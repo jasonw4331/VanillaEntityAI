@@ -1,0 +1,8 @@
+name: VanillaEntityAI
+main: jasonwynn10\VanillaEntityAI\EntityAI
+version: 0.0.1
+api:
+- 3.0.0-ALPHA11
+description: ""
+author: "jasonwynn10"
+load: STARTUP
