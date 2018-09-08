@@ -106,7 +106,7 @@ class EntityAI extends PluginBase {
 		Endermite::class => [],
 		Vindicator::class => [],
 		//Learn to code mascot
-		];
+	];
 
 	public function onLoad() : void {
 		foreach(self::$entities as $class => $saveNames) {
@@ -120,6 +120,6 @@ class EntityAI extends PluginBase {
 		new EntityListener($this);
 		$this->getScheduler()->scheduleRepeatingTask(new HostileSpawnTask(), 1);
 		$this->getScheduler()->scheduleRepeatingTask(new PassiveSpawnTask(), 400);
-		$this->getScheduler()->scheduleRepeatingTask(new DespawnTask(), 1);
+		$this->getScheduler()->scheduleRepeatingTask(new DespawnTask(), 20);
 	}
 }

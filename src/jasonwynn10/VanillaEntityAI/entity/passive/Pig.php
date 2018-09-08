@@ -32,7 +32,7 @@ class Pig extends Creature {
 		$drops = [];
 		if($this->isOnFire()) {
 			array_pad($drops, mt_rand(1, 3), Item::get(Item::COOKED_PORKCHOP));
-		}else {
+		}else{
 			array_pad($drops, mt_rand(1, 3), Item::get(Item::RAW_PORKCHOP));
 		}
 		if(!empty($this->getArmorInventory()->getContents())) {

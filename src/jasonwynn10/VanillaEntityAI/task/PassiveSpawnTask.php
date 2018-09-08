@@ -30,8 +30,8 @@ class PassiveSpawnTask extends Task {
 				$centerZ = $player->z >> 4;
 				for($X = $centerX - 8; $X < $centerX + 8; $X++) {
 					for($Z = $centerZ - 8; $Z < $centerZ + 8; $Z++) {
-						if(!isset($chunks[$X.":".$Z])) {
-							$chunks[$X.":".$Z] = $level->getChunk($X, $Z, true);
+						if(!isset($chunks[$X . ":" . $Z])) {
+							$chunks[$X . ":" . $Z] = $level->getChunk($X, $Z, true);
 						}
 					}
 				}

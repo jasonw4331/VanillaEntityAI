@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+namespace jasonwynn10\VanillaEntityAI\data;
 /**
  * PureEntitiesX: Mob AI Plugin for PMMP
  * Copyright (C)  2018 RevivalPMMP
@@ -18,63 +19,62 @@ declare(strict_types=1);
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace jasonwynn10\VanillaEntityAI\data;
-
+use pocketmine\entity\Entity;
 
 interface Data {
 
 	// Entity Network IDs
 	const NETWORK_IDS = [
-		"bat" => 19,
-		"blaze" => 43,
-		"cave_spider" => 40,
-		"chicken" => 10,
-		"cow" => 11,
-		"creeper" => 33,
-		"donkey" => 24,
-		"elder_guardian" => 50,
+		"bat" => Entity::BAT,
+		"blaze" => Entity::BLAZE,
+		"cave_spider" => Entity::CAVE_SPIDER,
+		"chicken" => Entity::CHICKEN,
+		"cow" => Entity::COW,
+		"creeper" => Entity::CREEPER,
+		"donkey" => Entity::DONKEY,
+		"elder_guardian" => Entity::ELDER_GUARDIAN,
 		"ender_charge" => 79,
-		"ender_dragon" => 53,
-		"enderman" => 38,
-		"endermite" => 55,
-		"evoker" => 104,
-		"ghast" => 41,
-		"guardian" => 49,
-		"horse" => 23,
-		"husk" => 47,
-		"iron_golem" => 20,
-		"large_fireball" => 85,
-		"llama" => 29,
-		"magma_cube" => 42,
-		"mooshroom" => 16,
-		"mule" => 25,
-		"ocelot" => 22,
-		"parrot" => 30,
-		"pig" => 12,
-		"pig_zombie" => 36,
-		"polar_bear" => 28,
-		"rabbit" => 18,
-		"sheep" => 13,
-		"shulker" => 54,
-		"silverfish" => 39,
-		"skeleton" => 34,
-		"skeleton_horse" => 26,
-		"slime" => 37,
-		"small_fireball" => 94,
-		"snow_golem" => 21,
-		"spider" => 35,
-		"squid" => 17,
-		"stray" => 46,
-		"vex" => 105,
-		"villager" => 15,
-		"vindicator" => 57,
-		"witch" => 45,
-		"wither_skeleton" => 48,
-		"wither" => 52,
-		"wolf" => 14,
-		"zombie" => 32,
-		"zombie_pigman" => 36,
-		"zombie_villager" => 44
+		"ender_dragon" => Entity::ENDER_DRAGON,
+		"enderman" => Entity::ENDERMAN,
+		"endermite" => Entity::ENDERMITE,
+		"evoker" => Entity::EVOCATION_ILLAGER,
+		"ghast" => Entity::GHAST,
+		"guardian" => Entity::GUARDIAN,
+		"horse" => Entity::HORSE,
+		"husk" => Entity::HUSK,
+		"iron_golem" => Entity::IRON_GOLEM,
+		"large_fireball" => Entity::LARGE_FIREBALL,
+		"llama" => Entity::LLAMA,
+		"magma_cube" => Entity::MAGMA_CUBE,
+		"mooshroom" => Entity::MOOSHROOM,
+		"mule" => Entity::MULE,
+		"ocelot" => Entity::OCELOT,
+		"parrot" => Entity::PARROT,
+		"pig" => Entity::PIG,
+		"pig_zombie" => Entity::ZOMBIE_PIGMAN,
+		"polar_bear" => Entity::POLAR_BEAR,
+		"rabbit" => Entity::RABBIT,
+		"sheep" => Entity::SHEEP,
+		"shulker" => Entity::SHULKER,
+		"silverfish" => Entity::SILVERFISH,
+		"skeleton" => Entity::SKELETON,
+		"skeleton_horse" => Entity::SKELETON_HORSE,
+		"slime" => Entity::SLIME,
+		"small_fireball" => Entity::SMALL_FIREBALL,
+		"snow_golem" => Entity::SNOW_GOLEM,
+		"spider" => Entity::SPIDER,
+		"squid" => Entity::SQUID,
+		"stray" => Entity::STRAY,
+		"vex" => Entity::VEX,
+		"villager" => Entity::VILLAGER,
+		"vindicator" => Entity::VINDICATOR,
+		"witch" => Entity::WITCH,
+		"wither_skeleton" => Entity::WITHER_SKELETON,
+		"wither" => Entity::WITHER,
+		"wolf" => Entity::WOLF,
+		"zombie" => Entity::ZOMBIE,
+		"zombie_pigman" => Entity::ZOMBIE_PIGMAN,
+		"zombie_villager" => Entity::ZOMBIE_VILLAGER
 	];
 
 
