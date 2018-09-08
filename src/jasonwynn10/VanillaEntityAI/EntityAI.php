@@ -119,7 +119,8 @@ class EntityAI extends PluginBase {
 		//SpoonDetector::printSpoon($this, "spoon.txt");
 		new EntityListener($this);
 		$this->getScheduler()->scheduleRepeatingTask(new HostileSpawnTask(), 1);
-		$this->getScheduler()->scheduleRepeatingTask(new PassiveSpawnTask(), 400);
+		$this->getScheduler()->scheduleRepeatingTask(new PassiveSpawnTask(), 20);
 		$this->getScheduler()->scheduleRepeatingTask(new DespawnTask(), 20);
+		// TODO: mob crush limit
 	}
 }

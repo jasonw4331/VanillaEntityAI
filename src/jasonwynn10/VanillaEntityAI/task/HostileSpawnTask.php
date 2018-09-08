@@ -48,7 +48,7 @@ class HostileSpawnTask extends Task {
 				return;
 			}
 			foreach($chunks as $chunk) {
-				$packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, 255), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));;
+				$packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight()-1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));;
 				$lightLevel = $level->getFullLightAt($packCenter->x, $packCenter->y, $packCenter->z);
 				if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid() and $lightLevel <= 7) {
 					$entityId = Data::NETWORK_IDS[MobTypeMaps::OVERWORLD_HOSTILE_MOBS[array_rand(MobTypeMaps::OVERWORLD_HOSTILE_MOBS)]];

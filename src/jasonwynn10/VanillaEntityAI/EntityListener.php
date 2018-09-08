@@ -34,7 +34,7 @@ class EntityListener implements Listener {
 	public function onLoad(ChunkLoadEvent $event) {
 		$chunk = $event->getChunk();
 		$level = $event->getLevel();
-		$packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, 255), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));;
+		$packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight()-1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));;
 		$lightLevel = $level->getFullLightAt($packCenter->x, $packCenter->y, $packCenter->z);
 		if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid() and $lightLevel > 8) {
 			$entityId = Data::NETWORK_IDS[MobTypeMaps::PASSIVE_DRY_MOBS[array_rand(MobTypeMaps::PASSIVE_DRY_MOBS)]];
@@ -52,7 +52,7 @@ class EntityListener implements Listener {
 					}
 				}
 			}
-		}elseif(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid() and $lightLevel <= 7){
+		}elseif(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid() and $lightLevel <= 7) {
 			$entityId = Data::NETWORK_IDS[MobTypeMaps::OVERWORLD_HOSTILE_MOBS[array_rand(MobTypeMaps::OVERWORLD_HOSTILE_MOBS)]];
 			for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
 				$x = mt_rand(-20, 20) + $packCenter->x;
@@ -84,9 +84,9 @@ class EntityListener implements Listener {
 	public function onUnload(ChunkUnloadEvent $event) {
 		$chunk = $event->getChunk();
 		foreach($chunk->getEntities() as $entity) {
-			if($entity instanceof Monster or ($entity instanceof Creature and !$entity instanceof Human)) {
+			if($entity instanceof Monster) {  // TODO: check if mob is permanent
 				$entity->flagForDespawn();
-				$entity->setCanSaveWithChunk(false); //TODO: check if mob is named or is supposed to not permanently despawn
+				$entity->setCanSaveWithChunk(false);
 			}
 		}
 	}
