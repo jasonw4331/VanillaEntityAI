@@ -2,12 +2,16 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\passive;
 
-use jasonwynn10\VanillaEntityAI\EntityAI;
 use pocketmine\entity\Creature;
 use pocketmine\item\Item;
 
 class Pig extends Creature {
-	public function initEntity() {
+	public const NETWORK_ID = self::PIG;
+
+	public $width = 1.5;
+	public $height = 1.0;
+
+	public function initEntity() : void {
 		$this->setMaxHealth(10);
 		parent::initEntity();
 	}
@@ -18,10 +22,7 @@ class Pig extends Creature {
 	 * @return bool
 	 */
 	public function entityBaseTick(int $tickDiff = 1) : bool {
-		$hasUpdate = parent::entityBaseTick($tickDiff);
-		$target = EntityAI::passiveAI($this, $tickDiff);
-		// TODO: move to target
-		return $hasUpdate;
+		return parent::entityBaseTick($tickDiff);
 	}
 
 	/**
@@ -31,7 +32,7 @@ class Pig extends Creature {
 		$drops = [];
 		if($this->isOnFire()) {
 			array_pad($drops, mt_rand(1, 3), Item::get(Item::COOKED_PORKCHOP));
-		}else{
+		}else {
 			array_pad($drops, mt_rand(1, 3), Item::get(Item::RAW_PORKCHOP));
 		}
 		if(!empty($this->getArmorInventory()->getContents())) {
