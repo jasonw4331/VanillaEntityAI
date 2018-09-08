@@ -17,9 +17,13 @@ class DespawnTask extends Task {
 				for($Z = $centerZ - 8; $Z < $centerZ + 8; $Z++) {
 					$chunk = $player->getLevel()->getChunk($X, $Z, true);
 					foreach($chunk->getEntities() as $entity) {
-						if($entity instanceof Monster and $entity->distance($player) > 54 and $entity->getLevel()->getFullLight($entity->floor()) > 8) {
+						if($entity instanceof Monster and $entity->distance($player) > 128 and $entity->getLevel()->getFullLight($entity->floor()) > 8) {
 							$entity->flagForDespawn();
-						}elseif($entity instanceof Creature and $entity->distance($player) > 54 and $entity->getLevel()->getFullLight($entity->floor()) < 7 and !$entity instanceof Human) {
+						}elseif($entity instanceof Creature and $entity->distance($player) > 128 and $entity->getLevel()->getFullLight($entity->floor()) < 7 and !$entity instanceof Human) {
+							$entity->flagForDespawn();
+						}elseif($entity instanceof Monster and $entity->distance($player) > 32 and $entity->getLevel()->getFullLight($entity->floor()) > 8 and mt_rand(1, 50) === 1) {
+							$entity->flagForDespawn();
+						}elseif($entity instanceof Creature and $entity->distance($player) > 32 and $entity->getLevel()->getFullLight($entity->floor()) < 7 and !$entity instanceof Human and mt_rand(1, 50) === 1) {
 							$entity->flagForDespawn();
 						}
 					}
