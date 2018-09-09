@@ -8,7 +8,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 
-class Zombie extends \pocketmine\entity\Zombie implements \pocketmine\entity\Ageable {
+class Zombie extends \pocketmine\entity\Zombie implements \pocketmine\entity\Ageable,CustomMonster {
 	public const NETWORK_ID = self::ZOMBIE;
 
 	public $width = 0.6;

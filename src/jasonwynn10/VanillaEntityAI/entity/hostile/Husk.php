@@ -8,7 +8,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 
-class Husk extends Zombie {
+class Husk extends Zombie implements CustomMonster {
 	public const NETWORK_ID = self::HUSK;
 
 	public $width = 1.031;

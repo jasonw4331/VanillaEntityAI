@@ -4,7 +4,7 @@ namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use pocketmine\entity\Monster;
 
-class Wither extends Monster {
+class Wither extends Monster implements CustomMonster {
 	public const NETWORK_ID = self::WITHER;
 
 

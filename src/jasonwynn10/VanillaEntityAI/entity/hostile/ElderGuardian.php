@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
-class ElderGuardian extends Guardian {
+class ElderGuardian extends Guardian implements CustomMonster {
 	public const NETWORK_ID = self::ELDER_GUARDIAN;
 
 	public $width = 1.9975;

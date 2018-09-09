@@ -2,7 +2,6 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\neutral;
 
-use pocketmine\entity\object\ItemEntity;
+use pocketmine\entity\projectile\Projectile;
 
-class Item extends ItemEntity {
-}
+class Trident extends Projectile {}

@@ -4,7 +4,7 @@ namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use pocketmine\entity\Monster;
 
-class Guardian extends Monster {
+class Guardian extends Monster implements CustomMonster {
 	public const NETWORK_ID = self::GUARDIAN;
 
 	public $width = 1.0; //TODO

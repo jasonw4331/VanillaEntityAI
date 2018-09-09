@@ -2,7 +2,6 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\neutral;
 
-use pocketmine\entity\object\ItemEntity;
+use pocketmine\entity\object\PrimedTNT;
 
-class Item extends ItemEntity {
-}
+class TNT extends PrimedTNT {}

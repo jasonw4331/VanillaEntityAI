@@ -23,6 +23,6 @@ class Minecart extends Entity {
 	 * @return string
 	 */
 	public function getName() : string {
-		return "Armor Stand";
+		return "Minecart";
 	}
 }

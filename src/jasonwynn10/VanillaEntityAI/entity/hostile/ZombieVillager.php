@@ -8,7 +8,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 
-class ZombieVillager extends Zombie {
+class ZombieVillager extends Zombie implements CustomMonster {
 	public const NETWORK_ID = self::ZOMBIE_VILLAGER;
 
 	public $width = 1.031;

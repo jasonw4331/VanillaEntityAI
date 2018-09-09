@@ -2,7 +2,9 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
-class CaveSpider extends Spider {
+use pocketmine\level\Position;
+
+class CaveSpider extends Spider implements CustomMonster{
 	public const NETWORK_ID = self::CAVE_SPIDER;
 
 	public $width = 1.438;
@@ -33,5 +35,9 @@ class CaveSpider extends Spider {
 	 */
 	public function getName() : string {
 		return "Cave Spider";
+	}
+
+	public function getTarget() : ?Position {
+		// TODO: Implement getTarget() method.
 	}
 }

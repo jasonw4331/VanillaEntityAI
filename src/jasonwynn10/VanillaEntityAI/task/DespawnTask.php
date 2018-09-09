@@ -2,10 +2,11 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\task;
 
+use jasonwynn10\VanillaEntityAI\entity\hostile\CustomMonster;
 use pocketmine\entity\Creature;
 use pocketmine\entity\Human;
-use pocketmine\entity\Monster;
 use pocketmine\level\format\Chunk;
+use pocketmine\Player;
 use pocketmine\scheduler\Task;
 use pocketmine\Server;
 
@@ -39,13 +40,13 @@ class DespawnTask extends Task {
 							break;
 						}
 					}
-					if($entity instanceof Monster and !$closeA and $entity->getLevel()->getFullLight($entity->floor()) > 8) {
+					if($entity instanceof CustomMonster and !$closeA and $entity->getLevel()->getFullLight($entity->floor()) > 8) {
 						$entity->flagForDespawn();
-					}elseif($entity instanceof Creature and !$closeA and $entity->getLevel()->getFullLight($entity->floor()) < 7 and !$entity instanceof Human){
+					}elseif($entity instanceof Creature and !$closeA and $entity->getLevel()->getFullLight($entity->floor()) < 7 and !$entity instanceof Human) {
 						$entity->flagForDespawn();
-					}elseif($entity instanceof Monster and !$closeB and $entity->getLevel()->getFullLight($entity->floor()) > 8 and mt_rand(1, 50) === 1){
+					}elseif($entity instanceof CustomMonster and !$closeB and !$entity->getTarget() instanceof Player and $entity->getLevel()->getFullLight($entity->floor()) > 8 and mt_rand(1, 50) === 1) {
 						$entity->flagForDespawn();
-					}elseif($entity instanceof Creature and !$closeB and $entity->getLevel()->getFullLight($entity->floor()) < 7 and !$entity instanceof Human and mt_rand(1, 50) === 1){
+					}elseif($entity instanceof Creature and !$closeB and !$entity->getTarget() instanceof Player and $entity->getLevel()->getFullLight($entity->floor()) < 7 and !$entity instanceof Human and mt_rand(1, 50) === 1) {
 						$entity->flagForDespawn();
 					}
 				}

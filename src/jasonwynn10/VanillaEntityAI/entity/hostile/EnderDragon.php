@@ -4,7 +4,7 @@ namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use pocketmine\entity\Monster;
 
-class EnderDragon extends Monster {
+class EnderDragon extends Monster implements CustomMonster {
 	public const NETWORK_ID = self::ENDER_DRAGON;
 
 	public $width = 2.5;

@@ -4,7 +4,7 @@ namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use pocketmine\entity\Monster;
 
-class Shulker extends Monster {
+class Shulker extends Monster implements CustomMonster {
 	public const NETWORK_ID = self::SHULKER;
 
 	public $width = 1.0;

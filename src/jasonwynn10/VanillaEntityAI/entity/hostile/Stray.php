@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
-class Stray extends Skeleton {
+class Stray extends Skeleton implements CustomMonster {
 	public const NETWORK_ID = self::STRAY;
 
 	public $width = 0.875;

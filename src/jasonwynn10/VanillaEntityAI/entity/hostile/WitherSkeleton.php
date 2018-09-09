@@ -9,7 +9,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 
-class WitherSkeleton extends Monster {
+class WitherSkeleton extends Monster implements CustomMonster {
 	public const NETWORK_ID = self::WITHER_SKELETON;
 
 	public $width = 0.875;

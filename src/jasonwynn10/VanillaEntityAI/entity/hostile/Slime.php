@@ -4,7 +4,7 @@ namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use pocketmine\entity\Monster;
 
-class Slime extends Monster {
+class Slime extends Monster implements CustomMonster {
 	public const NETWORK_ID = self::SLIME;
 
 	public $width = 1.2;

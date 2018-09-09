@@ -4,7 +4,7 @@ namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use pocketmine\entity\Monster;
 
-class Vindicator extends Monster {
+class Vindicator extends Monster implements CustomMonster {
 	public const NETWORK_ID = self::VINDICATOR;
 
 	public $width = 0.6;

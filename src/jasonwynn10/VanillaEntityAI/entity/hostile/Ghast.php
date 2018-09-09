@@ -4,7 +4,7 @@ namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use pocketmine\entity\Monster;
 
-class Ghast extends Monster {
+class Ghast extends Monster implements CustomMonster {
 	public const NETWORK_ID = self::GHAST;
 
 	public $width = 4.5;

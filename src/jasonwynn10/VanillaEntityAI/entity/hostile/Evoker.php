@@ -4,7 +4,7 @@ namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use pocketmine\entity\Monster;
 
-class Evoker extends Monster {
+class Evoker extends Monster implements CustomMonster {
 	public const NETWORK_ID = self::EVOCATION_ILLAGER;
 
 	public $width = 1.031;

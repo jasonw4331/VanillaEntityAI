@@ -3,8 +3,9 @@ declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use pocketmine\entity\Monster;
+use pocketmine\level\Position;
 
-class Blaze extends Monster {
+class Blaze extends Monster implements CustomMonster {
 	public const NETWORK_ID = self::BLAZE;
 
 	public $width = 1.25;
@@ -36,5 +37,9 @@ class Blaze extends Monster {
 	 */
 	public function getName() : string {
 		return "Blaze";
+	}
+
+	public function getTarget() : ?Position {
+		// TODO: Implement getTarget() method.
 	}
 }

@@ -10,7 +10,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 
-class Skeleton extends Monster implements InventoryHolder {
+class Skeleton extends Monster implements InventoryHolder,CustomMonster {
 	public const NETWORK_ID = self::SKELETON;
 
 	public $width = 0.875;

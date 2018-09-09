@@ -9,7 +9,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 
-class ZombiePigman extends Monster implements \pocketmine\entity\Ageable {
+class ZombiePigman extends Monster implements \pocketmine\entity\Ageable,CustomMonster {
 	public const NETWORK_ID = self::ZOMBIE_PIGMAN;
 
 	public $width = 2.0;
