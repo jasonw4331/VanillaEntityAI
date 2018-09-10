@@ -4,7 +4,7 @@ namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use pocketmine\level\Position;
 
-interface CustomMonster{
+interface CustomMonster {
 
 	/**
 	 * @return Position|null

@@ -10,6 +10,8 @@ class Blaze extends Monster implements CustomMonster {
 
 	public $width = 1.25;
 	public $height = 1.5;
+	/** @var Position|null  */
+	protected $target;
 
 
 	public function initEntity() : void {
@@ -40,6 +42,6 @@ class Blaze extends Monster implements CustomMonster {
 	}
 
 	public function getTarget() : ?Position {
-		// TODO: Implement getTarget() method.
+		return $this->target;
 	}
 }

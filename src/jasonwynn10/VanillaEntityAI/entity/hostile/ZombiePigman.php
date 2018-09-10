@@ -2,21 +2,28 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
+use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
 use jasonwynn10\VanillaEntityAI\inventory\MobInventory;
+use pocketmine\entity\Ageable;
 use pocketmine\entity\Monster;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\level\Position;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 
-class ZombiePigman extends Monster implements \pocketmine\entity\Ageable,CustomMonster {
+class ZombiePigman extends Monster implements Ageable, CustomMonster, InventoryHolder {
 	public const NETWORK_ID = self::ZOMBIE_PIGMAN;
 
 	public $width = 2.0;
 	public $height = 2.0;
 
 	/** @var MobInventory */
-	private $inventory;
+	protected $inventory;
+	/** @var Position|null  */
+	protected $target;
+	/** @var bool  */
+	protected $dropAll = false;
 
 	public function initEntity() : void {
 		$this->inventory = new MobInventory($this, ItemFactory::get(Item::GOLD_SWORD));
@@ -89,5 +96,26 @@ class ZombiePigman extends Monster implements \pocketmine\entity\Ageable,CustomM
 		$pk->item = $this->inventory->getItemInHand();
 		$pk->inventorySlot = $pk->hotbarSlot = $this->inventory->getHeldItemIndex();
 		$player->dataPacket($pk);
+	}
+
+	/**
+	 * @return Position|null
+	 */
+	public function getTarget() : ?Position {
+		return $this->target;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isDropAll() : bool {
+		return $this->dropAll;
+	}
+
+	/**
+	 * @param bool $dropAll
+	 */
+	public function setDropAll(bool $dropAll = true) : void {
+		$this->dropAll = $dropAll;
 	}
 }

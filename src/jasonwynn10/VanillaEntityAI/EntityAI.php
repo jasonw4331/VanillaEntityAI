@@ -89,8 +89,12 @@ use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\SnowGolem;
 use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Wolf;
 use jasonwynn10\VanillaEntityAI\task\DespawnTask;
 use jasonwynn10\VanillaEntityAI\task\HostileSpawnTask;
+use jasonwynn10\VanillaEntityAI\task\InhabitedChunkCounter;
 use jasonwynn10\VanillaEntityAI\task\PassiveSpawnTask;
 use pocketmine\entity\Entity;
+use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\level\format\Chunk;
+use pocketmine\level\Level;
 use pocketmine\plugin\PluginBase;
 use spoondetector\SpoonDetector;
 
@@ -149,7 +153,7 @@ class EntityAI extends PluginBase {
 		//ArmorStand::class => [],
 		//TripodCamera::class => [],
 		// player
-		//Item::class => [],
+		Item::class => ['Item', 'minecraft:item'],
 		//TNT::class => [],
 		//FallingBlock::class => [],
 		//MovingBlock::class => [],
@@ -198,7 +202,17 @@ class EntityAI extends PluginBase {
 		//fish
 	];
 
+	private static $instance;
+
+	/**
+	 * @return self
+	 */
+	public static function getInstance() : self {
+		return self::$instance;
+	}
+
 	public function onLoad() : void {
+		self::$instance = $this;
 		foreach(self::$entities as $class => $saveNames) {
 			Entity::registerEntity($class, true, $saveNames);
 		}
@@ -213,6 +227,108 @@ class EntityAI extends PluginBase {
 		if($this->getServer()->getConfigBool("spawn-animals", true))
 			$this->getScheduler()->scheduleRepeatingTask(new PassiveSpawnTask(), 20);
 		$this->getScheduler()->scheduleRepeatingTask(new DespawnTask(), 20);
-		// TODO: mob crush limit
+		$this->getScheduler()->scheduleRepeatingTask(new InhabitedChunkCounter(), 20 * 60 * 60);
+		// TODO: mob crush limit task?
+	}
+
+	/**
+	 * @param Level $level
+	 * @param Chunk $chunk
+	 *
+	 * @return float
+	 */
+	public function getRegionalDifficulty(Level $level, Chunk $chunk) : float {
+		$totalPlayTime = 0;
+		foreach($level->getPlayers() as $player) {
+			$time = (microtime(true) - $player->creationTime);
+			$hours = 0;
+			if($time >= 3600) {
+				$hours = floor(($time % (3600 * 24)) / 3600);
+			}
+			$totalPlayTime += $hours;
+		}
+
+		if ($totalPlayTime > 21)
+			$totalTimeFactor = 0.25;
+		elseif($totalPlayTime < 20)
+			$totalTimeFactor = 0;
+		else
+			$totalTimeFactor = (($totalPlayTime * 20 * 60 * 60) - 72000 ) / 5760000;
+
+		$chunkInhabitedTime = isset($chunk->inhabitedTime) ? $chunk->inhabitedTime : 0; // TODO: how long have players been in a specific chunk? increase count each hour, 1 * # of players
+
+		if($chunkInhabitedTime > 50)
+			$chunkFactor = 1;
+		else
+			$chunkFactor = ($chunkInhabitedTime * 20 * 60 * 60) / 3600000;
+
+		if($level->getDifficulty() !== Level::DIFFICULTY_HARD)
+			$chunkFactor *= 3/4;
+
+		$phaseTime = $level->getTime() / Level::TIME_FULL;
+		while($phaseTime > 5)
+			$phaseTime-=5; // TODO: better method
+		$moonPhase = 1.0;
+		switch($phaseTime) {
+			case 1:
+				$moonPhase = 1.0;
+				break;
+			case 2:
+				$moonPhase = 0.75;
+				break;
+			case 3:
+				$moonPhase = 0.5;
+				break;
+			case 4:
+				$moonPhase = 0.25;
+				break;
+			case 5:
+				$moonPhase = 0.0;
+				break;
+		}
+
+		if($moonPhase / 4 > $totalTimeFactor)
+			$chunkFactor += $totalTimeFactor;
+		else
+			$chunkFactor += $moonPhase / 4;
+
+		if($level->getDifficulty() === Level::DIFFICULTY_EASY)
+			$chunkFactor /= 2;
+
+		$regionalDifficulty = 0.75 + $totalTimeFactor + $chunkFactor;
+
+		if($level->getDifficulty() === Level::DIFFICULTY_NORMAL)
+			$regionalDifficulty *= 2;
+		if ($level->getDifficulty() === Level::DIFFICULTY_HARD)
+			$regionalDifficulty *= 3;
+
+		return $regionalDifficulty;
+	}
+
+	/**
+	 * @param Level $level
+	 * @param Chunk $chunk
+	 *
+	 * @return float
+	 */
+	public function getClumpedRegionalDifficulty(Level $level, Chunk $chunk) : float {
+		$regionalDifficulty = $this->getRegionalDifficulty($level, $chunk);
+		if ( $regionalDifficulty < 2.0 ) {
+			$result = 0.0;
+		} else if ( $regionalDifficulty > 4.0 ) {
+			$result = 1.0;
+		} else {
+			$result = ( $regionalDifficulty - 2.0 ) / 2.0;
+		}
+		return $result;
+	}
+
+	/**
+	 * @param int $level
+	 *
+	 * @return EnchantmentInstance
+	 */
+	public function getRandomEnchantment(int $level) : EnchantmentInstance {
+		// TODO: vanilla enchantment math
 	}
 }

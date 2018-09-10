@@ -2,9 +2,17 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\inventory;
 
+use pocketmine\block\LitPumpkin;
+use pocketmine\block\Pumpkin;
+use pocketmine\block\Skull;
 use pocketmine\entity\Monster;
 use pocketmine\inventory\BaseInventory;
+use pocketmine\item\Armor;
 use pocketmine\item\Item;
+use pocketmine\item\ItemIds;
+use pocketmine\item\TieredTool;
+use pocketmine\item\Tool;
+use pocketmine\level\Level;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
@@ -35,6 +43,22 @@ class MobInventory extends BaseInventory {
 
 	public function getDefaultSize() : int {
 		return 1;
+	}
+
+	/**
+	 * @param Item ...$slots
+	 *
+	 * @return array
+	 */
+	public function addItem(Item ...$slots) : array {
+		foreach($slots as $slot) {
+			if($slot instanceof Armor or $slot->getId() === ItemIds::PUMPKIN or $slot->getId() === ItemIds::LIT_PUMPKIN or $slot->getId() === ItemIds::SKULL) {
+				//
+			}elseif($slot instanceof TieredTool) {
+				//
+			}
+		}
+		return [];
 	}
 
 	/**
