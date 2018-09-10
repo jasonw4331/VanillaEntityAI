@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI;
 
+use jasonwynn10\VanillaEntityAI\command\SummonCommand;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Blaze;
 use jasonwynn10\VanillaEntityAI\entity\hostile\CaveSpider;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Creeper;
@@ -213,15 +214,21 @@ class EntityAI extends PluginBase {
 
 	public function onLoad() : void {
 		self::$instance = $this;
+	}
+
+	public function onEnable() : void {
+		if(!SpoonDetector::printSpoon($this, "spoon.txt"))
+			return;
+
 		foreach(self::$entities as $class => $saveNames) {
 			Entity::registerEntity($class, true, $saveNames);
 		}
 		// TODO: find a way to save entities across server restarts, but unload with chunks in-game
-	}
 
-	public function onEnable() : void {
-		SpoonDetector::printSpoon($this, "spoon.txt");
+		$this->getServer()->getCommandMap()->register("pocketmine", new SummonCommand("summon"));
+
 		new EntityListener($this);
+
 		if($this->getServer()->getConfigBool("spawn-mobs", true))
 			$this->getScheduler()->scheduleRepeatingTask(new HostileSpawnTask(), 1);
 		if($this->getServer()->getConfigBool("spawn-animals", true))
