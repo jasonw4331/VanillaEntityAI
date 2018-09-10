@@ -30,9 +30,9 @@ class Item extends ItemEntity implements Collidable {
 	}
 
 	public function onCollideWithEntity(Entity $entity) : void {
-		if($this->pickupDelay === 0 and $entity instanceof Item and $entity->onGround and mt_rand(1, 50) === 50) {
+		if($this->pickupDelay === 0 and $entity instanceof Item and $entity->onGround and mt_rand(1, 50) === 50) { // use randomness for delay before merge
 			if($this->item->equals($entity->getItem()))
-			$this->item->setCount($this->item->getCount() + $entity->getItem()->getCount());
+				$this->item->setCount($this->item->getCount() + $entity->getItem()->getCount());
 			$entity->flagForDespawn();
 			foreach($this->getViewers() as $player)
 				$this->sendSpawnPacket($player);

@@ -262,7 +262,7 @@ class EntityAI extends PluginBase {
 		else
 			$totalTimeFactor = (($totalPlayTime * 20 * 60 * 60) - 72000 ) / 5760000;
 
-		$chunkInhabitedTime = isset($chunk->inhabitedTime) ? $chunk->inhabitedTime : 0; // TODO: how long have players been in a specific chunk? increase count each hour, 1 * # of players
+		$chunkInhabitedTime = isset($chunk->inhabitedTime) ? $chunk->inhabitedTime : 0;
 
 		if($chunkInhabitedTime > 50)
 			$chunkFactor = 1;
