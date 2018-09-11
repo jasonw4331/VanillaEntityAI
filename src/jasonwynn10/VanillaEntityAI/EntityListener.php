@@ -5,14 +5,15 @@ namespace jasonwynn10\VanillaEntityAI;
 use jasonwynn10\VanillaEntityAI\data\BiomeInfo;
 use jasonwynn10\VanillaEntityAI\data\Data;
 use jasonwynn10\VanillaEntityAI\data\MobTypeMaps;
+use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
 use pocketmine\block\Block;
 use pocketmine\entity\Creature;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Human;
 use pocketmine\entity\Monster;
 use pocketmine\event\level\ChunkLoadEvent;
 use pocketmine\event\level\ChunkUnloadEvent;
 use pocketmine\event\Listener;
+use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 
@@ -31,6 +32,19 @@ class EntityListener implements Listener {
 		$this->plugin = $plugin;
 	}
 
+	/**
+	 * @param int $entityId
+	 * @param int $trialBiome
+	 *
+	 * @return bool
+	 */
+	private function isSpawnAllowedByBiome(int $entityId, int $trialBiome) : bool {
+		return in_array($entityId, BiomeInfo::ALLOWED_ENTITIES_BY_BIOME[$trialBiome]);
+	}
+
+	/**
+	 * @param ChunkLoadEvent $event
+	 */
 	public function onLoad(ChunkLoadEvent $event) {
 		$chunk = $event->getChunk();
 		$level = $event->getLevel();
@@ -72,22 +86,22 @@ class EntityListener implements Listener {
 	}
 
 	/**
-	 * @param int $entityId
-	 * @param int $trialBiome
-	 *
-	 * @return bool
+	 * @param ChunkUnloadEvent $event
 	 */
-	private function isSpawnAllowedByBiome(int $entityId, int $trialBiome) : bool {
-		return in_array($entityId, BiomeInfo::ALLOWED_ENTITIES_BY_BIOME[$trialBiome]);
-	}
-
 	public function onUnload(ChunkUnloadEvent $event) {
 		$chunk = $event->getChunk();
 		foreach($chunk->getEntities() as $entity) {
-			if($entity instanceof Monster) {  // TODO: check if mob is permanent
+			if($entity instanceof Monster) {  // TODO: check if mob is permanent (name tag or picked up items)
 				$entity->flagForDespawn();
 				$entity->setCanSaveWithChunk(false);
 			}
 		}
+	}
+
+	/**
+	 * @param PlayerCreationEvent $event
+	 */
+	public function onLogin(PlayerCreationEvent $event) {
+		$event->setPlayerClass(Player::class);
 	}
 }
