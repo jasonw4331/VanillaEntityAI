@@ -16,8 +16,8 @@ class SummonCommand extends VanillaCommand {
 	public function __construct(string $name) {
 		parent::__construct(
 			$name,
-			"%pocketmine.command.summon.description",
-			"%commands.summon.usage"
+			"Summons an entity.",
+			"/summon <entityType: EntityType> [spawnPos: x y z]"
 		);
 		$this->setPermission("pocketmine.command.summon");
 	}
@@ -58,10 +58,9 @@ class SummonCommand extends VanillaCommand {
 		}
 
 		if(count($args) > 1 and count($args) < 4) {
-			$pos = 1;
-			$x = $this->getRelativeDouble($sender->x, $sender, $args[$pos++]);
-			$y = $this->getRelativeDouble($sender->y, $sender, $args[$pos++], 0, $sender->getLevel()->getWorldHeight());
-			$z = $this->getRelativeDouble($sender->z, $sender, $args[$pos++]);
+			$x = $this->getRelativeDouble($sender->x, $sender, $args[$pos = 2]);
+			$y = $this->getRelativeDouble($sender->y, $sender, $args[++$pos], 0, $sender->getLevel()->getWorldHeight());
+			$z = $this->getRelativeDouble($sender->z, $sender, $args[++$pos]);
 		}else{
 			$x = $sender->x;
 			$y = $sender->y;

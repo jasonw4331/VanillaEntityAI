@@ -223,7 +223,6 @@ class EntityAI extends PluginBase {
 		foreach(self::$entities as $class => $saveNames) {
 			Entity::registerEntity($class, true, $saveNames);
 		}
-		// TODO: find a way to save entities across server restarts, but unload with chunks in-game
 
 		$this->getServer()->getCommandMap()->register("pocketmine", new SummonCommand("summon"));
 
@@ -320,22 +319,22 @@ class EntityAI extends PluginBase {
 	 */
 	public function getClumpedRegionalDifficulty(Level $level, Chunk $chunk) : float {
 		$regionalDifficulty = $this->getRegionalDifficulty($level, $chunk);
-		if ( $regionalDifficulty < 2.0 ) {
+		if ($regionalDifficulty < 2.0) {
 			$result = 0.0;
-		} else if ( $regionalDifficulty > 4.0 ) {
+		}elseif($regionalDifficulty > 4.0) {
 			$result = 1.0;
-		} else {
-			$result = ( $regionalDifficulty - 2.0 ) / 2.0;
+		}else{
+			$result = ($regionalDifficulty - 2.0) / 2.0;
 		}
 		return $result;
 	}
 
 	/**
-	 * @param int $level
+	 * @param int $experienceLevel
 	 *
 	 * @return EnchantmentInstance
 	 */
-	public function getRandomEnchantment(int $level) : EnchantmentInstance {
+	public function getRandomEnchantment(int $experienceLevel) : EnchantmentInstance {
 		// TODO: vanilla enchantment math
 	}
 }
