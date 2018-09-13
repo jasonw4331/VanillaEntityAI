@@ -2,13 +2,7 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
-use pocketmine\level\Position;
+use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
 
-interface CustomMonster {
-
-	/**
-	 * @return Position|null
-	 */
-	public function getTarget() : ?Position;
-
+interface CustomMonster extends CreatureBase {
 }

@@ -4,4 +4,5 @@ namespace jasonwynn10\VanillaEntityAI\entity\neutral;
 
 use pocketmine\entity\object\PrimedTNT;
 
-class TNT extends PrimedTNT {}
+class TNT extends PrimedTNT {
+}

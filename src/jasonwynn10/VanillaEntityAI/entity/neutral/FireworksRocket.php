@@ -12,7 +12,7 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 
-class FireworksRocket extends Projectile{
+class FireworksRocket extends Projectile {
 	public const NETWORK_ID = self::FIREWORKS_ROCKET;
 	/** @var float */
 	public $width = 0.25;
@@ -28,12 +28,35 @@ class FireworksRocket extends Projectile{
 	private $item;
 	/** @var null|Random */
 	private $random;
+
 	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null, \pocketmine\item\Item $item = null, ?Random $random = null) {
 		$this->random = $random;
 		$this->item = $item;
 		parent::__construct($level, $nbt, $shootingEntity);
 	}
-	protected function initEntity() : void {
+
+	public function spawnTo(Player $player): void {
+		$this->setMotion($this->getDirectionVector());
+		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LAUNCH);
+		parent::spawnTo($player);
+	}
+
+	public function despawnFromAll(): void {
+		$this->broadcastEntityEvent(EntityEventPacket::FIREWORK_PARTICLES);
+		parent::despawnFromAll();
+		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BLAST);
+	}
+
+	public function entityBaseTick(int $tickDiff = 1): bool {
+		if($this->lifeTime-- < 0) {
+			$this->flagForDespawn();
+			return true;
+		}else {
+			return parent::entityBaseTick($tickDiff);
+		}
+	}
+
+	protected function initEntity(): void {
 		parent::initEntity();
 		$random = $this->random ?? new Random;
 		$this->setGenericFlag(self::DATA_FLAG_HAS_COLLISION, true);
@@ -45,23 +68,7 @@ class FireworksRocket extends Projectile{
 		}
 		$this->lifeTime = 20 * $flyTime + $random->nextBoundedInt(5) + $random->nextBoundedInt(7);
 	}
-	public function spawnTo(Player $player) : void {
-		$this->setMotion($this->getDirectionVector());
-		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LAUNCH);
-		parent::spawnTo($player);
+
+	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult): void {
 	}
-	public function despawnFromAll() : void {
-		$this->broadcastEntityEvent(EntityEventPacket::FIREWORK_PARTICLES);
-		parent::despawnFromAll();
-		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BLAST);
-	}
-	public function entityBaseTick(int $tickDiff = 1) : bool {
-		if($this->lifeTime-- < 0) {
-			$this->flagForDespawn();
-			return true;
-		}else{
-			return parent::entityBaseTick($tickDiff);
-		}
-	}
-	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void {}
 }

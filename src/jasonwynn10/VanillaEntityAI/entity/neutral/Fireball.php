@@ -4,4 +4,5 @@ namespace jasonwynn10\VanillaEntityAI\entity\neutral;
 
 use pocketmine\entity\projectile\Projectile;
 
-class Fireball extends Projectile {}
+class Fireball extends Projectile {
+}

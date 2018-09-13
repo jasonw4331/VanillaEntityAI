@@ -4,4 +4,5 @@ namespace jasonwynn10\VanillaEntityAI\entity\neutral;
 
 use pocketmine\entity\projectile\Projectile;
 
-class ShulkerBullet extends Projectile {}
+class ShulkerBullet extends Projectile {
+}

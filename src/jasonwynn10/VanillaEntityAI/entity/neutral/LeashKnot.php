@@ -4,4 +4,5 @@ namespace jasonwynn10\VanillaEntityAI\entity\neutral;
 
 use pocketmine\entity\Entity;
 
-class LeashKnot extends Entity {}
+class LeashKnot extends Entity {
+}

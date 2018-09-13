@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI;
 
 use jasonwynn10\VanillaEntityAI\command\SummonCommand;
+use jasonwynn10\VanillaEntityAI\data\BiomeInfo;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Blaze;
 use jasonwynn10\VanillaEntityAI\entity\hostile\CaveSpider;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Creeper;
@@ -10,6 +11,7 @@ use jasonwynn10\VanillaEntityAI\entity\hostile\ElderGuardian;
 use jasonwynn10\VanillaEntityAI\entity\hostile\EnderDragon;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Enderman;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Endermite;
+use jasonwynn10\VanillaEntityAI\entity\hostile\Evoker;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Ghast;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Guardian;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Husk;
@@ -20,6 +22,7 @@ use jasonwynn10\VanillaEntityAI\entity\hostile\Skeleton;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Slime;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Spider;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Stray;
+use jasonwynn10\VanillaEntityAI\entity\hostile\Vex;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Vindicator;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Witch;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Wither;
@@ -27,7 +30,43 @@ use jasonwynn10\VanillaEntityAI\entity\hostile\WitherSkeleton;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Zombie;
 use jasonwynn10\VanillaEntityAI\entity\hostile\ZombiePigman;
 use jasonwynn10\VanillaEntityAI\entity\hostile\ZombieVillager;
+use jasonwynn10\VanillaEntityAI\entity\neutral\AreaEffectCloud;
+use jasonwynn10\VanillaEntityAI\entity\neutral\ArmorStand;
+use jasonwynn10\VanillaEntityAI\entity\neutral\Arrow;
+use jasonwynn10\VanillaEntityAI\entity\neutral\Boat;
+use jasonwynn10\VanillaEntityAI\entity\neutral\ChestMinecart;
+use jasonwynn10\VanillaEntityAI\entity\neutral\CommandBlockMinecart;
+use jasonwynn10\VanillaEntityAI\entity\neutral\DangerousWitherSkull;
+use jasonwynn10\VanillaEntityAI\entity\neutral\DragonFireball;
+use jasonwynn10\VanillaEntityAI\entity\neutral\Egg;
+use jasonwynn10\VanillaEntityAI\entity\neutral\EnderCrystal;
+use jasonwynn10\VanillaEntityAI\entity\neutral\EnderPearl;
+use jasonwynn10\VanillaEntityAI\entity\neutral\EvocationFang;
+use jasonwynn10\VanillaEntityAI\entity\neutral\ExperienceBottle;
+use jasonwynn10\VanillaEntityAI\entity\neutral\ExperienceOrb;
+use jasonwynn10\VanillaEntityAI\entity\neutral\EyeOfEnder;
+use jasonwynn10\VanillaEntityAI\entity\neutral\FallingBlock;
+use jasonwynn10\VanillaEntityAI\entity\neutral\Fireball;
+use jasonwynn10\VanillaEntityAI\entity\neutral\FireworksRocket;
+use jasonwynn10\VanillaEntityAI\entity\neutral\FishingHook;
+use jasonwynn10\VanillaEntityAI\entity\neutral\HopperMinecart;
 use jasonwynn10\VanillaEntityAI\entity\neutral\Item;
+use jasonwynn10\VanillaEntityAI\entity\neutral\LargeFireball;
+use jasonwynn10\VanillaEntityAI\entity\neutral\LeashKnot;
+use jasonwynn10\VanillaEntityAI\entity\neutral\Lightning;
+use jasonwynn10\VanillaEntityAI\entity\neutral\LingeringPotion;
+use jasonwynn10\VanillaEntityAI\entity\neutral\LlamaSpit;
+use jasonwynn10\VanillaEntityAI\entity\neutral\Minecart;
+use jasonwynn10\VanillaEntityAI\entity\neutral\MovingBlock;
+use jasonwynn10\VanillaEntityAI\entity\neutral\Painting;
+use jasonwynn10\VanillaEntityAI\entity\neutral\ShulkerBullet;
+use jasonwynn10\VanillaEntityAI\entity\neutral\Snowball;
+use jasonwynn10\VanillaEntityAI\entity\neutral\SplashPotion;
+use jasonwynn10\VanillaEntityAI\entity\neutral\TNT;
+use jasonwynn10\VanillaEntityAI\entity\neutral\TNTMinecart;
+use jasonwynn10\VanillaEntityAI\entity\neutral\Trident;
+use jasonwynn10\VanillaEntityAI\entity\neutral\TripodCamera;
+use jasonwynn10\VanillaEntityAI\entity\neutral\WitherSkull;
 use jasonwynn10\VanillaEntityAI\entity\passive\Bat;
 use jasonwynn10\VanillaEntityAI\entity\passive\Chicken;
 use jasonwynn10\VanillaEntityAI\entity\passive\Cow;
@@ -54,16 +93,18 @@ use jasonwynn10\VanillaEntityAI\task\DespawnTask;
 use jasonwynn10\VanillaEntityAI\task\HostileSpawnTask;
 use jasonwynn10\VanillaEntityAI\task\InhabitedChunkCounter;
 use jasonwynn10\VanillaEntityAI\task\PassiveSpawnTask;
+use jasonwynn10\VanillaEntityAI\tile\MobSpawner;
 use pocketmine\entity\Entity;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\level\biome\Biome;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
-use pocketmine\level\Position;
 use pocketmine\plugin\PluginBase;
 use spoondetector\SpoonDetector;
 
 class EntityAI extends PluginBase {
-
+	/** @var string[] $entities */
 	public static $entities = [
 		Chicken::class => ['Chicken', 'minecraft:chicken'],
 		Cow::class => ['Cow', 'minecraft:cow'],
@@ -165,140 +206,14 @@ class EntityAI extends PluginBase {
 		//tropical fish
 		//fish
 	];
-
+	/** @var self|null */
 	private static $instance;
 
 	/**
 	 * @return self
 	 */
-	public static function getInstance() : self {
+	public static function getInstance(): self {
 		return self::$instance;
-	}
-
-	public function onLoad() : void {
-		self::$instance = $this;
-	}
-
-	public function onEnable() : void {
-		if(!SpoonDetector::printSpoon($this, "spoon.txt"))
-			return;
-
-		foreach(self::$entities as $class => $saveNames) {
-			Entity::registerEntity($class, true, $saveNames);
-		}
-
-		$this->getServer()->getCommandMap()->register("pocketmine", new SummonCommand("summon"));
-
-		new EntityListener($this);
-
-		if($this->getServer()->getConfigBool("spawn-mobs", true))
-			$this->getScheduler()->scheduleRepeatingTask(new HostileSpawnTask(), 1);
-		if($this->getServer()->getConfigBool("spawn-animals", true))
-			$this->getScheduler()->scheduleRepeatingTask(new PassiveSpawnTask(), 20);
-		$this->getScheduler()->scheduleRepeatingTask(new DespawnTask(), 20);
-		$this->getScheduler()->scheduleRepeatingTask(new InhabitedChunkCounter(), 20 * 60 * 60);
-		// TODO: mob crush limit task?
-	}
-
-	/**
-	 * @param Level $level
-	 * @param Chunk $chunk
-	 *
-	 * @return float
-	 */
-	public function getRegionalDifficulty(Level $level, Chunk $chunk) : float {
-		$totalPlayTime = 0;
-		foreach($level->getPlayers() as $player) {
-			$time = (microtime(true) - $player->creationTime);
-			$hours = 0;
-			if($time >= 3600) {
-				$hours = floor(($time % (3600 * 24)) / 3600);
-			}
-			$totalPlayTime += $hours;
-		}
-
-		if ($totalPlayTime > 21)
-			$totalTimeFactor = 0.25;
-		elseif($totalPlayTime < 20)
-			$totalTimeFactor = 0;
-		else
-			$totalTimeFactor = (($totalPlayTime * 20 * 60 * 60) - 72000 ) / 5760000;
-
-		$chunkInhabitedTime = isset($chunk->inhabitedTime) ? $chunk->inhabitedTime : 0;
-
-		if($chunkInhabitedTime > 50)
-			$chunkFactor = 1;
-		else
-			$chunkFactor = ($chunkInhabitedTime * 20 * 60 * 60) / 3600000;
-
-		if($level->getDifficulty() !== Level::DIFFICULTY_HARD)
-			$chunkFactor *= 3/4;
-
-		$phaseTime = $level->getTime() / Level::TIME_FULL;
-		while($phaseTime > 5)
-			$phaseTime-=5; // TODO: better method
-		$moonPhase = 1.0;
-		switch($phaseTime) {
-			case 1:
-				$moonPhase = 1.0;
-				break;
-			case 2:
-				$moonPhase = 0.75;
-				break;
-			case 3:
-				$moonPhase = 0.5;
-				break;
-			case 4:
-				$moonPhase = 0.25;
-				break;
-			case 5:
-				$moonPhase = 0.0;
-				break;
-		}
-
-		if($moonPhase / 4 > $totalTimeFactor)
-			$chunkFactor += $totalTimeFactor;
-		else
-			$chunkFactor += $moonPhase / 4;
-
-		if($level->getDifficulty() === Level::DIFFICULTY_EASY)
-			$chunkFactor /= 2;
-
-		$regionalDifficulty = 0.75 + $totalTimeFactor + $chunkFactor;
-
-		if($level->getDifficulty() === Level::DIFFICULTY_NORMAL)
-			$regionalDifficulty *= 2;
-		if ($level->getDifficulty() === Level::DIFFICULTY_HARD)
-			$regionalDifficulty *= 3;
-
-		return $regionalDifficulty;
-	}
-
-	/**
-	 * @param Level $level
-	 * @param Chunk $chunk
-	 *
-	 * @return float
-	 */
-	public function getClumpedRegionalDifficulty(Level $level, Chunk $chunk) : float {
-		$regionalDifficulty = $this->getRegionalDifficulty($level, $chunk);
-		if ($regionalDifficulty < 2.0) {
-			$result = 0.0;
-		}elseif($regionalDifficulty > 4.0) {
-			$result = 1.0;
-		}else{
-			$result = ($regionalDifficulty - 2.0) / 2.0;
-		}
-		return $result;
-	}
-
-	/**
-	 * @param int $experienceLevel
-	 *
-	 * @return EnchantmentInstance
-	 */
-	public function getRandomEnchantment(int $experienceLevel) : EnchantmentInstance {
-		// TODO: vanilla enchantment math
 	}
 
 	/**
@@ -311,49 +226,179 @@ class EntityAI extends PluginBase {
 	 * When the given coordinates are NOT an AIR block coordinate we search upwards until the first air block is found
 	 * which is then returned to the caller.
 	 *
-	 * @param       $x                int the x position to start search
-	 * @param       $y                int the y position to start search
-	 * @param       $z                int the z position to start searching
-	 * @param Level $level Level the level object to search in
+	 * @param int $x
+	 * @param int $y
+	 * @param int $z
+	 * @param Level $level
 	 *
-	 * @return null|Position    either NULL if no valid position was found or the final AIR spawn position
+	 * @return int|null returns valid y coordinate if found
 	 */
-	public static function getSuitableHeightPosition($x, $y, $z, Level $level) {
-		$newPosition = null;
+	public static function getSuitableHeight(int $x, int $y, int $z, Level $level): ?int {
 		$id = $level->getBlockIdAt($x, $y, $z);
-		if($id == 0) { // we found an air block - we need to search down step by step to get the correct block which is not an "AIR" block
+		if($id === 0) {
 			$air = true;
-			$y = $y - 1;
+			--$y;
 			while($air) {
 				$id = $level->getBlockIdAt($x, $y, $z);
-				if($id != 0) { // this is an air block ...
-					$newPosition = new Position($x, $y + 1, $z, $level);
+				if($id !== 0) { // this is an air block ...
+					++$y;
 					$air = false;
-				}else{
-					$y = $y - 1;
+				}else {
+					--$y;
 					if($y < -255) {
-						break;
+						return null;
 					}
 				}
 			}
-		}else{ // something else than AIR block. search upwards for a valid air block
+		}else {
 			$air = false;
 			while(!$air) {
 				$id = $level->getBlockIdAt($x, $y, $z);
-				if($id == 0) { // this is an air block ...
-					$newPosition = new Position($x, $y, $z, $level);
+				if($id === 0) {
 					$air = true;
-				}else{
-					$y = $y + 1;
-					if($y > 255) {
-						break;
+				}else {
+					++$y;
+					if($y > $level->getWorldHeight()) {
+						return null;
 					}
 				}
 			}
 		}
-
-		return $newPosition;
+		return $y;
 	}
 
+	/**
+	 * @param int $entityId
+	 * @param int $trialBiome
+	 *
+	 * @return bool
+	 */
+	public static function isSpawnAllowedByBiome(int $entityId, int $trialBiome): bool {
+		return (in_array($entityId, BiomeInfo::ALLOWED_ENTITIES_BY_BIOME[$trialBiome]) or (($trialBiome !== Biome::HELL and $trialBiome !== 9) and in_array($entityId, BiomeInfo::OVERWORLD_BIOME_EXEMPT)));
+	}
 
+	public function onLoad(): void {
+		self::$instance = $this;
+	}
+
+	public function onEnable(): void {
+		if(!SpoonDetector::printSpoon($this, "spoon.txt"))
+			return;
+		/** @noinspection PhpUnhandledExceptionInspection */
+		MobSpawner::registerTile(MobSpawner::class, [MobSpawner::MOB_SPAWNER, "minecraft:mob_spawner"]);
+		foreach(self::$entities as $class => $saveNames) {
+			Entity::registerEntity($class, true, $saveNames);
+		}
+		$this->getServer()->getCommandMap()->register("pocketmine", new SummonCommand("summon"));
+		new EntityListener($this);
+		if($this->getServer()->getConfigBool("spawn-mobs", true)) {
+			$this->getScheduler()->scheduleRepeatingTask(new HostileSpawnTask(), 1);
+		}
+		if($this->getServer()->getConfigBool("spawn-animals", true)) {
+			$this->getScheduler()->scheduleRepeatingTask(new PassiveSpawnTask(), 20);
+		}
+		$this->getScheduler()->scheduleRepeatingTask(new DespawnTask(), 20);
+		$this->getScheduler()->scheduleRepeatingTask(new InhabitedChunkCounter(), 20 * 60 * 60);
+		// TODO: mob crush limit task?
+	}
+
+	/**
+	 * @param Level $level
+	 * @param Chunk $chunk
+	 *
+	 * @return float
+	 */
+	public function getClumpedRegionalDifficulty(Level $level, Chunk $chunk): float {
+		$regionalDifficulty = $this->getRegionalDifficulty($level, $chunk);
+		if($regionalDifficulty < 2.0) {
+			$result = 0.0;
+		}elseif($regionalDifficulty > 4.0) {
+			$result = 1.0;
+		}else {
+			$result = ($regionalDifficulty - 2.0) / 2.0;
+		}
+		return $result;
+	}
+
+	/**
+	 * @param Level $level
+	 * @param Chunk $chunk
+	 *
+	 * @return float
+	 */
+	public function getRegionalDifficulty(Level $level, Chunk $chunk): float {
+		$totalPlayTime = 0;
+		foreach($level->getPlayers() as $player) {
+			$time = (microtime(true) - $player->creationTime);
+			$hours = 0;
+			if($time >= 3600) {
+				$hours = floor(($time % (3600 * 24)) / 3600);
+			}
+			$totalPlayTime += $hours;
+		}
+		if($totalPlayTime > 21) {
+			$totalTimeFactor = 0.25;
+		}elseif($totalPlayTime < 20) {
+			$totalTimeFactor = 0;
+		}else {
+			$totalTimeFactor = (($totalPlayTime * 20 * 60 * 60) - 72000) / 5760000;
+		}
+		$chunkInhabitedTime = isset($chunk->inhabitedTime) ? $chunk->inhabitedTime : 0;
+		if($chunkInhabitedTime > 50) {
+			$chunkFactor = 1;
+		}else {
+			$chunkFactor = ($chunkInhabitedTime * 20 * 60 * 60) / 3600000;
+		}
+		if($level->getDifficulty() !== Level::DIFFICULTY_HARD) {
+			$chunkFactor *= 3 / 4;
+		}
+		$phaseTime = $level->getTime() / Level::TIME_FULL;
+		while($phaseTime > 5)
+			$phaseTime -= 5; // TODO: better method
+		$moonPhase = 1.0;
+		switch($phaseTime) {
+			case 1:
+				$moonPhase = 1.0;
+			break;
+			case 2:
+				$moonPhase = 0.75;
+			break;
+			case 3:
+				$moonPhase = 0.5;
+			break;
+			case 4:
+				$moonPhase = 0.25;
+			break;
+			case 5:
+				$moonPhase = 0.0;
+			break;
+		}
+		if($moonPhase / 4 > $totalTimeFactor) {
+			$chunkFactor += $totalTimeFactor;
+		}else {
+			$chunkFactor += $moonPhase / 4;
+		}
+		if($level->getDifficulty() === Level::DIFFICULTY_EASY) {
+			$chunkFactor /= 2;
+		}
+		$regionalDifficulty = 0.75 + $totalTimeFactor + $chunkFactor;
+		if($level->getDifficulty() === Level::DIFFICULTY_NORMAL) {
+			$regionalDifficulty *= 2;
+		}
+		if($level->getDifficulty() === Level::DIFFICULTY_HARD) {
+			$regionalDifficulty *= 3;
+		}
+		return $regionalDifficulty;
+	}
+
+	/**
+	 * @param int $experienceLevel
+	 *
+	 * @return EnchantmentInstance
+	 */
+	public function getRandomEnchantment(int $experienceLevel): EnchantmentInstance {
+		// TODO: vanilla enchantment math
+		$enchantment = new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::UNBREAKING));
+		return $enchantment; // temporary stuff
+	}
 }

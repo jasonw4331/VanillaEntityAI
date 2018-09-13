@@ -7,11 +7,10 @@ use pocketmine\item\Item;
 
 class Pig extends Creature {
 	public const NETWORK_ID = self::PIG;
-
 	public $width = 1.5;
 	public $height = 1.0;
 
-	public function initEntity() : void {
+	public function initEntity(): void {
 		$this->setMaxHealth(10);
 		parent::initEntity();
 	}
@@ -21,18 +20,18 @@ class Pig extends Creature {
 	 *
 	 * @return bool
 	 */
-	public function entityBaseTick(int $tickDiff = 1) : bool {
+	public function entityBaseTick(int $tickDiff = 1): bool {
 		return parent::entityBaseTick($tickDiff);
 	}
 
 	/**
 	 * @return Item[]
 	 */
-	public function getDrops() : array {
+	public function getDrops(): array {
 		$drops = [];
 		if($this->isOnFire()) {
 			array_pad($drops, mt_rand(1, 3), Item::get(Item::COOKED_PORKCHOP));
-		}else{
+		}else {
 			array_pad($drops, mt_rand(1, 3), Item::get(Item::RAW_PORKCHOP));
 		}
 		if(!empty($this->getArmorInventory()->getContents())) {
@@ -41,7 +40,7 @@ class Pig extends Creature {
 		return $drops;
 	}
 
-	public function getXpDropAmount() : int {
+	public function getXpDropAmount(): int {
 		//TODO: check for baby state
 		return mt_rand(1, 3);
 	}
@@ -49,7 +48,7 @@ class Pig extends Creature {
 	/**
 	 * @return string
 	 */
-	public function getName() : string {
+	public function getName(): string {
 		return "Pig";
 	}
 }

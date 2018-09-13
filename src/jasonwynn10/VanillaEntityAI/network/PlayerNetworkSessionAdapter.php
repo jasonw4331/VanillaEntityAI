@@ -7,20 +7,18 @@ use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\Server;
 
 class PlayerNetworkSessionAdapter extends \pocketmine\network\mcpe\PlayerNetworkSessionAdapter {
-
-	/** @var Server  */
+	/** @var Server */
 	protected $server;
-	/** @var Player  */
+	/** @var Player */
 	protected $player;
 
-	public function __construct(Server $server, Player $player){
+	public function __construct(Server $server, Player $player) {
 		parent::__construct($server, $player);
 		$this->server = $server;
 		$this->player = $player;
 	}
 
-	public function handlePlayerInput(PlayerInputPacket $packet) : bool {
+	public function handlePlayerInput(PlayerInputPacket $packet): bool {
 		return $this->player->handlePlayerInput($packet);
 	}
-
 }

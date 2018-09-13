@@ -12,13 +12,8 @@ use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
 class SummonCommand extends VanillaCommand {
-
 	public function __construct(string $name) {
-		parent::__construct(
-			$name,
-			"Summons an entity.",
-			"/summon <entityType: EntityType> [spawnPos: x y z]"
-		);
+		parent::__construct($name, "Summons an entity.", "/summon <entityType: EntityType> [spawnPos: x y z]");
 		$this->setPermission("pocketmine.command.summon");
 	}
 
@@ -34,15 +29,12 @@ class SummonCommand extends VanillaCommand {
 		if(!$this->testPermission($sender) or !$sender instanceof Player) {
 			return true;
 		}
-
 		$args = array_values(array_filter($args, function($arg) {
 			return $arg !== "";
 		}));
-
 		if(count($args) < 1 or (count($args) > 1 and count($args) < 4) or count($args) > 4) {
 			throw new InvalidCommandSyntaxException();
 		}
-
 		$entityId = 0;
 		foreach(array_keys(EntityAI::$entities) as $class) {
 			/** @noinspection PhpUnhandledExceptionInspection */
@@ -51,17 +43,16 @@ class SummonCommand extends VanillaCommand {
 				$entityId = $reflectionClass->getConstant("NETWORK_ID");
 			}elseif($args[0] === $reflectionClass->getShortName()) {
 				$entityId = $reflectionClass->getConstant("NETWORK_ID");
-			}else{
-				$sender->sendMessage(TextFormat::RED."That entity could not be found");
+			}else {
+				$sender->sendMessage(TextFormat::RED . "That entity could not be found");
 				return true;
 			}
 		}
-
 		if(count($args) > 1 and count($args) < 4) {
 			$x = $this->getRelativeDouble($sender->x, $sender, $args[$pos = 2]);
 			$y = $this->getRelativeDouble($sender->y, $sender, $args[++$pos], 0, $sender->getLevel()->getWorldHeight());
 			$z = $this->getRelativeDouble($sender->z, $sender, $args[++$pos]);
-		}else{
+		}else {
 			$x = $sender->x;
 			$y = $sender->y;
 			$z = $sender->z;

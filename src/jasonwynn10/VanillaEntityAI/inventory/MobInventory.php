@@ -2,27 +2,20 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\inventory;
 
-use pocketmine\block\LitPumpkin;
-use pocketmine\block\Pumpkin;
-use pocketmine\block\Skull;
 use pocketmine\entity\Monster;
 use pocketmine\inventory\BaseInventory;
 use pocketmine\item\Armor;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\item\TieredTool;
-use pocketmine\item\Tool;
-use pocketmine\level\Level;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\Player;
 
 class MobInventory extends BaseInventory {
 	protected $maxStackSize = 1;
-
 	/** @var Monster */
 	protected $holder;
-
 	/** @var int */
 	protected $itemInHandIndex = 0;
 
@@ -37,11 +30,11 @@ class MobInventory extends BaseInventory {
 		parent::__construct([$item]);
 	}
 
-	public function getName() : string {
+	public function getName(): string {
 		return "Mob";
 	}
 
-	public function getDefaultSize() : int {
+	public function getDefaultSize(): int {
 		return 1;
 	}
 
@@ -50,7 +43,7 @@ class MobInventory extends BaseInventory {
 	 *
 	 * @return array
 	 */
-	public function addItem(Item ...$slots) : array {
+	public function addItem(Item ...$slots): array {
 		foreach($slots as $slot) {
 			if($slot instanceof Armor or $slot->getId() === ItemIds::PUMPKIN or $slot->getId() === ItemIds::LIT_PUMPKIN or $slot->getId() === ItemIds::SKULL) {
 				//
@@ -69,10 +62,8 @@ class MobInventory extends BaseInventory {
 	 *
 	 * @return bool if the equipment change was successful, false if not.
 	 */
-	public function equipItem(int $hotbarSlot) : bool {
-
+	public function equipItem(int $hotbarSlot): bool {
 		$this->setHeldItemIndex($hotbarSlot);
-
 		return true;
 	}
 
@@ -83,9 +74,7 @@ class MobInventory extends BaseInventory {
 	 */
 	public function setHeldItemIndex(int $hotbarSlot) {
 		$this->throwIfNotHotbarSlot($hotbarSlot);
-
 		$this->itemInHandIndex = $hotbarSlot;
-
 		$this->sendHeldItem($this->getHolder()->getViewers());
 	}
 
@@ -100,7 +89,7 @@ class MobInventory extends BaseInventory {
 		}
 	}
 
-	private function isHotbarSlot(int $slot) : bool {
+	private function isHotbarSlot(int $slot): bool {
 		return $slot >= 0 and $slot <= $this->getHotbarSize();
 	}
 
@@ -108,7 +97,7 @@ class MobInventory extends BaseInventory {
 	 * Returns the number of slots in the hotbar.
 	 * @return int
 	 */
-	public function getHotbarSize() : int {
+	public function getHotbarSize(): int {
 		return 1;
 	}
 
@@ -119,13 +108,11 @@ class MobInventory extends BaseInventory {
 	 */
 	public function sendHeldItem(array $target) {
 		$item = $this->getItemInHand();
-
 		$pk = new MobEquipmentPacket();
 		$pk->entityRuntimeId = $this->holder->getId();
 		$pk->item = $item;
 		$pk->inventorySlot = $pk->hotbarSlot = $this->itemInHandIndex;
 		$pk->windowId = ContainerIds::INVENTORY;
-
 		$this->holder->getLevel()->getServer()->broadcastPacket($target, $pk);
 	}
 
@@ -134,7 +121,7 @@ class MobInventory extends BaseInventory {
 	 *
 	 * @return Item
 	 */
-	public function getItemInHand() : Item {
+	public function getItemInHand(): Item {
 		return $this->getHotbarSlotItem($this->itemInHandIndex);
 	}
 
@@ -147,7 +134,7 @@ class MobInventory extends BaseInventory {
 	 *
 	 * @throws \InvalidArgumentException if the hotbar slot index is out of range
 	 */
-	public function getHotbarSlotItem(int $hotbarSlot) : Item {
+	public function getHotbarSlotItem(int $hotbarSlot): Item {
 		$this->throwIfNotHotbarSlot($hotbarSlot);
 		return $this->getItem($hotbarSlot);
 	}
@@ -164,7 +151,7 @@ class MobInventory extends BaseInventory {
 	 * Returns the hotbar slot number the holder is currently holding.
 	 * @return int
 	 */
-	public function getHeldItemIndex() : int {
+	public function getHeldItemIndex(): int {
 		return $this->itemInHandIndex;
 	}
 
@@ -175,7 +162,7 @@ class MobInventory extends BaseInventory {
 	 *
 	 * @return bool
 	 */
-	public function setItemInHand(Item $item) : bool {
+	public function setItemInHand(Item $item): bool {
 		return $this->setItem($this->itemInHandIndex, $item);
 	}
 }

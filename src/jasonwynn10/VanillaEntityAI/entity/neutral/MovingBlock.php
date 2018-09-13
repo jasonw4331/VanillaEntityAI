@@ -5,5 +5,4 @@ namespace jasonwynn10\VanillaEntityAI\entity\neutral;
 use pocketmine\entity\Entity;
 
 class MovingBlock extends Entity {
-
 }
