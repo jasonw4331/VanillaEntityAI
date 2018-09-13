@@ -2,8 +2,11 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
+use pocketmine\entity\Living;
 use pocketmine\entity\Monster;
 use pocketmine\level\Position;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\nbt\tag\CompoundTag;
 
 class Blaze extends Monster implements CustomMonster {
 	public const NETWORK_ID = self::BLAZE;
@@ -41,5 +44,32 @@ class Blaze extends Monster implements CustomMonster {
 
 	public function getTarget(): ?Position {
 		return $this->target;
+	}
+
+	/**
+	 * @param Position $spawnPos
+	 * @param CompoundTag|null $spawnData
+	 *
+	 * @return null|Living
+	 */
+	public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?Living {
+		$width = 1.25;
+		$height = 1.5;
+		$boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+		$halfWidth = $width / 2;
+		$boundingBox->setBounds($spawnPos->x - $halfWidth, $spawnPos->y, $spawnPos->z - $halfWidth, $spawnPos->x + $halfWidth, $spawnPos->y + $height, $spawnPos->z + $halfWidth);
+		// TODO: work on logic here more
+		if($spawnPos->level === null or !empty($spawnPos->level->getCollisionBlocks($boundingBox, true)) or !$spawnPos->level->getBlock($spawnPos->subtract(0, 1), false, false)->isSolid()) {
+			return null;
+		}
+		$nbt = self::createBaseNBT($spawnPos);
+		if(isset($spawnData)) {
+			$nbt = $spawnData->merge($nbt);
+		}else {
+			// TODO: randomized gear and other
+		}
+		/** @var self $entity */
+		$entity = self::createEntity("Blaze", $spawnPos->level, $nbt);
+		return $entity;
 	}
 }

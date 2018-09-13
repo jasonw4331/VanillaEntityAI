@@ -233,7 +233,7 @@ class EntityAI extends PluginBase {
 	 *
 	 * @return int|null returns valid y coordinate if found
 	 */
-	public static function getSuitableHeight(int $x, int $y, int $z, Level $level): ?int {
+	public static function getSuitableHeight(int $x, int $y, int $z, Level $level) : ?int {
 		$id = $level->getBlockIdAt($x, $y, $z);
 		if($id === 0) {
 			$air = true;
