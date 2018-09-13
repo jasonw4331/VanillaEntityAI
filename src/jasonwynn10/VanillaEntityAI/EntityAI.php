@@ -10,7 +10,6 @@ use jasonwynn10\VanillaEntityAI\entity\hostile\ElderGuardian;
 use jasonwynn10\VanillaEntityAI\entity\hostile\EnderDragon;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Enderman;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Endermite;
-use jasonwynn10\VanillaEntityAI\entity\hostile\Evoker;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Ghast;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Guardian;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Husk;
@@ -21,7 +20,6 @@ use jasonwynn10\VanillaEntityAI\entity\hostile\Skeleton;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Slime;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Spider;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Stray;
-use jasonwynn10\VanillaEntityAI\entity\hostile\Vex;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Vindicator;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Witch;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Wither;
@@ -29,43 +27,7 @@ use jasonwynn10\VanillaEntityAI\entity\hostile\WitherSkeleton;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Zombie;
 use jasonwynn10\VanillaEntityAI\entity\hostile\ZombiePigman;
 use jasonwynn10\VanillaEntityAI\entity\hostile\ZombieVillager;
-use jasonwynn10\VanillaEntityAI\entity\neutral\AreaEffectCloud;
-use jasonwynn10\VanillaEntityAI\entity\neutral\ArmorStand;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Arrow;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Boat;
-use jasonwynn10\VanillaEntityAI\entity\neutral\ChestMinecart;
-use jasonwynn10\VanillaEntityAI\entity\neutral\CommandBlockMinecart;
-use jasonwynn10\VanillaEntityAI\entity\neutral\DangerousWitherSkull;
-use jasonwynn10\VanillaEntityAI\entity\neutral\DragonFireball;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Egg;
-use jasonwynn10\VanillaEntityAI\entity\neutral\EnderCrystal;
-use jasonwynn10\VanillaEntityAI\entity\neutral\EnderPearl;
-use jasonwynn10\VanillaEntityAI\entity\neutral\EvocationFang;
-use jasonwynn10\VanillaEntityAI\entity\neutral\ExperienceBottle;
-use jasonwynn10\VanillaEntityAI\entity\neutral\ExperienceOrb;
-use jasonwynn10\VanillaEntityAI\entity\neutral\EyeOfEnder;
-use jasonwynn10\VanillaEntityAI\entity\neutral\FallingBlock;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Fireball;
-use jasonwynn10\VanillaEntityAI\entity\neutral\FireworksRocket;
-use jasonwynn10\VanillaEntityAI\entity\neutral\FishingHook;
-use jasonwynn10\VanillaEntityAI\entity\neutral\HopperMinecart;
 use jasonwynn10\VanillaEntityAI\entity\neutral\Item;
-use jasonwynn10\VanillaEntityAI\entity\neutral\LargeFireball;
-use jasonwynn10\VanillaEntityAI\entity\neutral\LeashKnot;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Lightning;
-use jasonwynn10\VanillaEntityAI\entity\neutral\LingeringPotion;
-use jasonwynn10\VanillaEntityAI\entity\neutral\LlamaSpit;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Minecart;
-use jasonwynn10\VanillaEntityAI\entity\neutral\MovingBlock;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Painting;
-use jasonwynn10\VanillaEntityAI\entity\neutral\ShulkerBullet;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Snowball;
-use jasonwynn10\VanillaEntityAI\entity\neutral\SplashPotion;
-use jasonwynn10\VanillaEntityAI\entity\neutral\TNT;
-use jasonwynn10\VanillaEntityAI\entity\neutral\TNTMinecart;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Trident;
-use jasonwynn10\VanillaEntityAI\entity\neutral\TripodCamera;
-use jasonwynn10\VanillaEntityAI\entity\neutral\WitherSkull;
 use jasonwynn10\VanillaEntityAI\entity\passive\Bat;
 use jasonwynn10\VanillaEntityAI\entity\passive\Chicken;
 use jasonwynn10\VanillaEntityAI\entity\passive\Cow;
@@ -96,6 +58,7 @@ use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
+use pocketmine\level\Position;
 use pocketmine\plugin\PluginBase;
 use spoondetector\SpoonDetector;
 
@@ -338,4 +301,60 @@ class EntityAI extends PluginBase {
 	public function getRandomEnchantment(int $level) : EnchantmentInstance {
 		// TODO: vanilla enchantment math
 	}
+
+	/**
+	 * Returns a suitable Y-position for spawning an entity, starting from the given coordinates.
+	 *
+	 * First, it's checked if the given position is AIR position. If so, we search down the y-coordinate
+	 * to get a first non-air block. When a non-air block is found the position returned is the last found air
+	 * position.
+	 *
+	 * When the given coordinates are NOT an AIR block coordinate we search upwards until the first air block is found
+	 * which is then returned to the caller.
+	 *
+	 * @param       $x                int the x position to start search
+	 * @param       $y                int the y position to start search
+	 * @param       $z                int the z position to start searching
+	 * @param Level $level Level the level object to search in
+	 *
+	 * @return null|Position    either NULL if no valid position was found or the final AIR spawn position
+	 */
+	public static function getSuitableHeightPosition($x, $y, $z, Level $level) {
+		$newPosition = null;
+		$id = $level->getBlockIdAt($x, $y, $z);
+		if($id == 0) { // we found an air block - we need to search down step by step to get the correct block which is not an "AIR" block
+			$air = true;
+			$y = $y - 1;
+			while($air) {
+				$id = $level->getBlockIdAt($x, $y, $z);
+				if($id != 0) { // this is an air block ...
+					$newPosition = new Position($x, $y + 1, $z, $level);
+					$air = false;
+				}else{
+					$y = $y - 1;
+					if($y < -255) {
+						break;
+					}
+				}
+			}
+		}else{ // something else than AIR block. search upwards for a valid air block
+			$air = false;
+			while(!$air) {
+				$id = $level->getBlockIdAt($x, $y, $z);
+				if($id == 0) { // this is an air block ...
+					$newPosition = new Position($x, $y, $z, $level);
+					$air = true;
+				}else{
+					$y = $y + 1;
+					if($y > 255) {
+						break;
+					}
+				}
+			}
+		}
+
+		return $newPosition;
+	}
+
+
 }
