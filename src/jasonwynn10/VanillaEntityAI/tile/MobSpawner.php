@@ -84,21 +84,42 @@ class MobSpawner extends Spawnable {
 					var_dump($class); // TODO: remove
 				}
 			}
-			/** @var CompoundTag $blankTag */
-			foreach($this->spawnPotentials->getAllValues() as $blankTag) {
-				if($blankTag->hasTag("Entity", CompoundTag::class) and $blankTag->hasTag("Weight", IntTag::class) and $weight = $blankTag->getInt("Weight") > 0) {
-					// TODO: weighted randomness
+			if(isset($this->spawnPotentials)) {
+				$totalWeight = 0;
+				/** @var CompoundTag $blankTag */
+				foreach($this->spawnPotentials->getAllValues() as $blankTag) {
+					if($blankTag->hasTag("Entity", CompoundTag::class) and $blankTag->hasTag("Weight", IntTag::class) and $weight = $blankTag->getInt("Weight") > 0) {
+						$totalWeight += $blankTag->getInt("Weight");
+					}
+				}
+				$random = mt_rand(1, $totalWeight);
+				foreach($this->spawnPotentials->getAllValues() as $blankTag) {
+					if($blankTag->hasTag("Entity", CompoundTag::class) and $blankTag->hasTag("Weight", IntTag::class) and $weight = $blankTag->getInt("Weight", 1) > 0) {
+						if($random-$blankTag->getInt("Weight", 1) <= 0) {
+							$tag = clone $blankTag->getCompoundTag("Entity");
+							$tag->setName("spawnData");
+							$this->spawnData = $tag;
+							break;
+						}
+					}
 				}
 			}
 		}elseif($this->delay === -1) {
 			$this->delay = mt_rand($this->minSpawnDelay, $this->maxSpawnDelay);
 			$this->spawnData = new CompoundTag("SpawnData", [new IntTag("id", Entity::PIG)]); // TODO: randomize
-			$this->spawnPotentials = new ListTag("SpawnPotentials", [], NBT::TAG_Compound); // TODO: randomize
+			$this->spawnPotentials = new ListTag("SpawnPotentials", [], NBT::TAG_Compound); // TODO: set from spawnData
 		}
 		$this->scheduleUpdate();
 		return true;
 	}
 
+	/**
+	 * @param AxisAlignedBB $bb
+	 * @param Level $level
+	 * @param string $type
+	 *
+	 * @return array
+	 */
 	protected static function getAreaEntities(AxisAlignedBB $bb, Level $level, string $type = Living::class) {
 		$nearby = [];
 		$minX = ((int)floor($bb->minX)) >> 4; // TODO: check if this is right
@@ -261,6 +282,8 @@ class MobSpawner extends Spawnable {
 	 * @return MobSpawner
 	 */
 	public function setRequiredPlayerRange(int $range): MobSpawner {
+		if($range < 0)
+			$range = 0;
 		$this->requiredPlayerRange = $range;
 		return $this;
 	}
@@ -288,7 +311,7 @@ class MobSpawner extends Spawnable {
 	 * @return MobSpawner
 	 */
 	public function setSpawnData(CompoundTag $spawnData) : MobSpawner {
-		$this->spawnData = $spawnData;
+		$this->spawnData = clone $spawnData; // TODO: check valid
 		return $this;
 	}
 
@@ -296,7 +319,7 @@ class MobSpawner extends Spawnable {
 	 * @return ListTag|array|null
 	 */
 	public function getSpawnPotentials() : ListTag {
-		return $this->spawnPotentials;
+		return $this->spawnPotentials ?? new ListTag("SpawnPotentials", []);
 	}
 
 	/**
@@ -305,8 +328,16 @@ class MobSpawner extends Spawnable {
 	 * @return MobSpawner
 	 */
 	public function setSpawnPotentials(ListTag $spawnPotentials) : MobSpawner {
-		$this->spawnPotentials = $spawnPotentials;
-		// TODO: check if valid
+		if($spawnPotentials->getTagType() === NBT::TAG_Compound) {
+			$valid = true;
+			/** @var CompoundTag $tag */
+			foreach($spawnPotentials->getAllValues() as $tag) {
+				if(!$tag->hasTag("Entity", CompoundTag::class) or !$tag->hasTag("Weight", IntTag::class))
+					$valid = false;
+			}
+			if($valid)
+				$this->spawnPotentials = clone $spawnPotentials;
+		}
 		return $this;
 	}
 }
