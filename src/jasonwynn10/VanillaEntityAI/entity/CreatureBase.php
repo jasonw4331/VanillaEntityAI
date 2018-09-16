@@ -6,7 +6,7 @@ use pocketmine\entity\Living;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\CompoundTag;
 
-interface CreatureBase {
+interface CreatureBase extends Linkable {
 	/**
 	 * @param Position $spawnPos
 	 * @param CompoundTag|null $spawnData

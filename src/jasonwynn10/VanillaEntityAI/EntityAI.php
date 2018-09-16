@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI;
 
+use jasonwynn10\VanillaEntityAI\command\DifficultyCommand;
 use jasonwynn10\VanillaEntityAI\command\SummonCommand;
 use jasonwynn10\VanillaEntityAI\data\BiomeInfo;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Blaze;
@@ -28,6 +29,7 @@ use jasonwynn10\VanillaEntityAI\entity\hostile\Witch;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Wither;
 use jasonwynn10\VanillaEntityAI\entity\hostile\WitherSkeleton;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Zombie;
+use jasonwynn10\VanillaEntityAI\entity\hostile\ZombieHorse;
 use jasonwynn10\VanillaEntityAI\entity\hostile\ZombiePigman;
 use jasonwynn10\VanillaEntityAI\entity\hostile\ZombieVillager;
 use jasonwynn10\VanillaEntityAI\entity\neutral\AreaEffectCloud;
@@ -84,7 +86,6 @@ use jasonwynn10\VanillaEntityAI\entity\passive\Sheep;
 use jasonwynn10\VanillaEntityAI\entity\passive\SkeletonHorse;
 use jasonwynn10\VanillaEntityAI\entity\passive\Squid;
 use jasonwynn10\VanillaEntityAI\entity\passive\Villager;
-use jasonwynn10\VanillaEntityAI\entity\passive\ZombieHorse;
 use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\IronGolem;
 use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\PolarBear;
 use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\SnowGolem;
@@ -106,60 +107,13 @@ use spoondetector\SpoonDetector;
 class EntityAI extends PluginBase {
 	/** @var string[] $entities */
 	public static $entities = [
-		Chicken::class => ['Chicken', 'minecraft:chicken'],
-		Cow::class => ['Cow', 'minecraft:cow'],
-		Pig::class => ['Pig', 'minecraft:pig'],
-		Sheep::class => ['sheep', 'minecraft:sheep'],
-		Wolf::class => ['Wolf', 'minecraft:wolf'],
-		Villager::class => ['Villager', 'minecraft:villager'],
-		Mooshroom::class => ['Mooshroom', 'minecraft:mooshroom'],
-		Squid::class => ['Squid', 'minecraft:squid'],
-		Rabbit::class => ['Rabbit', 'minecraft:rabbit'],
-		Bat::class => ['Bat', 'minecraft:bat'],
-		IronGolem::class => ['IronGolem', 'minecraft:irongolem'],
-		SnowGolem::class => ['SnowGolem', 'minecraft:snowgolem'],
-		Ocelot::class => ['Ocelot', 'minecraft:ocelot'],
-		Horse::class => ['Horse', 'minecraft:horse'],
-		Donkey::class => ['Donkey', 'minecraft:donkey'],
-		Mule::class => ['Mule', 'minecraft:mule'],
-		SkeletonHorse::class => ['SkeletonHorse', 'minecraft:skeletonhorse'],
-		ZombieHorse::class => ['ZombieHorse', 'minecraft:zombiehorse'],
-		PolarBear::class => ['PolarBear', 'minecraft:polarbear'],
-		Llama::class => ['Llama', 'minecraft:llama'],
-		Parrot::class => ['Parrot', 'minecraft:parrot'],
-		Dolphin::class => ['Dolphin', 'minecraft:dolphin'],
-		Zombie::class => ['Zombie', 'minecraft:zombie'],
-		Creeper::class => ['Creeper', 'minecraft:creeper'],
-		Skeleton::class => ['Skeleton', 'minecraft:skeleton'],
-		Spider::class => ['Spider', 'minecraft:spider'],
-		ZombiePigman::class => ['PigZombie', 'minecraft:pigzombie'],
-		Slime::class => ['Slime', 'minecraft:slime'],
-		Enderman::class => ['Enderman', 'minecraft:enderman'],
-		Silverfish::class => ['Silverfish', 'minecraft:silverfish'],
-		CaveSpider::class => ['CaveSpider', 'minecraft:cavespider'],
-		Ghast::class => ['Ghast', 'minecraft:ghast'],
-		MagmaCube::class => ['MagmaCube', 'minecraft:magmacube'],
-		Blaze::class => ['Blaze', 'minecraft:blaze'],
-		ZombieVillager::class => ['ZombieVillager', 'minecraft:zombievillager'],
-		Witch::class => ['Witch', 'minecraft:witch'],
-		Stray::class => ['Stray', 'minecraft:stray'],
-		Husk::class => ['Husk', 'minecraft:husk'],
-		WitherSkeleton::class => ['WitherSkeleton', 'minecraft:witherskeleton'],
-		Guardian::class => ['Guardian', 'minecraft:guardian'],
-		ElderGuardian::class => ['ElderGuardian', 'minecraft:elderguardian'],
-		//NPC
-		Wither::class => ['Wither', 'minecraft:wither'],
-		EnderDragon::class => ['EnderDragon', 'minecraft:enderdragon'],
-		Shulker::class => ['Shulker', 'minecraft:shulker'],
-		Endermite::class => ['Endermite', 'minecraft:endermite'],
-		//Learn to code mascot
-		Vindicator::class => ['Vindicator', 'minecraft:vindicator'],
-		//
+		Chicken::class => ['Chicken', 'minecraft:chicken'], Cow::class => ['Cow', 'minecraft:cow'], Pig::class => ['Pig', 'minecraft:pig'], Sheep::class => ['sheep', 'minecraft:sheep'], Wolf::class => ['Wolf', 'minecraft:wolf'], Villager::class => ['Villager', 'minecraft:villager'], Mooshroom::class => ['Mooshroom', 'minecraft:mooshroom'], Squid::class => ['Squid', 'minecraft:squid'], Rabbit::class => ['Rabbit', 'minecraft:rabbit'], Bat::class => ['Bat', 'minecraft:bat'], IronGolem::class => ['IronGolem', 'minecraft:irongolem'], SnowGolem::class => ['SnowGolem', 'minecraft:snowgolem'], Ocelot::class => ['Ocelot', 'minecraft:ocelot'], Horse::class => ['Horse', 'minecraft:horse'], Donkey::class => ['Donkey', 'minecraft:donkey'], Mule::class => ['Mule', 'minecraft:mule'], SkeletonHorse::class => ['SkeletonHorse', 'minecraft:skeletonhorse'], ZombieHorse::class => ['ZombieHorse', 'minecraft:zombiehorse'], PolarBear::class => ['PolarBear', 'minecraft:polarbear'], Llama::class => ['Llama', 'minecraft:llama'], Parrot::class => ['Parrot', 'minecraft:parrot'], Dolphin::class => ['Dolphin', 'minecraft:dolphin'], Zombie::class => ['Zombie', 'minecraft:zombie'], Creeper::class => ['Creeper', 'minecraft:creeper'], Skeleton::class => ['Skeleton', 'minecraft:skeleton'], Spider::class => ['Spider', 'minecraft:spider'], ZombiePigman::class => ['PigZombie', 'minecraft:pigzombie'], Slime::class => ['Slime', 'minecraft:slime'], Enderman::class => ['Enderman', 'minecraft:enderman'], Silverfish::class => ['Silverfish', 'minecraft:silverfish'], CaveSpider::class => ['CaveSpider', 'minecraft:cavespider'], Ghast::class => ['Ghast', 'minecraft:ghast'], MagmaCube::class => ['MagmaCube', 'minecraft:magmacube'], Blaze::class => ['Blaze', 'minecraft:blaze'], ZombieVillager::class => ['ZombieVillager', 'minecraft:zombievillager'], Witch::class => ['Witch', 'minecraft:witch'], Stray::class => ['Stray', 'minecraft:stray'], Husk::class => ['Husk', 'minecraft:husk'], WitherSkeleton::class => ['WitherSkeleton', 'minecraft:witherskeleton'], Guardian::class => ['Guardian', 'minecraft:guardian'], ElderGuardian::class => ['ElderGuardian', 'minecraft:elderguardian'], //NPC
+		Wither::class => ['Wither', 'minecraft:wither'], EnderDragon::class => ['EnderDragon', 'minecraft:enderdragon'], Shulker::class => ['Shulker', 'minecraft:shulker'], Endermite::class => ['Endermite', 'minecraft:endermite'], //Learn to code mascot
+		Vindicator::class => ['Vindicator', 'minecraft:vindicator'], //
 		//ArmorStand::class => [],
 		//TripodCamera::class => [],
 		// player
-		Item::class => ['Item', 'minecraft:item'],
-		//TNT::class => [],
+		Item::class => ['Item', 'minecraft:item'], //TNT::class => [],
 		//FallingBlock::class => [],
 		//MovingBlock::class => [],
 		//ExperienceBottle::class => [],
@@ -290,6 +244,7 @@ class EntityAI extends PluginBase {
 			Entity::registerEntity($class, true, $saveNames);
 		}
 		$this->getServer()->getCommandMap()->register("pocketmine", new SummonCommand("summon"));
+		$this->getServer()->getCommandMap()->register("pocketmine", new DifficultyCommand("difficulty"));
 		new EntityListener($this);
 		if($this->getServer()->getConfigBool("spawn-mobs", true)) {
 			$this->getScheduler()->scheduleRepeatingTask(new HostileSpawnTask(), 1);
@@ -359,19 +314,19 @@ class EntityAI extends PluginBase {
 		switch($phaseTime) {
 			case 1:
 				$moonPhase = 1.0;
-			break;
+				break;
 			case 2:
 				$moonPhase = 0.75;
-			break;
+				break;
 			case 3:
 				$moonPhase = 0.5;
-			break;
+				break;
 			case 4:
 				$moonPhase = 0.25;
-			break;
+				break;
 			case 5:
 				$moonPhase = 0.0;
-			break;
+				break;
 		}
 		if($moonPhase / 4 > $totalTimeFactor) {
 			$chunkFactor += $totalTimeFactor;

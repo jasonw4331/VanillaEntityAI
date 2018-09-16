@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
+use jasonwynn10\VanillaEntityAI\entity\Linkable;
 use pocketmine\entity\Living;
 use pocketmine\entity\Monster;
 use pocketmine\level\Position;
@@ -65,11 +66,24 @@ class Blaze extends Monster implements CustomMonster {
 		$nbt = self::createBaseNBT($spawnPos);
 		if(isset($spawnData)) {
 			$nbt = $spawnData->merge($nbt);
-		}else {
-			// TODO: randomized gear and other
+			$nbt->setInt("id", self::NETWORK_ID);
 		}
 		/** @var self $entity */
 		$entity = self::createEntity("Blaze", $spawnPos->level, $nbt);
 		return $entity;
+	}
+
+	/**
+	 * @return Linkable|null
+	 */
+	public function getLink() : ?Linkable {
+		// TODO: Implement getLink() method.
+	}
+
+	/**
+	 * @param Linkable $entity
+	 */
+	public function setLink(Linkable $entity) {
+		// TODO: Implement setLink() method.
 	}
 }

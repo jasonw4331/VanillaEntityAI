@@ -3,11 +3,14 @@ declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
+use jasonwynn10\VanillaEntityAI\entity\Linkable;
 use jasonwynn10\VanillaEntityAI\inventory\MobInventory;
+use pocketmine\entity\Living;
 use pocketmine\entity\Monster;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Position;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 
@@ -105,5 +108,29 @@ class Witch extends Monster implements CustomMonster, InventoryHolder {
 	 */
 	public function getTarget(): ?Position {
 		return $this->target;
+	}
+
+	/**
+	 * @param Position $spawnPos
+	 * @param CompoundTag|null $spawnData
+	 *
+	 * @return null|Living
+	 */
+	public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?Living {
+		// TODO: Implement spawnMob() method.
+	}
+
+	/**
+	 * @return Linkable|null
+	 */
+	public function getLink() : ?Linkable {
+		// TODO: Implement getLink() method.
+	}
+
+	/**
+	 * @param Linkable $entity
+	 */
+	public function setLink(Linkable $entity) {
+		// TODO: Implement setLink() method.
 	}
 }

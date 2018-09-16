@@ -9,6 +9,7 @@ use jasonwynn10\VanillaEntityAI\EntityAI;
 use pocketmine\entity\Human;
 use pocketmine\entity\Monster;
 use pocketmine\level\format\Chunk;
+use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\scheduler\Task;
@@ -20,6 +21,9 @@ class HostileSpawnTask extends Task {
 	 */
 	public function onRun(int $currentTick) {
 		foreach(Server::getInstance()->getLevels() as $level) {
+			if($level->getDifficulty() < Level::DIFFICULTY_EASY) {
+				continue;
+			}
 			/** @var Chunk[] $chunks */
 			$chunks = [];
 			foreach($level->getPlayers() as $player) {

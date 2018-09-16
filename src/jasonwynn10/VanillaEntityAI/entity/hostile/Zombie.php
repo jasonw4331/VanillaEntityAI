@@ -4,17 +4,22 @@ namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use jasonwynn10\VanillaEntityAI\entity\Collidable;
 use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
+use jasonwynn10\VanillaEntityAI\entity\Linkable;
 use jasonwynn10\VanillaEntityAI\inventory\MobInventory;
 use pocketmine\block\Water;
 use pocketmine\entity\Ageable;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 
@@ -99,9 +104,9 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 				}else {
 					$drops[] = $this->armorInventory->getContents()[array_rand($this->armorInventory->getContents())];
 				}
-			}elseif(empty($this->inventory->getContents())) {
+			}elseif(empty($this->inventory->getContents()) and !empty($this->armorInventory->getContents())) {
 				$drops[] = $this->armorInventory->getContents()[array_rand($this->armorInventory->getContents())];
-			}else {
+			}elseif(empty($this->armorInventory->getContents()) and !empty($this->inventory->getContents())) {
 				$drops[] = $this->inventory->getContents()[array_rand($this->inventory->getContents())];
 			}
 		}
@@ -156,6 +161,10 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 				case Level::DIFFICULTY_HARD:
 					$damage = 4;
 			}
+			$pk = new EntityEventPacket();
+			$pk->entityRuntimeId = $this->id;
+			$pk->event = EntityEventPacket::ARM_SWING;
+			$this->server->broadcastPacket($this->hasSpawned, $pk);
 			$player->attack(new EntityDamageByEntityEvent($this, $player, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, $damage));
 		}
 	}
@@ -186,7 +195,7 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	/**
 	 * @param bool $dropAll
 	 */
-	public function setDropAll(bool $dropAll): void {
+	public function setDropAll(bool $dropAll = true) : void {
 		$this->dropAll = $dropAll;
 	}
 
@@ -209,5 +218,47 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 			}
 			$entity->attack(new EntityDamageByEntityEvent($this, $entity, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, $damage));
 		}
+	}
+
+	/**
+	 * @param Position $spawnPos
+	 * @param CompoundTag|null $spawnData
+	 *
+	 * @return null|Living
+	 */
+	public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?Living {
+		$width = 0.6;
+		$height = 1.8;
+		$boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+		$halfWidth = $width / 2;
+		$boundingBox->setBounds($spawnPos->x - $halfWidth, $spawnPos->y, $spawnPos->z - $halfWidth, $spawnPos->x + $halfWidth, $spawnPos->y + $height, $spawnPos->z + $halfWidth);
+		// TODO: work on logic here more
+		if($spawnPos->level === null or !empty($spawnPos->level->getCollisionBlocks($boundingBox, true)) or !$spawnPos->level->getBlock($spawnPos->subtract(0, 1), false, false)->isSolid()) {
+			return null;
+		}
+		$nbt = self::createBaseNBT($spawnPos);
+		if(isset($spawnData)) {
+			$nbt = $spawnData->merge($nbt);
+			$nbt->setInt("id", self::NETWORK_ID);
+		}else {
+			// TODO: randomized gear and other
+		}
+		/** @var self $entity */
+		$entity = self::createEntity("Zombie", $spawnPos->level, $nbt);
+		return $entity;
+	}
+
+	/**
+	 * @return Linkable|null
+	 */
+	public function getLink() : ?Linkable {
+		// TODO: Implement getLink() method.
+	}
+
+	/**
+	 * @param Linkable $entity
+	 */
+	public function setLink(Linkable $entity) {
+		// TODO: Implement setLink() method.
 	}
 }
