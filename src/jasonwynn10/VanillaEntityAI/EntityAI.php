@@ -96,8 +96,17 @@ use jasonwynn10\VanillaEntityAI\task\InhabitedChunkCounter;
 use jasonwynn10\VanillaEntityAI\task\PassiveSpawnTask;
 use jasonwynn10\VanillaEntityAI\tile\MobSpawner;
 use pocketmine\entity\Entity;
+use pocketmine\item\Armor;
+use pocketmine\item\Book;
+use pocketmine\item\Bow;
+use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\FishingRod;
+use pocketmine\item\ItemIds;
+use pocketmine\item\Sword;
+use pocketmine\item\TieredTool;
+use pocketmine\item\Tool;
 use pocketmine\level\biome\Biome;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
@@ -348,11 +357,137 @@ class EntityAI extends PluginBase {
 
 	/**
 	 * @param int $experienceLevel
+	 * @param \pocketmine\item\Item $item
 	 *
 	 * @return EnchantmentInstance
 	 */
-	public function getRandomEnchantment(int $experienceLevel): EnchantmentInstance {
-		// TODO: vanilla enchantment math
+	public function getRandomEnchantment(int $experienceLevel, \pocketmine\item\Item $item): EnchantmentInstance {
+		if($experienceLevel <= 8) {
+			$bookShelves = 0;
+		}elseif($experienceLevel <= 9) {
+			$bookShelves = 1;
+		}elseif($experienceLevel <= 11) {
+			$bookShelves = 2;
+		}elseif($experienceLevel <= 12) {
+			$bookShelves = 3;
+		}elseif($experienceLevel <= 14) {
+			$bookShelves = 4;
+		}elseif($experienceLevel <= 15) {
+			$bookShelves = 5;
+		}elseif($experienceLevel <= 17) {
+			$bookShelves = 6;
+		}elseif($experienceLevel <= 18) {
+			$bookShelves = 7;
+		}elseif($experienceLevel <= 20) {
+			$bookShelves = 8;
+		}elseif($experienceLevel <= 21) {
+			$bookShelves = 9;
+		}elseif($experienceLevel <= 23) {
+			$bookShelves = 10;
+		}elseif($experienceLevel <= 24) {
+			$bookShelves = 11;
+		}elseif($experienceLevel <= 26) {
+			$bookShelves = 12;
+		}elseif($experienceLevel <= 27) {
+			$bookShelves = 13;
+		}elseif($experienceLevel <= 29) {
+			$bookShelves = 14;
+		}elseif($experienceLevel <= 30) {
+			$bookShelves = 15;
+		}else {
+			$bookShelves = 15;
+		}
+		if($item instanceof TieredTool) {
+			switch($item->getTier()) {
+				case TieredTool::TIER_WOODEN:
+					$enchantability = 15;
+				break;
+				case TieredTool::TIER_STONE:
+					$enchantability = 5;
+				break;
+				case TieredTool::TIER_IRON:
+					$enchantability = 14;
+				break;
+				case TieredTool::TIER_GOLD:
+					$enchantability = 22;
+				break;
+				case TieredTool::TIER_DIAMOND:
+					$enchantability = 10;
+				break;
+				default:
+					$enchantability = 14; // default to iron
+				break;
+			}
+		}elseif($item instanceof Tool) {
+			$enchantability = 14; // default to iron
+		}elseif($item instanceof FishingRod) {
+			$enchantability = 14; // default to iron
+		}elseif($item instanceof Armor) {
+			if($item->getId() === ItemIds::LEATHER_BOOTS or $item->getId() === ItemIds::LEATHER_LEGGINGS or $item->getId() === ItemIds::LEATHER_CHESTPLATE or $item->getId() === ItemIds::LEATHER_HELMET) {
+				$enchantability = 15;
+			}elseif($item->getId() === ItemIds::CHAIN_BOOTS or $item->getId() === ItemIds::CHAIN_LEGGINGS or $item->getId() === ItemIds::CHAIN_CHESTPLATE or $item->getId() === ItemIds::CHAIN_HELMET) {
+				$enchantability = 12;
+			}elseif($item->getId() === ItemIds::IRON_BOOTS or $item->getId() === ItemIds::IRON_LEGGINGS or $item->getId() === ItemIds::IRON_CHESTPLATE or $item->getId() === ItemIds::IRON_HELMET) {
+				$enchantability = 9;
+			}elseif($item->getId() === ItemIds::GOLD_BOOTS or $item->getId() === ItemIds::GOLD_LEGGINGS or $item->getId() === ItemIds::GOLD_CHESTPLATE or $item->getId() === ItemIds::GOLD_HELMET) {
+				$enchantability = 25;
+			}elseif($item->getId() === ItemIds::DIAMOND_BOOTS or $item->getId() === ItemIds::DIAMOND_LEGGINGS or $item->getId() === ItemIds::DIAMOND_CHESTPLATE or $item->getId() === ItemIds::DIAMOND_HELMET) {
+				$enchantability = 10;
+			}else {
+				$enchantability = 9; // default to iron
+			}
+		}elseif($item instanceof Book) {
+			$enchantability = 1;
+		}else {
+			throw new \RuntimeException("Cannot enchant that item");
+		}
+		$baseEnchantmentLevel = (mt_rand(1, 8) + floor($bookShelves / 2) + mt_rand(0, $bookShelves));
+		$topSlotEnchantmentLevel = max($baseEnchantmentLevel / 3, 1);
+		$middleSlotEnchantmentLevel = ($baseEnchantmentLevel * 2) / 3 + 1;
+		$bottomSlotEnchantmentLevel = max($baseEnchantmentLevel, $bookShelves * 2);
+		$modifiedEnchantmentLevel = $baseEnchantmentLevel + mt_rand(0, $enchantability / 4) + mt_rand(0, $enchantability / 4) + 1;
+		$randomEnchantability = 1 + mt_rand(($enchantability / 2) / 2 + 1, (($enchantability / 2) / 2 + 1) - 1) + mt_rand(($enchantability / 2) / 2 + 1, (($enchantability / 2) / 2 + 1) - 1);
+		switch(mt_rand(1, 3)) {
+			default:
+			case 1:
+				$chosenEnchantmentLevel = $topSlotEnchantmentLevel;
+			break;
+			case 2:
+				$chosenEnchantmentLevel = $middleSlotEnchantmentLevel;
+			break;
+			case 3:
+				$chosenEnchantmentLevel = $bottomSlotEnchantmentLevel;
+			break;
+		}
+		$totalLevel = $chosenEnchantmentLevel + $randomEnchantability;
+		$randomBonus = 1 + (lcg_value() + lcg_value() - 1) * 0.15;
+		$finalLevel = (int)($totalLevel * $randomBonus + 0.5);
+		if($finalLevel < 1) {
+			$finalLevel = 1;
+		}
+		$enchantments = [];
+		do {
+			if($item instanceof Book) {
+				// any enchantment available
+			}elseif($item instanceof Sword) {
+				// sword enchantments + durable enchantments
+			}elseif($item instanceof Armor) {
+				// armour enchantments + durable enchantments
+			}elseif($item instanceof Bow) {
+				// bow enchantments + durable enchantments
+			}elseif($item instanceof FishingRod) {
+				// fishing enchantments + durable enchantments
+			}elseif($item instanceof Durable) {
+				// durable enchantments
+			}else { // regular items ex: stick
+				// Curse of Vanishing + Knockback + Looting
+			}
+			if() {
+				break;
+			}
+		}while(true);
+		// TODO: find valid enchantments based on $modifiedEnchantmentLevel https://minecraft.gamepedia.com/Enchanting/Levels
+		// https://minecraft.gamepedia.com/Tutorials/Enchantment_mechanics
 		$enchantment = new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::UNBREAKING));
 		return $enchantment; // temporary stuff
 	}
