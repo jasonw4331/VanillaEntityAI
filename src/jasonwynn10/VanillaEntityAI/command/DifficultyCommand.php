@@ -7,6 +7,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\level\Level;
+use pocketmine\Player;
 
 class DifficultyCommand extends \pocketmine\command\defaults\DifficultyCommand {
 	public function execute(CommandSender $sender, string $commandLabel, array $args) {
@@ -21,12 +22,18 @@ class DifficultyCommand extends \pocketmine\command\defaults\DifficultyCommand {
 			$difficulty = Level::DIFFICULTY_HARD;
 		}
 		if($difficulty !== -1) {
-			$sender->getServer()->setConfigInt("difficulty", $difficulty);
-			//TODO: add per-world support
-			foreach($sender->getServer()->getLevels() as $level) {
-				$level->setDifficulty($difficulty);
-				foreach($level->getEntities() as $entity) {
+			if($sender instanceof Player) {
+				$sender->getLevel()->setDifficulty($difficulty);
+				foreach($sender->getLevel()->getEntities() as $entity) {
 					$entity->flagForDespawn();
+				}
+			}else {
+				$sender->getServer()->setConfigInt("difficulty", $difficulty);
+				foreach($sender->getServer()->getLevels() as $level) {
+					$level->setDifficulty($difficulty);
+					foreach($level->getEntities() as $entity) {
+						$entity->flagForDespawn();
+					}
 				}
 			}
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.difficulty.success", [$difficulty]));
