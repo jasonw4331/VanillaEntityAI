@@ -362,6 +362,7 @@ class EntityAI extends PluginBase {
 	 * @return EnchantmentInstance
 	 */
 	public function getRandomEnchantment(int $experienceLevel, \pocketmine\item\Item $item): EnchantmentInstance {
+		$return = new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::SHARPNESS)); // default
 		if($experienceLevel <= 8) {
 			$bookShelves = 0;
 		}elseif($experienceLevel <= 9) {
@@ -466,29 +467,66 @@ class EntityAI extends PluginBase {
 			$finalLevel = 1;
 		}
 		$enchantments = [];
-		do {
-			if($item instanceof Book) {
-				// any enchantment available
-			}elseif($item instanceof Sword) {
-				// sword enchantments + durable enchantments
-			}elseif($item instanceof Armor) {
-				// armour enchantments + durable enchantments
-			}elseif($item instanceof Bow) {
-				// bow enchantments + durable enchantments
-			}elseif($item instanceof FishingRod) {
-				// fishing enchantments + durable enchantments
-			}elseif($item instanceof Durable) {
-				// durable enchantments
-			}else { // regular items ex: stick
-				// Curse of Vanishing + Knockback + Looting
+		if($item instanceof Sword or $item instanceof Book) {
+			$enchantments[Enchantment::SHARPNESS] = 10;
+			$enchantments[Enchantment::BANE_OF_ARTHROPODS] = 5;
+			$enchantments[Enchantment::KNOCKBACK] = 5;
+			$enchantments[Enchantment::SMITE] = 5;
+			$enchantments[Enchantment::FIRE_ASPECT] = 2;
+			$enchantments[Enchantment::LOOTING] = 2;
+		}
+		if(($item instanceof Tool and !$item instanceof Sword) or $item instanceof Book) {
+			$enchantments[Enchantment::EFFICIENCY] = 10;
+			$enchantments[Enchantment::FORTUNE] = 2;
+			$enchantments[Enchantment::SILK_TOUCH] = 1;
+		}
+		if($item instanceof Armor or $item instanceof Book) {
+			$enchantments[Enchantment::PROTECTION] = 10;
+			$enchantments[Enchantment::BINDING] = 1;
+			$enchantments[Enchantment::FIRE_PROTECTION] = 5;
+			$enchantments[Enchantment::PROJECTILE_PROTECTION] = 5;
+			$enchantments[Enchantment::BLAST_PROTECTION] = 2;
+			$enchantments[Enchantment::THORNS] = 1;
+			if($item->getId() === ItemIds::LEATHER_BOOTS or $item->getId() === ItemIds::CHAIN_BOOTS or $item->getId() === ItemIds::IRON_BOOTS or $item->getId() === ItemIds::GOLD_BOOTS or $item->getId() === ItemIds::DIAMOND_BOOTS) {
+				$enchantments[Enchantment::FEATHER_FALLING] = 5;
+				$enchantments[Enchantment::FROST_WALKER] = 2;
+				$enchantments[Enchantment::DEPTH_STRIDER] = 2;
+			}elseif($item->getId() === ItemIds::LEATHER_HELMET or $item->getId() === ItemIds::CHAIN_HELMET or $item->getId() === ItemIds::IRON_HELMET or $item->getId() === ItemIds::GOLD_HELMET or $item->getId() === ItemIds::DIAMOND_HELMET) {
+				$enchantments[Enchantment::RESPIRATION] = 2;
+				$enchantments[Enchantment::AQUA_AFFINITY] = 2;
 			}
-			if() {
+		}
+		if($item instanceof Bow or $item instanceof Book) {
+			$enchantments[Enchantment::POWER] = 10;
+			$enchantments[Enchantment::FLAME] = 2;
+			$enchantments[Enchantment::PUNCH] = 2;
+			$enchantments[Enchantment::INFINITY] = 1;
+		}
+		if($item instanceof FishingRod or $item instanceof Book) {
+			$enchantments[Enchantment::LUCK_OF_THE_SEA] = 2;
+			$enchantments[Enchantment::LURE] = 2;
+		}
+		if($item instanceof Durable or $item instanceof Book) {
+			$enchantments[Enchantment::UNBREAKING] = 5;
+			$enchantments[Enchantment::MENDING] = 2;
+		}
+		$enchantments[Enchantment::VANISHING] = 1;
+		$enchantments = array_filter($enchantments, function($id) { // TODO: remove when all enchantments implemented
+			return Enchantment::getEnchantment($id) !== null;
+		}, ARRAY_FILTER_USE_KEY); // filter unregistered enchantments
+		$totalWeight = 0;
+		foreach($enchantments as $weight) {
+			$totalWeight += $weight;
+		}
+		$random = mt_rand(1, $totalWeight);
+		foreach($enchantments as $id => $weight) {
+			if($random - $weight <= 0) {
+				$return = new EnchantmentInstance(Enchantment::getEnchantment($id));
+				$return->setLevel($finalLevel);
 				break;
 			}
-		}while(true);
-		// TODO: find valid enchantments based on $modifiedEnchantmentLevel https://minecraft.gamepedia.com/Enchanting/Levels
-		// https://minecraft.gamepedia.com/Tutorials/Enchantment_mechanics
-		$enchantment = new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::UNBREAKING));
-		return $enchantment; // temporary stuff
+		}
+		// TODO: filter valid enchantments based on $modifiedEnchantmentLevel https://minecraft.gamepedia.com/Enchanting/Levels
+		return $return;
 	}
 }
