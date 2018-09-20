@@ -4,9 +4,8 @@ namespace jasonwynn10\VanillaEntityAI\task;
 
 use jasonwynn10\VanillaEntityAI\entity\hostile\CustomMonster;
 use jasonwynn10\VanillaEntityAI\entity\passive\CustomCreature;
-use pocketmine\entity\Human;
 use pocketmine\level\format\Chunk;
-use pocketmine\Player;
+use pocketmine\level\Level;
 use pocketmine\scheduler\Task;
 use pocketmine\Server;
 
@@ -16,37 +15,29 @@ class DespawnTask extends Task {
 			/** @var Chunk[] $chunks */
 			$chunks = [];
 			foreach($level->getPlayers() as $player) {
-				$centerX = $player->z >> 4;
-				$centerZ = $player->z >> 4;
-				for($X = $centerX - 8; $X < $centerX + 8; $X++) {
-					for($Z = $centerZ - 8; $Z < $centerZ + 8; $Z++) {
-						if(!isset($chunks[$X . ":" . $Z])) {
-							$chunks[$X . ":" . $Z] = $level->getChunk($X, $Z, true);
-						}
+				foreach($player->usedChunks as $hash => $sent) {
+					if($sent) {
+						Level::getXZ($hash, $chunkX, $chunkZ);
+						$chunks[$hash] = $player->getLevel()->getChunk($chunkX, $chunkZ, true);
 					}
 				}
 			}
 			foreach($chunks as $chunk) {
+				if(mt_rand(1, 50) !== 1) {
+					return;
+				}
 				foreach($chunk->getEntities() as $entity) {
-					$closeA = false;
-					$closeB = false;
+					$distanceCheck = true;
 					foreach($level->getPlayers() as $player) {
-						if($entity->distance($player) < 128) {
-							$closeA = true;
-							break;
-						}
-						if($entity->distance($player) < 32) {
-							$closeB = true;
+						if($entity->distance($player) < 54) {
+							$distanceCheck = false;
 							break;
 						}
 					}
-					if($entity instanceof CustomMonster and !$closeA and $entity->getLevel()->getFullLight($entity->floor()) > 8) {
+					// TODO: check persistence and age
+					if($entity instanceof CustomMonster and $distanceCheck and $entity->getLevel()->getFullLight($entity->floor()) > 8) {
 						$entity->flagForDespawn();
-					}elseif($entity instanceof CustomCreature and !$closeA and $entity->getLevel()->getFullLight($entity->floor()) < 7 and !$entity instanceof Human) {
-						$entity->flagForDespawn();
-					}elseif($entity instanceof CustomMonster and !$closeB and !$entity->getTarget() instanceof Player and $entity->getLevel()->getFullLight($entity->floor()) > 8 and mt_rand(1, 50) === 1) {
-						$entity->flagForDespawn();
-					}elseif($entity instanceof CustomCreature and !$closeB and !$entity->getTarget() instanceof Player and $entity->getLevel()->getFullLight($entity->floor()) < 7 and !$entity instanceof Human and mt_rand(1, 50) === 1) {
+					}elseif($entity instanceof CustomCreature and $distanceCheck and $entity->getLevel()->getFullLight($entity->floor()) < 7) {
 						$entity->flagForDespawn();
 					}
 				}

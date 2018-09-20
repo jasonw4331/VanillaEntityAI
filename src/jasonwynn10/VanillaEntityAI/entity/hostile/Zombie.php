@@ -233,7 +233,7 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 		$halfWidth = $width / 2;
 		$boundingBox->setBounds($spawnPos->x - $halfWidth, $spawnPos->y, $spawnPos->z - $halfWidth, $spawnPos->x + $halfWidth, $spawnPos->y + $height, $spawnPos->z + $halfWidth);
 		// TODO: work on logic here more
-		if($spawnPos->level === null or !empty($spawnPos->level->getCollisionBlocks($boundingBox, true)) or !$spawnPos->level->getBlock($spawnPos->subtract(0, 1), false, false)->isSolid()) {
+		if($spawnPos->level === null or !empty($spawnPos->level->getCollisionBlocks($boundingBox, true)) or !$spawnPos->level->getBlock($spawnPos->subtract(0, 1), true, false)->isSolid()) {
 			return null;
 		}
 		$nbt = self::createBaseNBT($spawnPos);

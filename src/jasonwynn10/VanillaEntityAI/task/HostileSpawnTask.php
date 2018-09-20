@@ -7,7 +7,6 @@ use jasonwynn10\VanillaEntityAI\data\MobTypeMaps;
 use jasonwynn10\VanillaEntityAI\entity\hostile\CustomMonster;
 use jasonwynn10\VanillaEntityAI\EntityAI;
 use pocketmine\entity\Human;
-use pocketmine\entity\Monster;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
@@ -27,27 +26,23 @@ class HostileSpawnTask extends Task {
 			/** @var Chunk[] $chunks */
 			$chunks = [];
 			foreach($level->getPlayers() as $player) {
-				$centerX = $player->z >> 4;
-				$centerZ = $player->z >> 4;
-				for($X = $centerX - 8; $X < $centerX + 8; $X++) {
-					for($Z = $centerZ - 8; $Z < $centerZ + 8; $Z++) {
-						if(!isset($chunks[$X . ":" . $Z])) {
-							$chunks[$X . ":" . $Z] = $level->getChunk($X, $Z, true);
-						}
+				foreach($player->usedChunks as $hash => $sent) {
+					if($sent) {
+						Level::getXZ($hash, $chunkX, $chunkZ);
+						$chunks[$hash] = $player->getLevel()->getChunk($chunkX, $chunkZ, true);
 					}
 				}
 			}
-			$cap = 70 * count($chunks) / 256;
 			$entities = 0;
 			foreach($chunks as $chunk) {
 				foreach($chunk->getEntities() as $entity) {
-					if($entity instanceof Monster and !$entity instanceof Human) {
+					if($entity instanceof CustomMonster and !$entity instanceof Human) {
 						$entities += 1;
 					}
+					if($entities >= 200) { // bedrock edition has hard cap of 200
+						return;
+					}
 				}
-			}
-			if($entities >= $cap) {
-				return;
 			}
 			foreach($chunks as $chunk) {
 				$packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight() - 1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));
