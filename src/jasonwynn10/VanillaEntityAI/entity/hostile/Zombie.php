@@ -37,10 +37,41 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	protected $attackDelay;
 	/** @var bool */
 	protected $dropAll = false;
+	/** @var float $speed */
+	protected $speed = 1.0;
+	/** @var float $stepHeight */
+	protected $stepHeight = 1.0;
+	/** @var bool $baby */
+	protected $baby = false;
 
 	public function initEntity(): void {
 		$this->inventory = new MobInventory($this, ItemFactory::get(Item::AIR)); //TODO random enchantments and random item (iron sword or iron shovel or iron axe)
 		parent::initEntity();
+	}
+
+	public function onUpdate(int $currentTick): bool {
+		if($this->closed) {
+			return false;
+		}
+		$tickDiff = $currentTick - $this->lastUpdate;
+		if($this->target !== null) {
+			$x = $this->target->x - $this->x;
+			$y = $this->target->y - $this->y;
+			$z = $this->target->z - $this->z;
+			$diff = abs($x) + abs($z);
+			if($diff > 0) {
+				$this->motion->x = $this->speed * 0.15 * ($x / $diff);
+				$this->motion->z = $this->speed * 0.15 * ($z / $diff);
+				$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff));
+			}
+			$this->pitch = $y == 0 ? 0 : rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
+			if($this->distance($this->target) <= 0 and !$this->target instanceof Entity) {
+				$this->target = null;
+			}
+		}else {
+			// TODO: wandering AI
+		}
+		return parent::onUpdate($currentTick);
 	}
 
 	/**
@@ -50,6 +81,13 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	 */
 	public function entityBaseTick(int $tickDiff = 1): bool {
 		$this->checkNearEntities();
+		if($this->target === null) {
+			foreach($this->hasSpawned as $player) {
+				if($player->isSurvival() and $this->distance($player) <= 16 and $this->hasLineOfSight($player)) {
+					$this->target = $player;
+				}
+			}
+		}
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 		if($this->moveTime > 0) {
 			$this->moveTime -= $tickDiff;
@@ -65,7 +103,7 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 		if(!$this->hasEffect(Effect::WATER_BREATHING) and $this->isUnderwater()) {
 			$hasUpdate = true;
 			$airTicks = $this->getAirSupplyTicks() - $tickDiff;
-			// TODO : drowned transformation
+			// TODO: drowned transformation
 			if($airTicks <= -20) {
 				$airTicks = 0;
 				$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
@@ -80,10 +118,10 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 
 	protected function checkNearEntities() {
 		foreach($this->level->getNearbyEntities($this->boundingBox->expandedCopy(1, 0.5, 1), $this) as $entity) {
-			$entity->scheduleUpdate();
 			if(!$entity->isAlive() or $entity->isFlaggedForDespawn()) {
 				continue;
 			}
+			$entity->scheduleUpdate();
 			if($entity instanceof Collidable) {
 				$entity->onCollideWithEntity($this);
 			}
@@ -117,7 +155,7 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	 * @return int
 	 */
 	public function getXpDropAmount(): int {
-		if($this->isBaby()) {
+		if($this->baby) {
 			return 12;
 		}
 		$exp = 5;
@@ -127,7 +165,7 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	}
 
 	public function isBaby(): bool {
-		return false; //TODO
+		return $this->baby;
 	}
 
 	/**
@@ -233,7 +271,7 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 		$halfWidth = $width / 2;
 		$boundingBox->setBounds($spawnPos->x - $halfWidth, $spawnPos->y, $spawnPos->z - $halfWidth, $spawnPos->x + $halfWidth, $spawnPos->y + $height, $spawnPos->z + $halfWidth);
 		// TODO: work on logic here more
-		if($spawnPos->level === null or !empty($spawnPos->level->getCollisionBlocks($boundingBox, true)) or !$spawnPos->level->getBlock($spawnPos->subtract(0, 1), true, false)->isSolid()) {
+		if(!$spawnPos->isValid() or !$spawnPos->level->getBlock($spawnPos->subtract(0, 1), true, false)->isSolid() or $spawnPos->level->getFullLight($spawnPos) > 7) {
 			return null;
 		}
 		$nbt = self::createBaseNBT($spawnPos);
@@ -241,10 +279,12 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 			$nbt = $spawnData->merge($nbt);
 			$nbt->setInt("id", self::NETWORK_ID);
 		}else {
-			// TODO: randomized gear and other
+			// TODO: randomized gear and other based on difficulty
 		}
 		/** @var self $entity */
 		$entity = self::createEntity("Zombie", $spawnPos->level, $nbt);
+		if(mt_rand(1, 100) < 6)
+			$entity->setBaby();
 		return $entity;
 	}
 
@@ -260,5 +300,19 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	 */
 	public function setLink(Linkable $entity) {
 		// TODO: Implement setLink() method.
+	}
+
+	/**
+	 * @param bool $baby
+	 *
+	 * @return Zombie
+	 */
+	public function setBaby(bool $baby = true) : self {
+		$this->baby = $baby;
+		$this->speed *= 30;
+		$this->height = 0.975;
+		$this->width = 0.6;
+		$this->recalculateBoundingBox();
+		return $this;
 	}
 }

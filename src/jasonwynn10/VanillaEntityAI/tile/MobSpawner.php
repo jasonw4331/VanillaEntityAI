@@ -137,7 +137,7 @@ class MobSpawner extends Spawnable {
 		$x = mt_rand($this->spawnArea->minX, $this->spawnArea->maxX);
 		$y = mt_rand($this->spawnArea->minY, $this->spawnArea->maxY);
 		$z = mt_rand($this->spawnArea->minZ, $this->spawnArea->maxZ);
-		return new Position($x, $y, $z, $this->level);
+		return new Position($x + 0.5, $y, $z + 0.5, $this->level);
 	}
 
 	/**
@@ -227,6 +227,7 @@ class MobSpawner extends Spawnable {
 	 */
 	public function setEntityId(int $eid): MobSpawner {
 		$this->entityId = $eid;
+		$this->delay = mt_rand($this->minSpawnDelay, $this->maxSpawnDelay);
 		$this->onChanged();
 		$this->scheduleUpdate();
 		return $this;
@@ -289,5 +290,22 @@ class MobSpawner extends Spawnable {
 	public function setMaxNearbyEntities(int $count): MobSpawner {
 		$this->maxNearbyEntities = $count;
 		return $this;
+	}
+
+	/**
+	 * @param bool $isMovable
+	 *
+	 * @return MobSpawner
+	 */
+	public function setMovable(bool $isMovable = true): MobSpawner {
+		$this->isMovable = $isMovable;
+		return $this;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isMovable(): bool {
+		return $this->isMovable;
 	}
 }

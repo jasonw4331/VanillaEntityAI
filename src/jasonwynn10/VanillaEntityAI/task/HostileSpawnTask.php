@@ -55,7 +55,7 @@ class HostileSpawnTask extends Task {
 							/** @noinspection PhpUndefinedFieldInspection */
 							if($class instanceof CustomMonster and $class::NETWORK_ID === $entityId) {
 								/** @var CustomMonster $class */
-								$entity = $class::spawnMob(new Position($x, $packCenter->y, $z, $level));
+								$entity = $class::spawnMob(new Position($x + 0.5, $packCenter->y, $z + 0.5, $level));
 								if($entity !== null) {
 									$entity->spawnToAll();
 									$currentPackSize++;
