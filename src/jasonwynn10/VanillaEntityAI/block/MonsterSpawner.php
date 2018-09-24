@@ -58,4 +58,11 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner {
 		}
 		return $return;
 	}
+
+	/**
+	 * @return int
+	 */
+	public function getLightLevel() : int {
+		return 3;
+	}
 }
