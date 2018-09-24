@@ -5,32 +5,30 @@ namespace jasonwynn10\VanillaEntityAI\tile;
 use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
 use jasonwynn10\VanillaEntityAI\EntityAI;
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntityIds;
 use pocketmine\entity\Living;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\tile\Spawnable;
 
 class MobSpawner extends Spawnable {
-	public const NBT_KEY_SPAWNER_IS_MOVABLE = "isMovable"; // ByteTag
-	public const NBT_KEY_SPAWNER_DELAY = "Delay"; // ShortTag
-	public const NBT_KEY_SPAWNER_MAX_NEARBY_ENTITIES = "MaxNearbyEntities"; // ShortTag
-	public const NBT_KEY_SPAWNER_MAX_SPAWN_DELAY = "MaxSpawnDelay"; // ShortTag
-	public const NBT_KEY_SPAWNER_MIN_SPAWN_DELAY = "MinSawnDelay"; // ShortTag
-	public const NBT_KEY_SPAWNER_REQUIRED_PLAYER_RANGE = "RequiredPlayerRange"; // ShortTag
-	public const NBT_KEY_SPAWNER_SPAWN_COUNT = "SpawnCount"; // ShortTag
-	public const NBT_KEY_SPAWNER_SPAWN_RANGE = "SpawnRange"; // ShortTag
-	public const NBT_KEY_SPAWNER_ENTITY_ID = "EntityId"; // IntTag
-	public const NBT_KEY_SPAWNER_DISPLAY_ENTITY_HEIGHT = "DisplayEntityHeight"; // FloatTag
-	public const NBT_KEY_SPAWNER_DISPLAY_ENTITY_SCALE = "DisplayEntityScale"; // FloatTag
-	public const NBT_KEY_SPAWNER_DISPLAY_ENTITY_WIDTH = "DisplayEntityWidth"; // FloatTag
-	public const NBT_KEY_SPAWNER_SPAWN_DATA = "SpawnData"; // ShortTag
+	public const IS_MOVABLE = "isMovable"; // ByteTag
+	public const DELAY = "Delay"; // ShortTag
+	public const MAX_NEARBY_ENTITIES = "MaxNearbyEntities"; // ShortTag
+	public const MAX_SPAWN_DELAY = "MaxSpawnDelay"; // ShortTag
+	public const MIN_SPAWN_DELAY = "MinSawnDelay"; // ShortTag
+	public const REQUIRED_PLAYER_RANGE = "RequiredPlayerRange"; // ShortTag
+	public const SPAWN_COUNT = "SpawnCount"; // ShortTag
+	public const SPAWN_RANGE = "SpawnRange"; // ShortTag
+	public const ENTITY_ID = "EntityId"; // IntTag
+	public const DISPLAY_ENTITY_HEIGHT = "DisplayEntityHeight"; // FloatTag
+	public const DISPLAY_ENTITY_SCALE = "DisplayEntityScale"; // FloatTag
+	public const DISPLAY_ENTITY_WIDTH = "DisplayEntityWidth"; // FloatTag
 
 	/** @var int $spawnRange */
 	protected $spawnRange = 4;
@@ -46,31 +44,25 @@ class MobSpawner extends Spawnable {
 	protected $maxSpawnDelay = 800;
 	/** @var int $spawnCount */
 	protected $spawnCount = 4;
-	/** @var CompoundTag|null $spawnData */
-	protected $spawnData;
-	/** @var ListTag|null $spawnPotentials */
-	protected $spawnPotentials;
 	/** @var AxisAlignedBB|null $spawnArea */
 	protected $spawnArea;
-	/** @var bool $keepPacked */
-	private $keepPacked = false;
+	/** @var bool $isMovable */
+	protected $isMovable = false;
+	/** @var int $entityId */
+	protected $entityId = -1;
+	/** @var float $displayHeight */
+	protected $displayHeight = 0.9;
+	/** @var float $displayScale */
+	protected $displayScale = 0.5;
+	/** @var float $displayWidth */
+	protected $displayWidth = 0.3;
 
 	/**
 	 * @return bool
 	 */
 	public function onUpdate(): bool {
-		if($this->isClosed()) {
+		if($this->isClosed() or $this->entityId < EntityIds::CHICKEN) { // TODO are there entities with ids less than 10?
 			return false;
-		}
-		if(isset($this->spawnData)) {
-			$entityTag = clone $this->spawnData;
-			$entityTag->setName("Entity");
-			$this->spawnPotentials = new ListTag("SpawnPotentials", [
-				new CompoundTag("", [
-					$entityTag,
-					new IntTag("Weight", 1)
-				])
-			], NBT::TAG_Compound);
 		}
 		if(--$this->delay === 0) {
 			$this->delay = mt_rand($this->minSpawnDelay, $this->maxSpawnDelay);
@@ -87,12 +79,12 @@ class MobSpawner extends Spawnable {
 			 */
 			foreach(EntityAI::$entities as $class => $arr) {
 				/** @noinspection PhpUndefinedFieldInspection */
-				if($class instanceof CreatureBase and $class::NETWORK_ID === is_null($this->spawnData) ? -1 : $this->spawnData->getInt("id", -1)) {
+				if($class instanceof CreatureBase and $class::NETWORK_ID === $this->entityId) {
 					if($valid and count(self::getAreaEntities($this->spawnArea, $this->level, $class)) < $this->maxNearbyEntities) {
 						$spawned = 0;
 						while($spawned < $this->spawnCount) {
 							/** @var CreatureBase $class */
-							$entity = $class::spawnMob($this->getRandomSpawnPos(), $this->spawnData);
+							$entity = $class::spawnMob($this->getRandomSpawnPos());
 							if($entity !== null) {
 								$entity->spawnToAll();
 								$spawned++;
@@ -101,34 +93,9 @@ class MobSpawner extends Spawnable {
 					}
 				}
 			}
-			if(isset($this->spawnPotentials)) {
-				$totalWeight = 0;
-				/** @var CompoundTag $blankTag */
-				foreach($this->spawnPotentials->getAllValues() as $blankTag) {
-					if($blankTag->hasTag("Entity", CompoundTag::class) and $blankTag->hasTag("Weight", IntTag::class) and $weight = $blankTag->getInt("Weight") > 0) {
-						$totalWeight += $blankTag->getInt("Weight");
-					}
-				}
-				$random = mt_rand(1, $totalWeight);
-				foreach($this->spawnPotentials->getAllValues() as $blankTag) {
-					if($blankTag->hasTag("Entity", CompoundTag::class) and $blankTag->hasTag("Weight", IntTag::class) and $weight = $blankTag->getInt("Weight", 1) > 0) {
-						if($random - $blankTag->getInt("Weight", 1) <= 0) {
-							$tag = clone $blankTag->getCompoundTag("Entity");
-							$tag->setName("spawnData");
-							$this->spawnData = $tag;
-							$this->onChanged();
-							break;
-						}
-					}
-				}
-			}
 		}elseif($this->delay === -1) {
 			$this->delay = mt_rand($this->minSpawnDelay, $this->maxSpawnDelay);
-			$this->spawnData = new CompoundTag("SpawnData", [new IntTag("id", Entity::PIG)]); // TODO: randomize id
-			$entityTag = clone $this->spawnData;
-			$entityTag->setName("Entity");
-			$tag = new CompoundTag("", [$entityTag, new IntTag("Weight", 1)]);
-			$this->spawnPotentials = new ListTag("SpawnPotentials", [$tag], NBT::TAG_Compound);
+			$this->entityId = mt_rand(EntityIds::CHICKEN, EntityIds::FISH);
 			$this->onChanged();
 		}
 		$this->scheduleUpdate();
@@ -179,59 +146,40 @@ class MobSpawner extends Spawnable {
 	 * @param CompoundTag $nbt
 	 */
 	protected function readSaveData(CompoundTag $nbt): void {
-		if($nbt->hasTag("SpawnData", CompoundTag::class)) {
-			$this->spawnData = $nbt->getCompoundTag("SpawnData");
+		if($nbt->hasTag(self::ENTITY_ID, IntTag::class)) {
+			$this->entityId = $nbt->getInt(self::ENTITY_ID);
 		}
-		if($nbt->hasTag("SpawnPotentials", ListTag::class)) {
-			$this->spawnPotentials = $nbt->getListTag("SpawnPotentials");
-		}elseif($this->spawnData !== null) {
-			$this->spawnPotentials = new ListTag("SpawnPotentials", [], NBT::TAG_Compound);
+		if($nbt->hasTag(self::SPAWN_COUNT, ShortTag::class)) {
+			$this->spawnCount = $nbt->getShort(self::SPAWN_COUNT);
 		}
-		if($nbt->hasTag("SpawnCount", ShortTag::class)) {
-			$this->spawnCount = $nbt->getShort("SpawnCount");
-		}
-		if($nbt->hasTag("SpawnRange", ShortTag::class)) {
-			$this->spawnRange = $nbt->getShort("SpawnRange");
+		if($nbt->hasTag(self::SPAWN_RANGE, ShortTag::class)) {
+			$this->spawnRange = $nbt->getShort(self::SPAWN_RANGE);
 		}
 		$this->spawnArea = new AxisAlignedBB($this->x - $this->spawnRange, $this->y - 1, $this->z - $this->spawnRange, $this->x + $this->spawnRange, $this->y + 1, $this->z + $this->spawnRange);
-		if($nbt->hasTag("Delay", ShortTag::class)) {
-			$this->delay = $nbt->getShort("Delay");
+		if($nbt->hasTag(self::DELAY, ShortTag::class)) {
+			$this->delay = $nbt->getShort(self::DELAY);
 		}
-		if($nbt->hasTag("MinSpawnDelay", ShortTag::class)) {
-			$this->minSpawnDelay = $nbt->getShort("MinSpawnDelay");
+		if($nbt->hasTag(self::MIN_SPAWN_DELAY, ShortTag::class)) {
+			$this->minSpawnDelay = $nbt->getShort(self::MIN_SPAWN_DELAY);
 		}
-		if($nbt->hasTag("MaxSpawnDelay", ShortTag::class)) {
-			$this->maxSpawnDelay = $nbt->getShort("MaxSpawnDelay");
+		if($nbt->hasTag(self::MAX_SPAWN_DELAY, ShortTag::class)) {
+			$this->maxSpawnDelay = $nbt->getShort(self::MAX_SPAWN_DELAY);
 		}
-		if($nbt->hasTag("MaxNearbyEntities", ShortTag::class)) {
-			$this->maxNearbyEntities = $nbt->getShort("MaxNearbyEntities");
+		if($nbt->hasTag(self::MAX_NEARBY_ENTITIES, ShortTag::class)) {
+			$this->maxNearbyEntities = $nbt->getShort(self::MAX_NEARBY_ENTITIES);
 		}
-		if($nbt->hasTag("RequiredPlayerRange", ShortTag::class)) {
-			$this->requiredPlayerRange = $nbt->getShort("RequiredPlayerRange");
+		if($nbt->hasTag(self::REQUIRED_PLAYER_RANGE, ShortTag::class)) {
+			$this->requiredPlayerRange = $nbt->getShort(self::REQUIRED_PLAYER_RANGE);
 		}
-		if($nbt->hasTag("keepPacked", ByteTag::class)) {
-			$this->keepPacked = $nbt->getByte("keepPacked");
+		if($nbt->hasTag(self::DISPLAY_ENTITY_HEIGHT, FloatTag::class)) {
+			$this->displayHeight = $nbt->getFloat(self::DISPLAY_ENTITY_HEIGHT);
 		}
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getEntityId(): int {
-		return isset($this->spawnData) ? $this->spawnData->getInt("id", -1) : -1;
-	}
-
-	/**
-	 * @param int $id
-	 *
-	 * @return MobSpawner
-	 */
-	public function setEntityId(int $id): MobSpawner {
-		$this->spawnData = new CompoundTag("SpawnData", [new IntTag("id", $id)]);
-		$this->writeSaveData($nbt = new CompoundTag());
-		$this->onChanged();
-		$this->scheduleUpdate();
-		return $this;
+		if($nbt->hasTag(self::DISPLAY_ENTITY_WIDTH, FloatTag::class)) {
+			$this->displayHeight = $nbt->getFloat(self::DISPLAY_ENTITY_WIDTH);
+		}
+		if($nbt->hasTag(self::DISPLAY_ENTITY_SCALE, FloatTag::class)) {
+			$this->displayHeight = $nbt->getFloat(self::DISPLAY_ENTITY_SCALE);
+		}
 	}
 
 	/**
@@ -250,22 +198,38 @@ class MobSpawner extends Spawnable {
 	 * @param CompoundTag $nbt
 	 */
 	protected function addAdditionalSpawnData(CompoundTag $nbt): void {
-		if(isset($this->spawnData)) {
-			$nbt->setTag($this->spawnData); // Contains tags to copy to the next spawned entity(s) after spawning. Any of the entity or mob tags may be used. Note that if a spawner specifies any of these tags, almost all variable data such as mob equipment, villager profession, sheep wool color, etc., will not be automatically generated, and must also be manually specified (note that this does not apply to position data, which will be randomized as normal unless Pos is specified. Similarly, unless Size and Health are specified for a Slime or Magma Cube, these will still be randomized). This, together with EntityId, also determines the appearance of the miniature entity spinning in the spawner cage. Note: this tag is optional: if it does not exist, the next spawned entity will use the default vanilla spawning properties for this mob, including potentially randomized armor (this is true even if SpawnPotentials does exist). Warning: If SpawnPotentials exists, this tag will get overwritten after the next spawning attempt: see above for more details.
-			$nbt->setInt("EntityId", $this->spawnData->getInt("id", -1));
-		}
-		if(isset($this->spawnPotentials)) {
-			$nbt->setTag($this->spawnPotentials); // Optional. List of possible entities to spawn. If this tag does not exist, but SpawnData exists, Minecraft will generate it the next time the spawner tries to spawn an entity. The generated list will contain a single entry derived from the EntityId and SpawnData tags.
-		}
-		$nbt->setShort("SpawnCount", $this->spawnCount); // How many mobs to attempt to spawn each time. Requires MinSpawnDelay to be set
-		$nbt->setShort("SpawnRange", $this->spawnRange); // The radius around which the spawner attempts to place mobs randomly. The spawn area is square, includes the block the spawner is in, and is centered around the spawner's x,z coordinates - not the spawner itself. It is 2 blocks high, centered around the spawner's y coordinate (its bottom), allowing mobs to spawn as high as its top surface and as low as 1 block below its bottom surface. Vertical spawn coordinates are integers, while horizontal coordinates are floating point and weighted towards values near the spawner itself. Default value is 4.
-		$nbt->setShort("Delay", $this->delay); // Ticks until next spawn. If 0, it will spawn immediately when a player enters its range. If set to -1 (this state never occurs in a natural spawner; it seems to be a feature accessed only via NBT editing), the spawner will reset its Delay, and (if SpawnPotentials exist) EntityID and SpawnData as though it had just completed a successful spawn cycle, immediately when a player enters its range. Note that setting Delay to -1 can be useful if you want the game to properly randomize the spawner's Delay, EntityID, and SpawnData, rather than starting with pre-defined values.
-		$nbt->setShort("MinSpawnDelay", $this->minSpawnDelay); // The minimum random delay for the next spawn delay. May be equal to MaxSpawnDelay.
-		$nbt->setShort("MaxSpawnDelay", $this->maxSpawnDelay); // The maximum random delay for the next spawn delay. Warning: Setting this value to 0 crashes Minecraft. Set to at least 1. Note: Requires the MinSpawnDelay property to also be set.
-		$nbt->setShort("MaxNearbyEntities", $this->maxNearbyEntities); //Overrides the maximum number of nearby (within a box of spawnrange*2+1 x spawnrange*2+1 x 8 centered around the spawner block) entities whose IDs match this spawner's entity ID. Note that this is relative to a mob's hitbox, not their physical position. Also note that all entities within all chunk sections (16x16x16 cubes) overlapped by this box are tested for their ID and hitbox overlap, rather than just entities which are within the box, meaning a large amount of entities outside the box (or within it, of course) can cause substantial lag.
-		$nbt->setShort("RequiredPlayerRange", $this->requiredPlayerRange); // Overrides the block radius of the sphere of activation by players for this spawner. Note that for every gametick, a spawner will check all players in the current world to test whether a player is within this sphere. Note: Requires the MaxNearbyEntities property to also be set.
-		$nbt->setByte("keepPacked", (int)$this->keepPacked); // There is ZERO information on this tag anywhere
+		$nbt->setByte(self::IS_MOVABLE, (int)$this->isMovable);
+		$nbt->setShort(self::DELAY, $this->delay);
+		$nbt->setShort(self::MAX_NEARBY_ENTITIES, $this->maxNearbyEntities);
+		$nbt->setShort(self::MAX_SPAWN_DELAY, $this->maxSpawnDelay);
+		$nbt->setShort(self::MIN_SPAWN_DELAY, $this->minSpawnDelay);
+		$nbt->setShort(self::REQUIRED_PLAYER_RANGE, $this->requiredPlayerRange);
+		$nbt->setShort(self::SPAWN_COUNT, $this->spawnCount);
+		$nbt->setShort(self::SPAWN_RANGE, $this->spawnRange);
+		$nbt->setInt(self::ENTITY_ID, $this->entityId);
+		$nbt->setFloat(self::DISPLAY_ENTITY_HEIGHT, $this->displayHeight);
+		$nbt->setFloat(self::DISPLAY_ENTITY_WIDTH, $this->displayWidth);
+		$nbt->setFloat(self::DISPLAY_ENTITY_SCALE, $this->displayScale);
 		$this->scheduleUpdate();
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getEntityId(): int {
+		return $this->entityId;
+	}
+
+	/**
+	 * @param int $eid
+	 *
+	 * @return MobSpawner
+	 */
+	public function setEntityId(int $eid): MobSpawner {
+		$this->entityId = $eid;
+		$this->onChanged();
+		$this->scheduleUpdate();
+		return $this;
 	}
 
 	/**
@@ -324,51 +288,6 @@ class MobSpawner extends Spawnable {
 	 */
 	public function setMaxNearbyEntities(int $count): MobSpawner {
 		$this->maxNearbyEntities = $count;
-		return $this;
-	}
-
-	/**
-	 * @return CompoundTag|array|null
-	 */
-	public function getSpawnData(): CompoundTag {
-		return $this->spawnData ?? new CompoundTag("SpawnData");
-	}
-
-	/**
-	 * @param CompoundTag $spawnData
-	 *
-	 * @return MobSpawner
-	 */
-	public function setSpawnData(CompoundTag $spawnData): MobSpawner {
-		$this->spawnData = clone $spawnData; // TODO: check valid
-		return $this;
-	}
-
-	/**
-	 * @return ListTag|array|null
-	 */
-	public function getSpawnPotentials(): ListTag {
-		return $this->spawnPotentials ?? new ListTag("SpawnPotentials", []);
-	}
-
-	/**
-	 * @param ListTag $spawnPotentials
-	 *
-	 * @return MobSpawner
-	 */
-	public function setSpawnPotentials(ListTag $spawnPotentials): MobSpawner {
-		if($spawnPotentials->getTagType() === NBT::TAG_Compound) {
-			$valid = true;
-			/** @var CompoundTag $tag */
-			foreach($spawnPotentials->getAllValues() as $tag) {
-				if(!$tag->hasTag("Entity", CompoundTag::class) or !$tag->hasTag("Weight", IntTag::class)) {
-					$valid = false;
-				}
-			}
-			if($valid) {
-				$this->spawnPotentials = clone $spawnPotentials;
-			}
-		}
 		return $this;
 	}
 }
