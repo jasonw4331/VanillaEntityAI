@@ -3,7 +3,9 @@ declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use jasonwynn10\VanillaEntityAI\entity\Collidable;
+use jasonwynn10\VanillaEntityAI\entity\CollisionCheckingTrait;
 use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
+use jasonwynn10\VanillaEntityAI\entity\InventoryHolderTrait;
 use jasonwynn10\VanillaEntityAI\entity\Linkable;
 use jasonwynn10\VanillaEntityAI\inventory\MobInventory;
 use pocketmine\block\Water;
@@ -24,19 +26,16 @@ use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 
 class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster, InventoryHolder, Collidable {
+	use InventoryHolderTrait, CollisionCheckingTrait;
 	public const NETWORK_ID = self::ZOMBIE;
 	public $width = 0.6;
 	public $height = 1.95;
-	/** @var MobInventory */
-	protected $inventory;
 	/** @var Position|null */
 	protected $target;
 	/** @var int */
 	protected $moveTime;
 	/** @var int */
 	protected $attackDelay;
-	/** @var bool */
-	protected $dropAll = false;
 	/** @var float $speed */
 	protected $speed = 1.2;
 	/** @var float $stepHeight */
@@ -45,9 +44,10 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	protected $baby = false;
 
 	public function initEntity(): void {
-		$this->inventory = new MobInventory($this, ItemFactory::get(Item::AIR)); //TODO random enchantments and random item (iron sword or iron shovel or iron axe)
+		$this->inventory->setItemInHand(ItemFactory::get(Item::AIR)); //TODO random enchantments and random item (iron sword or iron shovel or iron axe)
 		if(mt_rand(1, 100) < 6)
 			$this->setBaby();
+		// TODO: random armour
 		parent::initEntity();
 	}
 
@@ -102,7 +102,7 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 		if(!$this->isOnFire() and ($time < Level::TIME_NIGHT or $time > Level::TIME_SUNRISE) and $this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) > 7) {
 			$this->setOnFire(2);
 		}
-		if($this->isOnFire() and $this->level->getBlock($this, true, false) instanceof Water) {
+		if($this->isOnFire() and $this->level->getBlock($this, true, false) instanceof Water) { // TODO: check weather
 			$this->extinguish();
 		}
 		$this->attackDelay += $tickDiff;
@@ -122,37 +122,16 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 		return $hasUpdate;
 	}
 
-	protected function checkNearEntities() {
-		// TODO: better method/logic
-		foreach($this->level->getNearbyEntities($this->boundingBox, $this) as $entity) {
-			if(!$entity->isAlive() or $entity->isFlaggedForDespawn()) {
-				continue;
-			}
-			$entity->scheduleUpdate();
-			if($entity instanceof Collidable) {
-				$entity->onCollideWithEntity($this);
-			}
-		}
-	}
-
 	/**
 	 * @return array
 	 */
-	public function getDrops(): array {
+	public function getDrops() : array {
 		$drops = parent::getDrops();
 		if($this->dropAll) {
-			$drops = array_merge($drops, $this->inventory->getContents(), $this->armorInventory->getContents());
+			$drops = array_merge($drops, $this->armorInventory->getContents());
 		}elseif(mt_rand(1, 100) <= 8.5) {
-			if(!empty($this->inventory->getContents()) and !empty($this->armorInventory->getContents())) {
-				if((bool)mt_rand(0, 1)) {
-					$drops[] = $this->inventory->getContents()[array_rand($this->inventory->getContents())];
-				}else {
-					$drops[] = $this->armorInventory->getContents()[array_rand($this->armorInventory->getContents())];
-				}
-			}elseif(empty($this->inventory->getContents()) and !empty($this->armorInventory->getContents())) {
+			if(!empty($this->armorInventory->getContents())) {
 				$drops[] = $this->armorInventory->getContents()[array_rand($this->armorInventory->getContents())];
-			}elseif(empty($this->armorInventory->getContents()) and !empty($this->inventory->getContents())) {
-				$drops[] = $this->inventory->getContents()[array_rand($this->inventory->getContents())];
 			}
 		}
 		return $drops;
@@ -182,16 +161,6 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 		return "Zombie";
 	}
 
-	public function close(): void {
-		if(!$this->closed) {
-			if($this->inventory !== null) {
-				$this->inventory->removeAllViewers(true);
-				$this->inventory = null;
-			}
-			parent::close();
-		}
-	}
-
 	public function onCollideWithPlayer(Player $player): void {
 		parent::onCollideWithPlayer($player);
 		if($this->target === $player) {
@@ -215,44 +184,11 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 		}
 	}
 
-	protected function sendSpawnPacket(Player $player): void {
-		parent::sendSpawnPacket($player);
-		$pk = new MobEquipmentPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->item = $this->inventory->getItemInHand();
-		$pk->inventorySlot = $pk->hotbarSlot = $this->inventory->getHeldItemIndex();
-		$player->dataPacket($pk);
-	}
-
-	/**
-	 * @return MobInventory
-	 */
-	public function getInventory() {
-		return $this->inventory;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isDropAll(): bool {
-		return $this->dropAll;
-	}
-
-	/**
-	 * @param bool $dropAll
-	 *
-	 * @return Zombie
-	 */
-	public function setDropAll(bool $dropAll = true) {
-		$this->dropAll = $dropAll;
-		return $this;
-	}
-
-	public function getTarget(): ?Position {
+	public function getTarget() : ?Position {
 		return $this->target;
 	}
 
-	public function onCollideWithEntity(Entity $entity): void {
+	public function onCollideWithEntity(Entity $entity) : void {
 		if($this->target === $entity) {
 			$damage = 2;
 			switch($this->getLevel()->getDifficulty()) {
