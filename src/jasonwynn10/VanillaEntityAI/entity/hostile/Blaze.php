@@ -82,8 +82,28 @@ class Blaze extends Monster implements CustomMonster {
 
 	/**
 	 * @param Linkable $entity
+	 *
+	 * @return Blaze
 	 */
 	public function setLink(Linkable $entity) {
 		// TODO: Implement setLink() method.
+		return $this;
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getSpeed(): float {
+		// TODO: Implement getSpeed() method.
+	}
+
+	/**
+	 * @param float $speed
+	 *
+	 * @return Blaze
+	 */
+	public function setSpeed(float $speed) {
+		// TODO: Implement setSpeed() method.
+		return $this;
 	}
 }

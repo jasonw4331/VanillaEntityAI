@@ -23,12 +23,11 @@ class DespawnTask extends Task {
 				}
 			}
 			foreach($chunks as $chunk) {
-				if(mt_rand(1, 50) !== 1) {
-					return;
-				}
+				if(mt_rand(1, 50) !== 1)
+					continue;
 				foreach($chunk->getEntities() as $entity) {
 					$distanceCheck = true;
-					foreach($level->getPlayers() as $player) {
+					foreach($entity->getViewers() as $player) {
 						if($entity->distance($player) < 54) {
 							$distanceCheck = false;
 							break;

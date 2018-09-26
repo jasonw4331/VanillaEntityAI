@@ -2,9 +2,14 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\passive;
 
+use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
+use jasonwynn10\VanillaEntityAI\entity\Linkable;
 use pocketmine\entity\Creature;
+use pocketmine\entity\Living;
+use pocketmine\level\Position;
+use pocketmine\nbt\tag\CompoundTag;
 
-class Horse extends Creature {
+class Horse extends Creature implements CreatureBase {
 	public const NETWORK_ID = self::HORSE;
 	public $width = 1.3;
 	public $height = 1.5;
@@ -34,5 +39,52 @@ class Horse extends Creature {
 	 */
 	public function getName(): string {
 		return "Horse";
+	}
+
+	/**
+	 * @param Position $spawnPos
+	 * @param CompoundTag|null $spawnData
+	 *
+	 * @return null|Living
+	 */
+	public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null): ?Living {
+		// TODO: Implement spawnMob() method.
+	}
+
+	/**
+	 * @return Position|null
+	 */
+	public function getTarget(): ?Position {
+		// TODO: Implement getTarget() method.
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getSpeed(): float {
+		// TODO: Implement getSpeed() method.
+	}
+
+	/**
+	 * @param float $speed
+	 *
+	 * @return CreatureBase
+	 */
+	public function setSpeed(float $speed) {
+		// TODO: Implement setSpeed() method.
+	}
+
+	/**
+	 * @return Linkable|null
+	 */
+	public function getLink(): ?Linkable {
+		// TODO: Implement getLink() method.
+	}
+
+	/**
+	 * @param Linkable $entity
+	 */
+	public function setLink(Linkable $entity) {
+		// TODO: Implement setLink() method.
 	}
 }

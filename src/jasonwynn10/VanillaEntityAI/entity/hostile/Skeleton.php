@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
+use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
 use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
 use jasonwynn10\VanillaEntityAI\entity\Linkable;
 use jasonwynn10\VanillaEntityAI\inventory\MobInventory;
@@ -132,5 +133,21 @@ class Skeleton extends Monster implements CustomMonster, InventoryHolder {
 	 */
 	public function setLink(Linkable $entity) {
 		// TODO: Implement setLink() method.
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getSpeed(): float {
+		// TODO: Implement getSpeed() method.
+	}
+
+	/**
+	 * @param float $speed
+	 *
+	 * @return CreatureBase
+	 */
+	public function setSpeed(float $speed) {
+		// TODO: Implement setSpeed() method.
 	}
 }

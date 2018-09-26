@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
+use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
 use jasonwynn10\VanillaEntityAI\entity\Linkable;
 use pocketmine\entity\Living;
 use pocketmine\entity\Monster;
@@ -71,5 +72,21 @@ class Shulker extends Monster implements CustomMonster {
 	 */
 	public function setLink(Linkable $entity) {
 		// TODO: Implement setLink() method.
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getSpeed(): float {
+		// TODO: Implement getSpeed() method.
+	}
+
+	/**
+	 * @param float $speed
+	 *
+	 * @return CreatureBase
+	 */
+	public function setSpeed(float $speed) {
+		// TODO: Implement setSpeed() method.
 	}
 }

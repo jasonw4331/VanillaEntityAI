@@ -226,4 +226,13 @@ class Creeper extends Monster implements CustomMonster, Explosive {
 		$this->setGenericFlag(self::DATA_FLAG_CHARGED, $charged);
 		return $this;
 	}
+
+	/**
+	 * @param float $speed
+	 *
+	 * @return Creeper
+	 */
+	public function setSpeed(float $speed) {
+		// TODO: Implement setSpeed() method.
+	}
 }

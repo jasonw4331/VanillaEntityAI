@@ -115,6 +115,7 @@ use pocketmine\level\biome\Biome;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\plugin\PluginBase;
+use pocketmine\timings\TimingsHandler;
 use spoondetector\SpoonDetector;
 
 class EntityAI extends PluginBase {
@@ -293,6 +294,7 @@ class EntityAI extends PluginBase {
 
 	public function onLoad(): void {
 		self::$instance = $this;
+		TimingsHandler::setEnabled();
 	}
 
 	public function onEnable(): void {
@@ -315,9 +317,8 @@ class EntityAI extends PluginBase {
 		if($this->getServer()->getConfigBool("spawn-animals", true)) {
 			$this->getScheduler()->scheduleRepeatingTask(new PassiveSpawnTask(), 20);
 		}
-		$this->getScheduler()->scheduleRepeatingTask(new DespawnTask(), 20);
+		$this->getScheduler()->scheduleRepeatingTask(new DespawnTask(), 1);
 		$this->getScheduler()->scheduleRepeatingTask(new InhabitedChunkCounter(), 20 * 60 * 60);
-		// TODO: mob crush limit task?
 	}
 
 	/**

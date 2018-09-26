@@ -19,4 +19,16 @@ interface CreatureBase extends Linkable {
 	 * @return Position|null
 	 */
 	public function getTarget(): ?Position;
+
+	/**
+	 * @return float
+	 */
+	public function getSpeed() : float;
+
+	/**
+	 * @param float $speed
+	 *
+	 * @return CreatureBase
+	 */
+	public function setSpeed(float $speed);
 }
