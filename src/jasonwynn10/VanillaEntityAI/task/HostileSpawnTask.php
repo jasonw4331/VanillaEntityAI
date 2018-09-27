@@ -5,6 +5,7 @@ namespace jasonwynn10\VanillaEntityAI\task;
 use jasonwynn10\VanillaEntityAI\data\Data;
 use jasonwynn10\VanillaEntityAI\data\MobTypeMaps;
 use jasonwynn10\VanillaEntityAI\entity\hostile\CustomMonster;
+use jasonwynn10\VanillaEntityAI\entity\SpawnableTrait;
 use jasonwynn10\VanillaEntityAI\EntityAI;
 use pocketmine\entity\Human;
 use pocketmine\level\format\Chunk;
@@ -54,10 +55,9 @@ class HostileSpawnTask extends Task {
 						foreach(EntityAI::$entities as $class => $arr) {
 							/** @noinspection PhpUndefinedFieldInspection */
 							if($class instanceof CustomMonster and $class::NETWORK_ID === $entityId) {
-								/** @var CustomMonster $class */
-								$entity = $class::spawnMob(new Position($x + 0.5, $packCenter->y, $z + 0.5, $level));
+								/** @var CustomMonster|SpawnableTrait $class */
+								$entity = $class::spawnFromSpawner(new Position($x + 0.5, $packCenter->y, $z + 0.5, $level));
 								if($entity !== null) {
-									$entity->spawnToAll();
 									$currentPackSize++;
 								}
 							}

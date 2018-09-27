@@ -7,6 +7,7 @@ use jasonwynn10\VanillaEntityAI\entity\CollisionCheckingTrait;
 use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
 use jasonwynn10\VanillaEntityAI\entity\InventoryHolderTrait;
 use jasonwynn10\VanillaEntityAI\entity\Linkable;
+use jasonwynn10\VanillaEntityAI\entity\SpawnableTrait;
 use jasonwynn10\VanillaEntityAI\inventory\MobInventory;
 use pocketmine\block\Water;
 use pocketmine\entity\Ageable;
@@ -26,7 +27,7 @@ use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 
 class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster, InventoryHolder, Collidable {
-	use InventoryHolderTrait, CollisionCheckingTrait;
+	use InventoryHolderTrait, CollisionCheckingTrait, SpawnableTrait;
 	public const NETWORK_ID = self::ZOMBIE;
 	public $width = 0.6;
 	public $height = 1.95;
@@ -212,15 +213,6 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	 * @return null|Living
 	 */
 	public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?Living {
-		$width = 0.6;
-		$height = 1.95;
-		$boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
-		$halfWidth = $width / 2;
-		$boundingBox->setBounds($spawnPos->x - $halfWidth, $spawnPos->y, $spawnPos->z - $halfWidth, $spawnPos->x + $halfWidth, $spawnPos->y + $height, $spawnPos->z + $halfWidth);
-		// TODO: work on logic here more
-		if(!$spawnPos->isValid() or !$spawnPos->level->getBlock($spawnPos->subtract(0, 1), true, false)->isSolid() or $spawnPos->level->getFullLight($spawnPos) > 7) {
-			return null;
-		}
 		$nbt = self::createBaseNBT($spawnPos);
 		if(isset($spawnData)) {
 			$nbt = $spawnData->merge($nbt);
@@ -229,8 +221,15 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 			// TODO: randomized gear and other based on difficulty
 		}
 		/** @var self $entity */
-		$entity = self::createEntity("Zombie", $spawnPos->level, $nbt);
-		return $entity;
+		$entity = self::createEntity(self::NETWORK_ID, $spawnPos->level, $nbt);
+		// TODO: work on logic here more
+		if(!$spawnPos->isValid() or !$entity->onGround or $spawnPos->level->getFullLight($spawnPos) > self::$spawnLight) {
+			$entity->flagForDespawn();
+			return null;
+		}else{
+			$entity->spawnToAll();
+			return $entity;
+		}
 	}
 
 	/**

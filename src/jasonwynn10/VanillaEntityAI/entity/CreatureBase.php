@@ -2,7 +2,6 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity;
 
-use pocketmine\entity\Living;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\CompoundTag;
 
@@ -11,9 +10,17 @@ interface CreatureBase extends Linkable {
 	 * @param Position $spawnPos
 	 * @param CompoundTag|null $spawnData
 	 *
-	 * @return null|Living
+	 * @return null|CreatureBase
 	 */
-	public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?Living;
+	public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null);
+
+	/**
+	 * @param Position $spawnPos
+	 * @param null|CompoundTag $spawnData
+	 *
+	 * @return null|CreatureBase
+	 */
+	public static function spawnFromSpawner(Position $spawnPos, ?CompoundTag $spawnData = null);
 
 	/**
 	 * @return Position|null
