@@ -5,10 +5,9 @@ namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 use jasonwynn10\VanillaEntityAI\entity\Collidable;
 use jasonwynn10\VanillaEntityAI\entity\CollisionCheckingTrait;
 use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
-use jasonwynn10\VanillaEntityAI\entity\InventoryHolderTrait;
+use jasonwynn10\VanillaEntityAI\entity\ItemHolderTrait;
 use jasonwynn10\VanillaEntityAI\entity\Linkable;
 use jasonwynn10\VanillaEntityAI\entity\SpawnableTrait;
-use jasonwynn10\VanillaEntityAI\inventory\MobInventory;
 use pocketmine\block\Water;
 use pocketmine\entity\Ageable;
 use pocketmine\entity\Effect;
@@ -16,18 +15,15 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\level\biome\Biome;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 
-class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster, InventoryHolder, Collidable {
-	use InventoryHolderTrait, CollisionCheckingTrait, SpawnableTrait;
+class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster, Collidable, InventoryHolder {
+	use ItemHolderTrait, CollisionCheckingTrait, SpawnableTrait;
 	public const NETWORK_ID = self::ZOMBIE;
 	public $width = 0.6;
 	public $height = 1.95;
@@ -44,15 +40,19 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	/** @var bool $baby */
 	protected $baby = false;
 
-	public function initEntity(): void {
-		$this->inventory->setItemInHand(ItemFactory::get(Item::AIR)); //TODO random enchantments and random item (iron sword or iron shovel or iron axe)
+	public function initEntity() : void {
 		if(mt_rand(1, 100) < 6)
 			$this->setBaby();
-		// TODO: random armour
+		if(mt_rand(1, 100) >= 80) {
+			if((bool)mt_rand(0,1))
+				$this->equipRandomItems();
+			else
+				$this->equipRandomArmour();
+		}
 		parent::initEntity();
 	}
 
-	public function onUpdate(int $currentTick): bool {
+	public function onUpdate(int $currentTick) : bool {
 		if($this->closed) {
 			return false;
 		}
@@ -82,7 +82,7 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	 *
 	 * @return bool
 	 */
-	public function entityBaseTick(int $tickDiff = 1): bool {
+	public function entityBaseTick(int $tickDiff = 1) : bool {
 		$this->checkNearEntities();
 		if($this->target === null) {
 			foreach($this->hasSpawned as $player) {
@@ -141,28 +141,35 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	/**
 	 * @return int
 	 */
-	public function getXpDropAmount(): int {
+	public function getXpDropAmount() : int {
 		if($this->baby) {
-			return 12;
+			$exp = 12;
+		}else{
+			$exp = 5;
 		}
-		$exp = 5;
 		foreach($this->getArmorInventory()->getContents() as $piece)
 			$exp += mt_rand(1, 3);
 		return $exp;
 	}
 
-	public function isBaby(): bool {
+	/**
+	 * @return bool
+	 */
+	public function isBaby() : bool {
 		return $this->baby;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getName(): string {
+	public function getName() : string {
 		return "Zombie";
 	}
 
-	public function onCollideWithPlayer(Player $player): void {
+	/**
+	 * @param Player $player
+	 */
+	public function onCollideWithPlayer(Player $player) : void {
 		parent::onCollideWithPlayer($player);
 		if($this->target === $player) {
 			$damage = 2;
@@ -185,10 +192,16 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 		}
 	}
 
+	/**
+	 * @return null|Position|Entity
+	 */
 	public function getTarget() : ?Position {
 		return $this->target;
 	}
 
+	/**
+	 * @param Entity $entity
+	 */
 	public function onCollideWithEntity(Entity $entity) : void {
 		if($this->target === $entity) {
 			$damage = 2;
@@ -217,13 +230,16 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 		if(isset($spawnData)) {
 			$nbt = $spawnData->merge($nbt);
 			$nbt->setInt("id", self::NETWORK_ID);
-		}else {
-			// TODO: randomized gear and other based on difficulty
 		}
-		/** @var self $entity */
-		$entity = self::createEntity(self::NETWORK_ID, $spawnPos->level, $nbt);
+		if($spawnPos->level->getBiomeId($spawnPos->x, $spawnPos->z) === Biome::DESERT and mt_rand(1, 100) > 80) {
+			/** @var Husk $entity */
+			$entity = self::createEntity(Husk::NETWORK_ID, $spawnPos->level, $nbt);
+		}else{
+			/** @var self $entity */
+			$entity = self::createEntity(self::NETWORK_ID, $spawnPos->level, $nbt);
+		}
 		// TODO: work on logic here more
-		if(!$spawnPos->isValid() or !$entity->onGround or $spawnPos->level->getFullLight($spawnPos) > self::$spawnLight) {
+		if(!$spawnPos->isValid() or !$entity->onGround or $spawnPos->level->getFullLight($spawnPos) > $entity->spawnLight) {
 			$entity->flagForDespawn();
 			return null;
 		}else{
@@ -277,5 +293,13 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	 */
 	public function getSpeed() : float {
 		return $this->speed;
+	}
+
+	public function equipRandomItems() : void {
+		//TODO random enchantments and random item (iron sword or iron shovel or iron axe)
+	}
+
+	public function equipRandomArmour() : void {
+		//TODO random enchantments and random armour
 	}
 }

@@ -2,26 +2,23 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
+use jasonwynn10\VanillaEntityAI\entity\Collidable;
 use jasonwynn10\VanillaEntityAI\entity\CollisionCheckingTrait;
-use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
 use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
-use jasonwynn10\VanillaEntityAI\entity\InventoryHolderTrait;
+use jasonwynn10\VanillaEntityAI\entity\ItemHolderTrait;
 use jasonwynn10\VanillaEntityAI\entity\Linkable;
-use jasonwynn10\VanillaEntityAI\inventory\MobInventory;
 use pocketmine\block\Water;
-use pocketmine\entity\Effect;
+use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\entity\Monster;
-use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
-class Skeleton extends Monster implements CustomMonster, InventoryHolder {
-	use InventoryHolderTrait, CollisionCheckingTrait;
+class Skeleton extends Monster implements CustomMonster, InventoryHolder, Collidable {
+	use ItemHolderTrait, CollisionCheckingTrait;
 	public const NETWORK_ID = self::SKELETON;
 	public $width = 0.875;
 	public $height = 2.0;
@@ -37,7 +34,8 @@ class Skeleton extends Monster implements CustomMonster, InventoryHolder {
 	protected $stepHeight = 1.0;
 
 	public function initEntity(): void {
-		$this->inventory->setItemInHand(ItemFactory::get(Item::BOW)); //TODO random enchantments
+		if(!isset($this->mainHand))
+			$this->mainHand = Item::get(Item::BOW); // TODO: random enchantments
 		// TODO: random armour
 		parent::initEntity();
 	}
@@ -94,8 +92,10 @@ class Skeleton extends Monster implements CustomMonster, InventoryHolder {
 	 * @return int
 	 */
 	public function getXpDropAmount(): int {
-		//TODO: check for equipment
-		return 5;
+		$exp = 5;
+		foreach($this->getArmorInventory()->getContents() as $piece)
+			$exp += mt_rand(1, 3);
+		return $exp;
 	}
 
 	/**
@@ -140,15 +140,38 @@ class Skeleton extends Monster implements CustomMonster, InventoryHolder {
 	 * @return float
 	 */
 	public function getSpeed(): float {
-		// TODO: Implement getSpeed() method.
+		return $this->speed;
 	}
 
 	/**
 	 * @param float $speed
 	 *
-	 * @return CreatureBase
+	 * @return self
 	 */
 	public function setSpeed(float $speed) {
-		// TODO: Implement setSpeed() method.
+		$this->speed = $speed;
+		return $this;
+	}
+
+	/**
+	 * @param Position $spawnPos
+	 * @param null|CompoundTag $spawnData
+	 *
+	 * @return null|self
+	 */
+	public static function spawnFromSpawner(Position $spawnPos, ?CompoundTag $spawnData = null) {
+		// TODO: Implement spawnFromSpawner() method.
+	}
+
+	public function equipRandomItems(): void {
+		// TODO: Implement equipRandomItems() method.
+	}
+
+	public function equipRandomArmour(): void {
+		// TODO: Implement equipRandomArmour() method.
+	}
+
+	public function onCollideWithEntity(Entity $entity): void {
+		// TODO: Implement onCollideWithEntity() method.
 	}
 }

@@ -1,5 +1,6 @@
 <?php
 namespace jasonwynn10\VanillaEntityAI\entity;
+
 trait CollisionCheckingTrait {
 	protected function checkNearEntities() {
 		// TODO: better method/logic

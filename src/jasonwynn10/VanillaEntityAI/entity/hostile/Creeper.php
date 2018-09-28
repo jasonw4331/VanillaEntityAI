@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use jasonwynn10\VanillaEntityAI\entity\Linkable;
+use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
 use pocketmine\entity\Creature;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Explosive;
@@ -15,7 +16,6 @@ use pocketmine\level\Explosion;
 use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\nbt\tag\CompoundTag;
-use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
 
 class Creeper extends Monster implements CustomMonster, Explosive {
 	public const NETWORK_ID = self::CREEPER;

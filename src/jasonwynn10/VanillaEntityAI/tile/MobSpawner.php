@@ -86,7 +86,6 @@ class MobSpawner extends Spawnable {
 							/** @var CreatureBase $class */
 							$entity = $class::spawnMob($this->getRandomSpawnPos());
 							if($entity !== null) {
-								$entity->spawnToAll();
 								$spawned++;
 							}
 						}

@@ -2,9 +2,7 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity;
 
-use pocketmine\item\Item;
-
-interface InventoryHolder extends \pocketmine\inventory\InventoryHolder {
+interface InventoryHolder {
 	/**
 	 * @return bool
 	 */
@@ -15,8 +13,7 @@ interface InventoryHolder extends \pocketmine\inventory\InventoryHolder {
 	 */
 	public function setDropAll(bool $dropAll = true);
 
-	/**
-	 * @return Item[]
-	 */
-	public function getRandomItems() : array;
+	public function equipRandomItems() : void;
+
+	public function equipRandomArmour() : void;
 }
