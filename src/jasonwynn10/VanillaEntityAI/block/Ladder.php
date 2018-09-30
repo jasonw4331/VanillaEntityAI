@@ -9,7 +9,7 @@ class Ladder extends \pocketmine\block\Ladder {
 	/**
 	 * @param Entity $entity
 	 */
-	public function onEntityCollide(Entity $entity): void {
+	public function onEntityCollide(Entity $entity) : void {
 		parent::onEntityCollide($entity);
 		if($entity instanceof CustomMonster) {
 			$entity->setMotion($entity->getMotion()->add(0, 0.05));

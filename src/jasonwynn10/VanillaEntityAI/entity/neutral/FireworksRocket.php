@@ -35,19 +35,19 @@ class FireworksRocket extends Projectile {
 		parent::__construct($level, $nbt, $shootingEntity);
 	}
 
-	public function spawnTo(Player $player): void {
+	public function spawnTo(Player $player) : void {
 		$this->setMotion($this->getDirectionVector());
 		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LAUNCH);
 		parent::spawnTo($player);
 	}
 
-	public function despawnFromAll(): void {
+	public function despawnFromAll() : void {
 		$this->broadcastEntityEvent(EntityEventPacket::FIREWORK_PARTICLES);
 		parent::despawnFromAll();
 		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BLAST);
 	}
 
-	public function entityBaseTick(int $tickDiff = 1): bool {
+	public function entityBaseTick(int $tickDiff = 1) : bool {
 		if($this->lifeTime-- < 0) {
 			$this->flagForDespawn();
 			return true;
@@ -56,7 +56,7 @@ class FireworksRocket extends Projectile {
 		}
 	}
 
-	protected function initEntity(): void {
+	protected function initEntity() : void {
 		parent::initEntity();
 		$random = $this->random ?? new Random;
 		$this->setGenericFlag(self::DATA_FLAG_HAS_COLLISION, true);
@@ -69,6 +69,6 @@ class FireworksRocket extends Projectile {
 		$this->lifeTime = 20 * $flyTime + $random->nextBoundedInt(5) + $random->nextBoundedInt(7);
 	}
 
-	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult): void {
+	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void {
 	}
 }

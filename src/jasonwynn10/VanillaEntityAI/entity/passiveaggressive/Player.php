@@ -4,6 +4,7 @@ namespace jasonwynn10\VanillaEntityAI\entity\passiveaggressive;
 
 use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Creeper;
+use jasonwynn10\VanillaEntityAI\entity\hostile\Enderman;
 use jasonwynn10\VanillaEntityAI\network\PlayerNetworkSessionAdapter;
 use pocketmine\entity\Entity;
 use pocketmine\network\mcpe\protocol\InteractPacket;
@@ -12,9 +13,6 @@ use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\SourceInterface;
 
 class Player extends \pocketmine\Player {
-	/** @var Entity|null $lookingAt */
-	private $lookingAt;
-
 	/**
 	 * @param SourceInterface $interface
 	 * @param string $ip
@@ -30,7 +28,7 @@ class Player extends \pocketmine\Player {
 	 *
 	 * @return bool
 	 */
-	public function handlePlayerInput(PlayerInputPacket $packet): bool {
+	public function handlePlayerInput(PlayerInputPacket $packet) : bool {
 		return false;
 	}
 
@@ -38,10 +36,15 @@ class Player extends \pocketmine\Player {
 		$return = parent::handleInteract($packet);
 		switch($packet->action) {
 			case InteractPacket::ACTION_LEAVE_VEHICLE:
-				// TODO:
+				// TODO: entity linking
 				break;
 			case InteractPacket::ACTION_MOUSEOVER:
-				$this->lookingAt = $this->level->getEntity($packet->target);
+				$target = $this->level->getEntity($packet->target);
+				$this->setTargetEntity($target);
+				if($target instanceof Enderman) {
+					// TODO: check looking at head
+					// TODO: aggro enderman
+				}
 				$return = true;
 				break;
 			default:
@@ -57,38 +60,19 @@ class Player extends \pocketmine\Player {
 			$type = $packet->trData->actionType;
 			switch($type) {
 				case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT:
-					{
-						$target = $this->level->getEntity($packet->trData->entityRuntimeId);
-						$this->lookingAt = $target;
-						if($target instanceof CreatureBase) {
-							$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, ""); // Don't show button anymore
-							if($target instanceof Creeper) {
-								$target->ignite();
-							}
-							$return = true;
-							break;
+					$target = $this->level->getEntity($packet->trData->entityRuntimeId);
+					$this->setTargetEntity($target);
+					if($target instanceof CreatureBase) {
+						$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, ""); // Don't show button anymore
+						if($target instanceof Creeper) {
+							$target->ignite();
 						}
-						$return = false;
+						$return = true;
+						break;
 					}
+					$return = false;
 			}
 		}
 		return $return;
-	}
-
-	/**
-	 * @return Entity|null
-	 */
-	public function getLookingAt() : ?Entity {
-		return $this->lookingAt;
-	}
-
-	/**
-	 * @param Entity|null $lookingAt
-	 *
-	 * @return Player
-	 */
-	public function setLookingAt(?Entity $lookingAt) : self {
-		$this->lookingAt = $lookingAt;
-		return $this;
 	}
 }

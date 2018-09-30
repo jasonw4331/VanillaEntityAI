@@ -12,7 +12,7 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner {
 	/**
 	 * @return bool
 	 */
-	public function canBeActivated(): bool {
+	public function canBeActivated() : bool {
 		return true;
 	}
 
@@ -22,7 +22,7 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner {
 	 *
 	 * @return bool
 	 */
-	public function onActivate(Item $item, Player $player = null): bool {
+	public function onActivate(Item $item, Player $player = null) : bool {
 		if($player instanceof Player and $item->getId() === Item::SPAWN_EGG) {
 			$t = $this->getLevel()->getTile($this);
 			if($t instanceof MobSpawner) {
@@ -46,7 +46,7 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner {
 	 *
 	 * @return bool
 	 */
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null): bool {
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool {
 		if($item->getDamage() > 9) {
 			$this->meta = 0;
 			$return = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);

@@ -1,12 +1,11 @@
 <?php
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity;
-
 interface InventoryHolder {
 	/**
 	 * @return bool
 	 */
-	public function isDropAll(): bool;
+	public function isDropAll() : bool;
 
 	/**
 	 * @param bool $dropAll

@@ -2,14 +2,11 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI;
 
-use jasonwynn10\VanillaEntityAI\data\BiomeInfo;
-use jasonwynn10\VanillaEntityAI\data\Data;
-use jasonwynn10\VanillaEntityAI\data\MobTypeMaps;
+use jasonwynn10\VanillaEntityAI\data\BiomeEntityList;
+use jasonwynn10\VanillaEntityAI\entity\AnimalBase;
+use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
+use jasonwynn10\VanillaEntityAI\entity\MonsterBase;
 use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
-use pocketmine\block\Block;
-use pocketmine\entity\Creature;
-use pocketmine\entity\Entity;
-use pocketmine\entity\Monster;
 use pocketmine\event\level\ChunkLoadEvent;
 use pocketmine\event\level\ChunkUnloadEvent;
 use pocketmine\event\Listener;
@@ -40,48 +37,40 @@ class EntityListener implements Listener {
 		$packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight() - 1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));;
 		$lightLevel = $level->getFullLightAt($packCenter->x, $packCenter->y, $packCenter->z);
 		if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid() and $lightLevel > 8) {
-			$entityId = Data::NETWORK_IDS[MobTypeMaps::PASSIVE_DRY_MOBS[array_rand(MobTypeMaps::PASSIVE_DRY_MOBS)]];
-			for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
-				$x = mt_rand(-20, 20) + $packCenter->x;
-				$z = mt_rand(-20, 20) + $packCenter->z;
-				$pos = new Position($x, $packCenter->y, $z, $level);
-				if((!$pos->level->getBlockAt($pos->x, $pos->y - 1, $pos->z)->isTransparent() and ($pos->level->getBlockAt($pos->x, $pos->y, $pos->z)->isTransparent() and $pos->level->getBlockAt($pos->x, $pos->y, $pos->z)->getId() != Block::WATER) and ($pos->level->getBlockAt($pos->x, $pos->y + 1, $pos->z)->isTransparent() and $pos->level->getBlockAt($pos->x, $pos->y + 1, $pos->z)->getId() != Block::WATER)) and $this->isSpawnAllowedByBiome($entityId, $level->getBiomeId($x, $z))) {
-					$nbt = Entity::createBaseNBT($pos);
-					/** @var Creature $entity */
-					$entity = Entity::createEntity($entityId, $level, $nbt);
-					if($entity instanceof Creature) {
-						$entity->spawnToAll();
-						$currentPackSize++;
+			$biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
+			$entityId = BiomeEntityList::BIOME_ANIMALS[$biomeId][array_rand(BiomeEntityList::BIOME_ANIMALS[$biomeId])];
+			if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid()) {
+				for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
+					$x = mt_rand(-20, 20) + $packCenter->x;
+					$z = mt_rand(-20, 20) + $packCenter->z;
+					foreach(EntityAI::$entities as $class => $arr) {
+						if($class instanceof AnimalBase and $class::NETWORK_ID === $entityId) {
+							$entity = $class::spawnMob(new Position($x + 0.5, $packCenter->y, $z + 0.5, $level));
+							if($entity !== null) {
+								$currentPackSize++;
+							}
+						}
 					}
 				}
 			}
 		}elseif(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid() and $lightLevel <= 7) {
-			$entityId = Data::NETWORK_IDS[MobTypeMaps::OVERWORLD_HOSTILE_MOBS[array_rand(MobTypeMaps::OVERWORLD_HOSTILE_MOBS)]];
-			for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
-				$x = mt_rand(-20, 20) + $packCenter->x;
-				$z = mt_rand(-20, 20) + $packCenter->z;
-				$pos = new Position($x, $packCenter->y, $z, $level);
-				if((!$pos->level->getBlockAt($pos->x, $pos->y - 1, $pos->z)->isTransparent() and ($pos->level->getBlockAt($pos->x, $pos->y, $pos->z)->isTransparent() and $pos->level->getBlockAt($pos->x, $pos->y, $pos->z)->getId() != Block::WATER) and ($pos->level->getBlockAt($pos->x, $pos->y + 1, $pos->z)->isTransparent() and $pos->level->getBlockAt($pos->x, $pos->y + 1, $pos->z)->getId() != Block::WATER)) and $this->isSpawnAllowedByBiome($entityId, $level->getBiomeId($x, $z))) {
-					$nbt = Entity::createBaseNBT($pos);
-					/** @var Monster $entity */
-					$entity = Entity::createEntity($entityId, $level, $nbt);
-					if($entity instanceof Monster) {
-						$entity->spawnToAll();
-						$currentPackSize++;
+			$biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
+			$entityId = BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId][array_rand(BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId])];
+			if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid()) {
+				for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
+					$x = mt_rand(-20, 20) + $packCenter->x;
+					$z = mt_rand(-20, 20) + $packCenter->z;
+					foreach(EntityAI::$entities as $class => $arr) {
+						if($class instanceof MonsterBase and $class::NETWORK_ID === $entityId) {
+							$entity = $class::spawnMob(new Position($x + 0.5, $packCenter->y, $z + 0.5, $level));
+							if($entity !== null) {
+								$currentPackSize++;
+							}
+						}
 					}
 				}
 			}
 		}
-	}
-
-	/**
-	 * @param int $entityId
-	 * @param int $trialBiome
-	 *
-	 * @return bool
-	 */
-	private function isSpawnAllowedByBiome(int $entityId, int $trialBiome): bool {
-		return in_array($entityId, BiomeInfo::ALLOWED_ENTITIES_BY_BIOME[$trialBiome]);
 	}
 
 	/**
@@ -90,7 +79,7 @@ class EntityListener implements Listener {
 	public function onUnload(ChunkUnloadEvent $event) {
 		$chunk = $event->getChunk();
 		foreach($chunk->getEntities() as $entity) {
-			if($entity instanceof Monster) {  // TODO: check if mob is permanent (name tag or picked up items)
+			if($entity instanceof CreatureBase and !$entity->isPersistent()) {  // TODO: check if mob is permanent (name tag or picked up items)
 				$entity->flagForDespawn();
 				$entity->setCanSaveWithChunk(false);
 			}

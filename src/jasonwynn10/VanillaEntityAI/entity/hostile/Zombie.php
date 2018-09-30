@@ -2,19 +2,21 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
+use jasonwynn10\VanillaEntityAI\entity\AgeableTrait;
 use jasonwynn10\VanillaEntityAI\entity\Collidable;
 use jasonwynn10\VanillaEntityAI\entity\CollisionCheckingTrait;
+use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
 use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
 use jasonwynn10\VanillaEntityAI\entity\ItemHolderTrait;
-use jasonwynn10\VanillaEntityAI\entity\Linkable;
-use jasonwynn10\VanillaEntityAI\entity\SpawnableTrait;
+use jasonwynn10\VanillaEntityAI\entity\MonsterBase;
 use pocketmine\block\Water;
 use pocketmine\entity\Ageable;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\level\biome\Biome;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
@@ -22,34 +24,38 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\Player;
 
-class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster, Collidable, InventoryHolder {
-	use ItemHolderTrait, CollisionCheckingTrait, SpawnableTrait;
+class Zombie extends MonsterBase implements Ageable, Collidable, InventoryHolder {
+	use ItemHolderTrait, CollisionCheckingTrait, AgeableTrait;
 	public const NETWORK_ID = self::ZOMBIE;
 	public $width = 0.6;
 	public $height = 1.95;
-	/** @var Position|null */
-	protected $target;
 	/** @var int */
 	protected $moveTime;
 	/** @var int */
 	protected $attackDelay;
 	/** @var float $speed */
 	protected $speed = 1.2;
-	/** @var float $stepHeight */
-	protected $stepHeight = 1.0;
-	/** @var bool $baby */
-	protected $baby = false;
 
 	public function initEntity() : void {
-		if(mt_rand(1, 100) < 6)
+		if(mt_rand(1, 100) < 6) {
 			$this->setBaby();
+		}
 		if(mt_rand(1, 100) >= 80) {
-			if((bool)mt_rand(0,1))
+			if((bool)mt_rand(0, 1)) {
 				$this->equipRandomItems();
-			else
+			}else {
 				$this->equipRandomArmour();
+			}
 		}
 		parent::initEntity();
+	}
+
+	public function equipRandomItems() : void {
+		//TODO random enchantments and random item (iron sword or iron shovel or iron axe)
+	}
+
+	public function equipRandomArmour() : void {
+		//TODO random enchantments and random armour
 	}
 
 	public function onUpdate(int $currentTick) : bool {
@@ -83,14 +89,13 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	 * @return bool
 	 */
 	public function entityBaseTick(int $tickDiff = 1) : bool {
-		$this->checkNearEntities();
 		if($this->target === null) {
 			foreach($this->hasSpawned as $player) {
 				if($player->isSurvival() and $this->distance($player) <= 16 and $this->hasLineOfSight($player)) {
 					$this->target = $player;
 				}
 			}
-		}elseif($this->target instanceof Player){
+		}elseif($this->target instanceof Player) {
 			if($this->target->isCreative() or !$this->target->isAlive()) {
 				$this->target = null;
 			}
@@ -127,7 +132,22 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	 * @return array
 	 */
 	public function getDrops() : array {
-		$drops = parent::getDrops();
+		$drops = [
+			ItemFactory::get(Item::ROTTEN_FLESH, 0, mt_rand(0, 2))
+		];
+		if(mt_rand(0, 199) < 5) {
+			switch(mt_rand(0, 2)) {
+				case 0:
+					$drops[] = ItemFactory::get(Item::IRON_INGOT, 0, 1);
+					break;
+				case 1:
+					$drops[] = ItemFactory::get(Item::CARROT, 0, 1);
+					break;
+				case 2:
+					$drops[] = ItemFactory::get(Item::POTATO, 0, 1);
+					break;
+			}
+		}
 		if($this->dropAll) {
 			$drops = array_merge($drops, $this->armorInventory->getContents());
 		}elseif(mt_rand(1, 100) <= 8.5) {
@@ -144,19 +164,12 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	public function getXpDropAmount() : int {
 		if($this->baby) {
 			$exp = 12;
-		}else{
+		}else {
 			$exp = 5;
 		}
 		foreach($this->getArmorInventory()->getContents() as $piece)
 			$exp += mt_rand(1, 3);
 		return $exp;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function isBaby() : bool {
-		return $this->baby;
 	}
 
 	/**
@@ -176,10 +189,10 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 			switch($this->getLevel()->getDifficulty()) {
 				case Level::DIFFICULTY_EASY:
 					$damage = 2;
-				break;
+					break;
 				case Level::DIFFICULTY_NORMAL:
 					$damage = 3;
-				break;
+					break;
 				case Level::DIFFICULTY_HARD:
 					$damage = 4;
 			}
@@ -193,10 +206,32 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 	}
 
 	/**
-	 * @return null|Position|Entity
+	 * @param Position $spawnPos
+	 * @param CompoundTag|null $spawnData
+	 *
+	 * @return null|CreatureBase
 	 */
-	public function getTarget() : ?Position {
-		return $this->target;
+	public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
+		$nbt = self::createBaseNBT($spawnPos);
+		if(isset($spawnData)) {
+			$nbt = $spawnData->merge($nbt);
+			$nbt->setInt("id", self::NETWORK_ID);
+		}
+		if($spawnPos->level->getBiomeId($spawnPos->x, $spawnPos->z) === Biome::DESERT and mt_rand(1, 100) > 80) {
+			/** @var Husk $entity */
+			$entity = self::createEntity(Husk::NETWORK_ID, $spawnPos->level, $nbt);
+		}else {
+			/** @var self $entity */
+			$entity = self::createEntity(self::NETWORK_ID, $spawnPos->level, $nbt);
+		}
+		// TODO: work on logic here more
+		if(!$spawnPos->isValid() or !$entity->onGround or $spawnPos->level->getFullLight($spawnPos) > $entity->spawnLight) {
+			$entity->flagForDespawn();
+			return null;
+		}else {
+			$entity->spawnToAll();
+			return $entity;
+		}
 	}
 
 	/**
@@ -208,98 +243,14 @@ class Zombie extends \pocketmine\entity\Zombie implements Ageable, CustomMonster
 			switch($this->getLevel()->getDifficulty()) {
 				case Level::DIFFICULTY_EASY:
 					$damage = 2;
-				break;
+					break;
 				case Level::DIFFICULTY_NORMAL:
 					$damage = 3;
-				break;
+					break;
 				case Level::DIFFICULTY_HARD:
 					$damage = 4;
 			}
 			$entity->attack(new EntityDamageByEntityEvent($this, $entity, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, $damage));
 		}
-	}
-
-	/**
-	 * @param Position $spawnPos
-	 * @param CompoundTag|null $spawnData
-	 *
-	 * @return null|Living
-	 */
-	public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?Living {
-		$nbt = self::createBaseNBT($spawnPos);
-		if(isset($spawnData)) {
-			$nbt = $spawnData->merge($nbt);
-			$nbt->setInt("id", self::NETWORK_ID);
-		}
-		if($spawnPos->level->getBiomeId($spawnPos->x, $spawnPos->z) === Biome::DESERT and mt_rand(1, 100) > 80) {
-			/** @var Husk $entity */
-			$entity = self::createEntity(Husk::NETWORK_ID, $spawnPos->level, $nbt);
-		}else{
-			/** @var self $entity */
-			$entity = self::createEntity(self::NETWORK_ID, $spawnPos->level, $nbt);
-		}
-		// TODO: work on logic here more
-		if(!$spawnPos->isValid() or !$entity->onGround or $spawnPos->level->getFullLight($spawnPos) > $entity->spawnLight) {
-			$entity->flagForDespawn();
-			return null;
-		}else{
-			$entity->spawnToAll();
-			return $entity;
-		}
-	}
-
-	/**
-	 * @return Linkable|null
-	 */
-	public function getLink() : ?Linkable {
-		// TODO: Implement getLink() method.
-	}
-
-	/**
-	 * @param Linkable $entity
-	 *
-	 * @return Zombie
-	 */
-	public function setLink(Linkable $entity) {
-		// TODO: Implement setLink() method.
-		return $this;
-	}
-
-	/**
-	 * @param bool $baby
-	 *
-	 * @return Zombie
-	 */
-	public function setBaby(bool $baby = true) : self {
-		$this->baby = $baby;
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY, $baby);
-		$this->setSprinting();
-		$this->setScale(0.5);
-		return $this;
-	}
-
-	/**
-	 * @param float $speed
-	 *
-	 * @return Zombie
-	 */
-	public function setSpeed(float $speed) : self {
-		$this->speed = $speed;
-		return $this;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getSpeed() : float {
-		return $this->speed;
-	}
-
-	public function equipRandomItems() : void {
-		//TODO random enchantments and random item (iron sword or iron shovel or iron axe)
-	}
-
-	public function equipRandomArmour() : void {
-		//TODO random enchantments and random armour
 	}
 }

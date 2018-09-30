@@ -4,38 +4,34 @@ namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use jasonwynn10\VanillaEntityAI\entity\Collidable;
 use jasonwynn10\VanillaEntityAI\entity\CollisionCheckingTrait;
+use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
 use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
 use jasonwynn10\VanillaEntityAI\entity\ItemHolderTrait;
-use jasonwynn10\VanillaEntityAI\entity\Linkable;
+use jasonwynn10\VanillaEntityAI\entity\MonsterBase;
 use pocketmine\block\Water;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Living;
-use pocketmine\entity\Monster;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
-class Skeleton extends Monster implements CustomMonster, InventoryHolder, Collidable {
+class Skeleton extends MonsterBase implements InventoryHolder, Collidable {
 	use ItemHolderTrait, CollisionCheckingTrait;
 	public const NETWORK_ID = self::SKELETON;
 	public $width = 0.875;
 	public $height = 2.0;
-	/** @var Position|null */
-	protected $target;
 	/** @var int */
 	protected $moveTime;
 	/** @var int */
 	protected $attackDelay;
 	/** @var float $speed */
 	protected $speed = 1.0;
-	/** @var float $stepHeight */
-	protected $stepHeight = 1.0;
 
-	public function initEntity(): void {
-		if(!isset($this->mainHand))
-			$this->mainHand = Item::get(Item::BOW); // TODO: random enchantments
+	public function initEntity() : void {
+		if(!isset($this->mainHand)) {
+			$this->mainHand = Item::get(Item::BOW);
+		} // TODO: random enchantments
 		// TODO: random armour
 		parent::initEntity();
 	}
@@ -45,7 +41,7 @@ class Skeleton extends Monster implements CustomMonster, InventoryHolder, Collid
 	 *
 	 * @return bool
 	 */
-	public function entityBaseTick(int $tickDiff = 1): bool {
+	public function entityBaseTick(int $tickDiff = 1) : bool {
 		$this->checkNearEntities();
 		if($this->target === null) {
 			foreach($this->hasSpawned as $player) {
@@ -53,7 +49,7 @@ class Skeleton extends Monster implements CustomMonster, InventoryHolder, Collid
 					$this->target = $player;
 				}
 			}
-		}elseif($this->target instanceof Player){
+		}elseif($this->target instanceof Player) {
 			if($this->target->isCreative() or !$this->target->isAlive()) {
 				$this->target = null;
 			}
@@ -91,7 +87,7 @@ class Skeleton extends Monster implements CustomMonster, InventoryHolder, Collid
 	/**
 	 * @return int
 	 */
-	public function getXpDropAmount(): int {
+	public function getXpDropAmount() : int {
 		$exp = 5;
 		foreach($this->getArmorInventory()->getContents() as $piece)
 			$exp += mt_rand(1, 3);
@@ -101,56 +97,18 @@ class Skeleton extends Monster implements CustomMonster, InventoryHolder, Collid
 	/**
 	 * @return string
 	 */
-	public function getName(): string {
+	public function getName() : string {
 		return "Skeleton";
-	}
-
-	/**
-	 * @return Position|null
-	 */
-	public function getTarget(): ?Position {
-		return $this->target;
 	}
 
 	/**
 	 * @param Position $spawnPos
 	 * @param CompoundTag|null $spawnData
 	 *
-	 * @return null|Living
+	 * @return null|CreatureBase
 	 */
-	public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?Living {
+	public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
 		// TODO: Implement spawnMob() method.
-	}
-
-	/**
-	 * @return Linkable|null
-	 */
-	public function getLink() : ?Linkable {
-		// TODO: Implement getLink() method.
-	}
-
-	/**
-	 * @param Linkable $entity
-	 */
-	public function setLink(Linkable $entity) {
-		// TODO: Implement setLink() method.
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getSpeed(): float {
-		return $this->speed;
-	}
-
-	/**
-	 * @param float $speed
-	 *
-	 * @return self
-	 */
-	public function setSpeed(float $speed) {
-		$this->speed = $speed;
-		return $this;
 	}
 
 	/**
@@ -159,19 +117,18 @@ class Skeleton extends Monster implements CustomMonster, InventoryHolder, Collid
 	 *
 	 * @return null|self
 	 */
-	public static function spawnFromSpawner(Position $spawnPos, ?CompoundTag $spawnData = null) {
+	public static function spawnFromSpawner(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
 		// TODO: Implement spawnFromSpawner() method.
 	}
 
-	public function equipRandomItems(): void {
-		// TODO: Implement equipRandomItems() method.
+	public function equipRandomItems() : void {
 	}
 
-	public function equipRandomArmour(): void {
-		// TODO: Implement equipRandomArmour() method.
+	public function equipRandomArmour() : void {
+		// TODO: random armour chance by difficulty
 	}
 
-	public function onCollideWithEntity(Entity $entity): void {
+	public function onCollideWithEntity(Entity $entity) : void {
 		// TODO: Implement onCollideWithEntity() method.
 	}
 }

@@ -18,7 +18,7 @@ class PlayerNetworkSessionAdapter extends \pocketmine\network\mcpe\PlayerNetwork
 		$this->player = $player;
 	}
 
-	public function handlePlayerInput(PlayerInputPacket $packet): bool {
+	public function handlePlayerInput(PlayerInputPacket $packet) : bool {
 		return $this->player->handlePlayerInput($packet);
 	}
 }

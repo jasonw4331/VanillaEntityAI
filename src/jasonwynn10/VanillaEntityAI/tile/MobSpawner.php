@@ -29,7 +29,6 @@ class MobSpawner extends Spawnable {
 	public const DISPLAY_ENTITY_HEIGHT = "DisplayEntityHeight"; // FloatTag
 	public const DISPLAY_ENTITY_SCALE = "DisplayEntityScale"; // FloatTag
 	public const DISPLAY_ENTITY_WIDTH = "DisplayEntityWidth"; // FloatTag
-
 	/** @var int $spawnRange */
 	protected $spawnRange = 4;
 	/** @var int $maxNearbyEntities */
@@ -60,8 +59,8 @@ class MobSpawner extends Spawnable {
 	/**
 	 * @return bool
 	 */
-	public function onUpdate(): bool {
-		if($this->isClosed() or $this->entityId < EntityIds::CHICKEN) { // TODO are there entities with ids less than 10?
+	public function onUpdate() : bool {
+		if($this->isClosed() or $this->entityId < EntityIds::CHICKEN) { // TODO: are there entities with ids less than 10?
 			return false;
 		}
 		if(--$this->delay === 0) {
@@ -73,18 +72,12 @@ class MobSpawner extends Spawnable {
 					break;
 				}
 			}
-			/**
-			 * @var string $class
-			 * @var string[] $arr
-			 */
 			foreach(EntityAI::$entities as $class => $arr) {
-				/** @noinspection PhpUndefinedFieldInspection */
 				if($class instanceof CreatureBase and $class::NETWORK_ID === $this->entityId) {
 					if($valid and count(self::getAreaEntities($this->spawnArea, $this->level, $class)) < $this->maxNearbyEntities) {
 						$spawned = 0;
 						while($spawned < $this->spawnCount) {
-							/** @var CreatureBase $class */
-							$entity = $class::spawnMob($this->getRandomSpawnPos());
+							$entity = $class::spawnFromSpawner($this->getRandomSpawnPos());
 							if($entity !== null) {
 								$spawned++;
 							}
@@ -132,7 +125,7 @@ class MobSpawner extends Spawnable {
 	 *
 	 * @return Position returns valid y coordinate if found
 	 */
-	protected function getRandomSpawnPos(): Position {
+	protected function getRandomSpawnPos() : Position {
 		$x = mt_rand($this->spawnArea->minX, $this->spawnArea->maxX);
 		$y = mt_rand($this->spawnArea->minY, $this->spawnArea->maxY);
 		$z = mt_rand($this->spawnArea->minZ, $this->spawnArea->maxZ);
@@ -144,7 +137,7 @@ class MobSpawner extends Spawnable {
 	 *
 	 * @param CompoundTag $nbt
 	 */
-	protected function readSaveData(CompoundTag $nbt): void {
+	protected function readSaveData(CompoundTag $nbt) : void {
 		if($nbt->hasTag(self::ENTITY_ID, IntTag::class)) {
 			$this->entityId = $nbt->getInt(self::ENTITY_ID);
 		}
@@ -186,7 +179,7 @@ class MobSpawner extends Spawnable {
 	 *
 	 * @param CompoundTag $nbt
 	 */
-	protected function writeSaveData(CompoundTag $nbt): void {
+	protected function writeSaveData(CompoundTag $nbt) : void {
 		$this->addAdditionalSpawnData($nbt);
 	}
 
@@ -196,7 +189,7 @@ class MobSpawner extends Spawnable {
 	 *
 	 * @param CompoundTag $nbt
 	 */
-	protected function addAdditionalSpawnData(CompoundTag $nbt): void {
+	protected function addAdditionalSpawnData(CompoundTag $nbt) : void {
 		$nbt->setByte(self::IS_MOVABLE, (int)$this->isMovable);
 		$nbt->setShort(self::DELAY, $this->delay);
 		$nbt->setShort(self::MAX_NEARBY_ENTITIES, $this->maxNearbyEntities);
@@ -215,7 +208,7 @@ class MobSpawner extends Spawnable {
 	/**
 	 * @return int
 	 */
-	public function getEntityId(): int {
+	public function getEntityId() : int {
 		return $this->entityId;
 	}
 
@@ -224,7 +217,7 @@ class MobSpawner extends Spawnable {
 	 *
 	 * @return MobSpawner
 	 */
-	public function setEntityId(int $eid): MobSpawner {
+	public function setEntityId(int $eid) : MobSpawner {
 		$this->entityId = $eid;
 		$this->delay = mt_rand($this->minSpawnDelay, $this->maxSpawnDelay);
 		$this->onChanged();
@@ -237,7 +230,7 @@ class MobSpawner extends Spawnable {
 	 *
 	 * @return MobSpawner
 	 */
-	public function setMinSpawnDelay(int $minDelay): MobSpawner {
+	public function setMinSpawnDelay(int $minDelay) : MobSpawner {
 		if($minDelay < $this->maxSpawnDelay) {
 			$this->minSpawnDelay = $minDelay;
 		}
@@ -249,7 +242,7 @@ class MobSpawner extends Spawnable {
 	 *
 	 * @return MobSpawner
 	 */
-	public function setMaxSpawnDelay(int $maxDelay): MobSpawner {
+	public function setMaxSpawnDelay(int $maxDelay) : MobSpawner {
 		if($this->minSpawnDelay < $maxDelay and $maxDelay !== 0) {
 			$this->maxSpawnDelay = $maxDelay;
 		}
@@ -261,7 +254,7 @@ class MobSpawner extends Spawnable {
 	 *
 	 * @return MobSpawner
 	 */
-	public function setSpawnDelay(int $delay): MobSpawner {
+	public function setSpawnDelay(int $delay) : MobSpawner {
 		if($delay < $this->maxSpawnDelay and $delay > $this->minSpawnDelay) {
 			$this->delay = $delay;
 		}
@@ -273,7 +266,7 @@ class MobSpawner extends Spawnable {
 	 *
 	 * @return MobSpawner
 	 */
-	public function setRequiredPlayerRange(int $range): MobSpawner {
+	public function setRequiredPlayerRange(int $range) : MobSpawner {
 		if($range < 0) {
 			$range = 0;
 		}
@@ -286,7 +279,7 @@ class MobSpawner extends Spawnable {
 	 *
 	 * @return MobSpawner
 	 */
-	public function setMaxNearbyEntities(int $count): MobSpawner {
+	public function setMaxNearbyEntities(int $count) : MobSpawner {
 		$this->maxNearbyEntities = $count;
 		return $this;
 	}
@@ -296,7 +289,7 @@ class MobSpawner extends Spawnable {
 	 *
 	 * @return MobSpawner
 	 */
-	public function setMovable(bool $isMovable = true): MobSpawner {
+	public function setMovable(bool $isMovable = true) : MobSpawner {
 		$this->isMovable = $isMovable;
 		return $this;
 	}
@@ -304,7 +297,7 @@ class MobSpawner extends Spawnable {
 	/**
 	 * @return bool
 	 */
-	public function isMovable(): bool {
+	public function isMovable() : bool {
 		return $this->isMovable;
 	}
 }

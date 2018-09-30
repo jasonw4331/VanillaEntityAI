@@ -9,7 +9,7 @@ class CaveSpider extends Spider {
 	/**
 	 * @return string
 	 */
-	public function getName(): string {
+	public function getName() : string {
 		return "Cave Spider";
 	}
 }

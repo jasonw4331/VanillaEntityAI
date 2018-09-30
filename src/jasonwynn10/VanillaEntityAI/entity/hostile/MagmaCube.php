@@ -2,12 +2,11 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
-use jasonwynn10\VanillaEntityAI\entity\Linkable;
-use pocketmine\entity\Living;
+use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\CompoundTag;
 
-class MagmaCube extends Slime implements CustomMonster {
+class MagmaCube extends Slime {
 	public const NETWORK_ID = self::MAGMA_CUBE;
 	public $width = 1.2;
 	public $height = 1.2;
@@ -15,7 +14,7 @@ class MagmaCube extends Slime implements CustomMonster {
 	/**
 	 * @return string
 	 */
-	public function getName(): string {
+	public function getName() : string {
 		return "Magma Cube";
 	}
 
@@ -23,23 +22,19 @@ class MagmaCube extends Slime implements CustomMonster {
 	 * @param Position $spawnPos
 	 * @param CompoundTag|null $spawnData
 	 *
-	 * @return null|Living
+	 * @return null|CreatureBase
 	 */
-	public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?Living {
+	public static function spawnMob(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
 		// TODO: Implement spawnMob() method.
 	}
 
 	/**
-	 * @return Linkable|null
+	 * @param Position $spawnPos
+	 * @param null|CompoundTag $spawnData
+	 *
+	 * @return null|CreatureBase
 	 */
-	public function getLink() : ?Linkable {
-		// TODO: Implement getLink() method.
-	}
-
-	/**
-	 * @param Linkable $entity
-	 */
-	public function setLink(Linkable $entity) {
-		// TODO: Implement setLink() method.
+	public static function spawnFromSpawner(Position $spawnPos, ?CompoundTag $spawnData = null) : ?CreatureBase {
+		// TODO: Implement spawnFromSpawner() method.
 	}
 }

@@ -2,14 +2,11 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\task;
 
-use jasonwynn10\VanillaEntityAI\data\BiomeInfo;
-use jasonwynn10\VanillaEntityAI\data\Data;
-use jasonwynn10\VanillaEntityAI\data\MobTypeMaps;
-use pocketmine\block\Block;
-use pocketmine\entity\Creature;
-use pocketmine\entity\Entity;
-use pocketmine\entity\Human;
+use jasonwynn10\VanillaEntityAI\data\BiomeEntityList;
+use jasonwynn10\VanillaEntityAI\entity\AnimalBase;
+use jasonwynn10\VanillaEntityAI\EntityAI;
 use pocketmine\level\format\Chunk;
+use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\math\Vector3;
 use pocketmine\scheduler\Task;
@@ -24,59 +21,43 @@ class PassiveSpawnTask extends Task {
 			/** @var Chunk[] $chunks */
 			$chunks = [];
 			foreach($level->getPlayers() as $player) {
-				$centerX = $player->z >> 4;
-				$centerZ = $player->z >> 4;
-				for($X = $centerX - 8; $X < $centerX + 8; $X++) {
-					for($Z = $centerZ - 8; $Z < $centerZ + 8; $Z++) {
-						if(!isset($chunks[$X . ":" . $Z])) {
-							$chunks[$X . ":" . $Z] = $level->getChunk($X, $Z, true);
-						}
+				foreach($player->usedChunks as $hash => $sent) {
+					if($sent) {
+						Level::getXZ($hash, $chunkX, $chunkZ);
+						$chunks[$hash] = $player->getLevel()->getChunk($chunkX, $chunkZ, true);
 					}
 				}
 			}
-			$cap = 15 * count($chunks) / 256;
 			$entities = 0;
 			foreach($chunks as $chunk) {
 				foreach($chunk->getEntities() as $entity) {
-					if($entity instanceof Creature and !$entity instanceof Human) {
+					if($entity instanceof AnimalBase) {
 						$entities += 1;
+					}
+					if($entities >= 200) { // bedrock edition has hard cap of 200
+						return;
 					}
 				}
 			}
-			if($entities >= $cap) {
-				return;
-			}
 			foreach($chunks as $chunk) {
-				$packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight() - 1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));;
-				$lightLevel = $level->getFullLightAt($packCenter->x, $packCenter->y, $packCenter->z);
-				if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid() and $lightLevel > 8) {
-					$entityId = Data::NETWORK_IDS[MobTypeMaps::PASSIVE_DRY_MOBS[array_rand(MobTypeMaps::PASSIVE_DRY_MOBS)]];
+				$packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight() - 1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));
+				$biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
+				$entityId = BiomeEntityList::BIOME_ANIMALS[$biomeId][array_rand(BiomeEntityList::BIOME_ANIMALS[$biomeId])];
+				if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid()) {
 					for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
 						$x = mt_rand(-20, 20) + $packCenter->x;
 						$z = mt_rand(-20, 20) + $packCenter->z;
-						$pos = new Position($x, $packCenter->y, $z, $level);
-						if((!$pos->level->getBlockAt($pos->x, $pos->y - 1, $pos->z)->isTransparent() and ($pos->level->getBlockAt($pos->x, $pos->y, $pos->z)->isTransparent() and $pos->level->getBlockAt($pos->x, $pos->y, $pos->z)->getId() != Block::WATER) and ($pos->level->getBlockAt($pos->x, $pos->y + 1, $pos->z)->isTransparent() and $pos->level->getBlockAt($pos->x, $pos->y + 1, $pos->z)->getId() != Block::WATER)) and $this->isSpawnAllowedByBiome($entityId, $level->getBiomeId($x, $z))) {
-							$nbt = Entity::createBaseNBT($pos);
-							/** @var Creature $entity */
-							$entity = Entity::createEntity($entityId, $level, $nbt);
-							if($entity instanceof Creature) {
-								$entity->spawnToAll();
-								$currentPackSize++;
+						foreach(EntityAI::$entities as $class => $arr) {
+							if($class instanceof AnimalBase and $class::NETWORK_ID === $entityId) {
+								$entity = $class::spawnMob(new Position($x + 0.5, $packCenter->y, $z + 0.5, $level));
+								if($entity !== null) {
+									$currentPackSize++;
+								}
 							}
 						}
 					}
 				}
 			}
 		}
-	}
-
-	/**
-	 * @param int $entityId
-	 * @param int $trialBiome
-	 *
-	 * @return bool
-	 */
-	private function isSpawnAllowedByBiome(int $entityId, int $trialBiome): bool {
-		return in_array($entityId, BiomeInfo::ALLOWED_ENTITIES_BY_BIOME[$trialBiome]);
 	}
 }
