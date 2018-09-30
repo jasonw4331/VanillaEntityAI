@@ -115,7 +115,6 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\plugin\PluginBase;
 use pocketmine\timings\TimingsHandler;
-use spoondetector\SpoonDetector;
 
 class EntityAI extends PluginBase {
 	/** @var string[] $entities */
@@ -287,12 +286,7 @@ class EntityAI extends PluginBase {
 	}
 
 	public function onEnable(): void {
-		if(!SpoonDetector::printSpoon($this, "spoon.txt"))
-			return;
-		BlockFactory::registerBlock(new Ladder(), true);
 		BlockFactory::registerBlock(new MonsterSpawner(), true);
-		BlockFactory::registerBlock(new Vine(), true);
-		BlockFactory::registerBlock(new Fire(), true);
 		/** @noinspection PhpUnhandledExceptionInspection */
 		MobSpawner::registerTile(MobSpawner::class, [MobSpawner::MOB_SPAWNER, "minecraft:mob_spawner"]);
 		foreach(self::$entities as $class => $saveNames) {
