@@ -2,12 +2,12 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI;
 
+use jasonwynn10\VanillaEntityAI\block\Fire;
 use jasonwynn10\VanillaEntityAI\block\Ladder;
 use jasonwynn10\VanillaEntityAI\block\MonsterSpawner;
 use jasonwynn10\VanillaEntityAI\block\Vine;
 use jasonwynn10\VanillaEntityAI\command\DifficultyCommand;
 use jasonwynn10\VanillaEntityAI\command\SummonCommand;
-use jasonwynn10\VanillaEntityAI\data\BiomeInfo;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Blaze;
 use jasonwynn10\VanillaEntityAI\entity\hostile\CaveSpider;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Creeper;
@@ -111,7 +111,6 @@ use pocketmine\item\ItemIds;
 use pocketmine\item\Sword;
 use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
-use pocketmine\level\biome\Biome;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\plugin\PluginBase;
@@ -282,16 +281,6 @@ class EntityAI extends PluginBase {
 		return $y;
 	}
 
-	/**
-	 * @param int $entityId
-	 * @param int $trialBiome
-	 *
-	 * @return bool
-	 */
-	public static function isSpawnAllowedByBiome(int $entityId, int $trialBiome): bool {
-		return (in_array($entityId, BiomeInfo::ALLOWED_ENTITIES_BY_BIOME[$trialBiome]) or (($trialBiome !== Biome::HELL and $trialBiome !== 9) and in_array($entityId, BiomeInfo::OVERWORLD_BIOME_EXEMPT)));
-	}
-
 	public function onLoad(): void {
 		self::$instance = $this;
 		TimingsHandler::setEnabled();
@@ -303,6 +292,7 @@ class EntityAI extends PluginBase {
 		BlockFactory::registerBlock(new Ladder(), true);
 		BlockFactory::registerBlock(new MonsterSpawner(), true);
 		BlockFactory::registerBlock(new Vine(), true);
+		BlockFactory::registerBlock(new Fire(), true);
 		/** @noinspection PhpUnhandledExceptionInspection */
 		MobSpawner::registerTile(MobSpawner::class, [MobSpawner::MOB_SPAWNER, "minecraft:mob_spawner"]);
 		foreach(self::$entities as $class => $saveNames) {
