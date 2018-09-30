@@ -1,7 +1,11 @@
 <?php
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\passive;
-class Mule extends Donkey {
+
+use jasonwynn10\VanillaEntityAI\entity\Interactable;
+use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
+
+class Mule extends Donkey implements Interactable {
 	public const NETWORK_ID = self::MULE;
 	public $width = 1.2;
 	public $height = 1.562;
@@ -31,5 +35,9 @@ class Mule extends Donkey {
 	 */
 	public function getName() : string {
 		return "Mule";
+	}
+
+	public function onPlayerInteract(Player $player) : void {
+		// TODO: Implement onPlayerInteract() method.
 	}
 }

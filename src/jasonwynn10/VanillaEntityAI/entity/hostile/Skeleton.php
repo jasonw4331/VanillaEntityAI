@@ -2,6 +2,7 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
+use jasonwynn10\VanillaEntityAI\entity\ClimbingTrait;
 use jasonwynn10\VanillaEntityAI\entity\Collidable;
 use jasonwynn10\VanillaEntityAI\entity\CollisionCheckingTrait;
 use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
@@ -16,8 +17,8 @@ use pocketmine\level\Position;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 
-class Skeleton extends MonsterBase implements InventoryHolder, Collidable {
-	use ItemHolderTrait, CollisionCheckingTrait;
+class Skeleton extends MonsterBase implements InventoryHolder {
+	use ItemHolderTrait, ClimbingTrait;
 	public const NETWORK_ID = self::SKELETON;
 	public $width = 0.875;
 	public $height = 2.0;

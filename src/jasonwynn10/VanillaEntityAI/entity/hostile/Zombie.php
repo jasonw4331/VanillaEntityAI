@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use jasonwynn10\VanillaEntityAI\entity\AgeableTrait;
+use jasonwynn10\VanillaEntityAI\entity\ClimbingTrait;
 use jasonwynn10\VanillaEntityAI\entity\Collidable;
 use jasonwynn10\VanillaEntityAI\entity\CollisionCheckingTrait;
 use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
@@ -24,13 +25,11 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\Player;
 
-class Zombie extends MonsterBase implements Ageable, Collidable, InventoryHolder {
-	use ItemHolderTrait, CollisionCheckingTrait, AgeableTrait;
+class Zombie extends MonsterBase implements Ageable, InventoryHolder {
+	use ItemHolderTrait, AgeableTrait, ClimbingTrait;
 	public const NETWORK_ID = self::ZOMBIE;
 	public $width = 0.6;
 	public $height = 1.95;
-	/** @var int */
-	protected $moveTime;
 	/** @var int */
 	protected $attackDelay;
 	/** @var float $speed */
@@ -39,6 +38,9 @@ class Zombie extends MonsterBase implements Ageable, Collidable, InventoryHolder
 	public function initEntity() : void {
 		if(mt_rand(1, 100) < 6) {
 			$this->setBaby();
+			if(mt_rand(1, 100) <= 15) {
+				// TODO: zombie jockey
+			}
 		}
 		if(mt_rand(1, 100) >= 80) {
 			if((bool)mt_rand(0, 1)) {
@@ -62,8 +64,7 @@ class Zombie extends MonsterBase implements Ageable, Collidable, InventoryHolder
 		if($this->closed) {
 			return false;
 		}
-		$tickDiff = $currentTick - $this->lastUpdate;
-		if($this->target !== null) {
+		if($this->moveTime <= 0 and isset($this->target) and !$this->target instanceof Entity) {
 			$x = $this->target->x - $this->x;
 			$y = $this->target->y - $this->y;
 			$z = $this->target->z - $this->z;
@@ -74,11 +75,23 @@ class Zombie extends MonsterBase implements Ageable, Collidable, InventoryHolder
 				$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff));
 			}
 			$this->pitch = $y == 0 ? 0 : rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
-			if($this->distance($this->target) <= 0 and !$this->target instanceof Entity) {
+			if($this->distance($this->target) <= 0)
 				$this->target = null;
+		}elseif($this->target instanceof Entity) {
+			$this->moveTime = 0;
+			$x = $this->target->x - $this->x;
+			$y = $this->target->y - $this->y;
+			$z = $this->target->z - $this->z;
+			$diff = abs($x) + abs($z);
+			if($diff > 0) {
+				$this->motion->x = $this->speed * 0.15 * ($x / $diff);
+				$this->motion->z = $this->speed * 0.15 * ($z / $diff);
+				$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff));
 			}
-		}else {
-			// TODO: random wandering target
+			$this->pitch = $y == 0 ? 0 : rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
+		}elseif($this->moveTime <= 0) {
+			$this->moveTime = 100;
+			// TODO: random target position
 		}
 		return parent::onUpdate($currentTick);
 	}
@@ -183,8 +196,8 @@ class Zombie extends MonsterBase implements Ageable, Collidable, InventoryHolder
 	 * @param Player $player
 	 */
 	public function onCollideWithPlayer(Player $player) : void {
-		parent::onCollideWithPlayer($player);
-		if($this->target === $player) {
+		if($this->target === $player and $this->attackDelay > 10) {
+			$this->attackDelay = 0;
 			$damage = 2;
 			switch($this->getLevel()->getDifficulty()) {
 				case Level::DIFFICULTY_EASY:
@@ -196,7 +209,8 @@ class Zombie extends MonsterBase implements Ageable, Collidable, InventoryHolder
 				case Level::DIFFICULTY_HARD:
 					$damage = 4;
 			}
-			// TODO: add damage from items in hand
+			if($this->mainHand !== null)
+				$damage = $this->mainHand->getAttackPoints();
 			$pk = new EntityEventPacket();
 			$pk->entityRuntimeId = $this->id;
 			$pk->event = EntityEventPacket::ARM_SWING;
@@ -238,7 +252,8 @@ class Zombie extends MonsterBase implements Ageable, Collidable, InventoryHolder
 	 * @param Entity $entity
 	 */
 	public function onCollideWithEntity(Entity $entity) : void {
-		if($this->target === $entity) {
+		if($this->target === $entity and $this->attackDelay > 10) {
+			$this->attackDelay = 0;
 			$damage = 2;
 			switch($this->getLevel()->getDifficulty()) {
 				case Level::DIFFICULTY_EASY:
@@ -250,6 +265,12 @@ class Zombie extends MonsterBase implements Ageable, Collidable, InventoryHolder
 				case Level::DIFFICULTY_HARD:
 					$damage = 4;
 			}
+			if($this->mainHand !== null)
+				$damage = $this->mainHand->getAttackPoints();
+			$pk = new EntityEventPacket();
+			$pk->entityRuntimeId = $this->id;
+			$pk->event = EntityEventPacket::ARM_SWING;
+			$this->server->broadcastPacket($this->hasSpawned, $pk);
 			$entity->attack(new EntityDamageByEntityEvent($this, $entity, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, $damage));
 		}
 	}

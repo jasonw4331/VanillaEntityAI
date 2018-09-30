@@ -2,13 +2,15 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity;
 
+use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
+use pocketmine\block\Block;
 use pocketmine\entity\Creature;
 use pocketmine\entity\Entity;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\CompoundTag;
 
-abstract class CreatureBase extends Creature implements Linkable {
-	use SpawnableTrait;
+abstract class CreatureBase extends Creature implements Linkable, Collidable {
+	use SpawnableTrait, CollisionCheckingTrait;
 	/** @var float $speed */
 	protected $speed = 1.0;
 	/** @var float $stepHeight */
@@ -19,6 +21,8 @@ abstract class CreatureBase extends Creature implements Linkable {
 	protected $persistent = false;
 	/** @var Linkable|null $linkedEntity */
 	protected $linkedEntity;
+	/** @var int $moveTime */
+	protected $moveTime = 0;
 
 	/**
 	 * @param Position $spawnPos
@@ -99,5 +103,23 @@ abstract class CreatureBase extends Creature implements Linkable {
 	public function setLink(?Linkable $entity) : self {
 		$this->linkedEntity = $entity;
 		return $this;
+	}
+
+	/**
+	 * @param Player $player
+	 */
+	public function onPlayerLook(Player $player) : void {
+	}
+
+	/**
+	 * @param Entity $entity
+	 */
+	public function onCollideWithEntity(Entity $entity) : void {
+	}
+
+	/**
+	 * @param Block $block
+	 */
+	public function onCollideWithBlock(Block $block) : void {
 	}
 }

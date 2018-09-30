@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\passive;
+
 class Mooshroom extends Cow {
 	public const NETWORK_ID = self::MOOSHROOM;
 	public $width = 1.781;

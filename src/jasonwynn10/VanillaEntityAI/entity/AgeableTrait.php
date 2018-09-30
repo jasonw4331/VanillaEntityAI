@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity;
+
 trait AgeableTrait {
 	/** @var bool $baby */
 	protected $baby = false;

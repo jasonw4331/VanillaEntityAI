@@ -2,10 +2,7 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI;
 
-use jasonwynn10\VanillaEntityAI\block\Fire;
-use jasonwynn10\VanillaEntityAI\block\Ladder;
 use jasonwynn10\VanillaEntityAI\block\MonsterSpawner;
-use jasonwynn10\VanillaEntityAI\block\Vine;
 use jasonwynn10\VanillaEntityAI\command\DifficultyCommand;
 use jasonwynn10\VanillaEntityAI\command\SummonCommand;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Blaze;
@@ -227,57 +224,6 @@ class EntityAI extends PluginBase {
 	 */
 	public static function getInstance(): self {
 		return self::$instance;
-	}
-
-	/**
-	 * Returns a suitable Y-position for spawning an entity, starting from the given coordinates.
-	 *
-	 * First, it's checked if the given position is AIR position. If so, we search down the y-coordinate
-	 * to get a first non-air block. When a non-air block is found the position returned is the last found air
-	 * position.
-	 *
-	 * When the given coordinates are NOT an AIR block coordinate we search upwards until the first air block is found
-	 * which is then returned to the caller.
-	 *
-	 * @param int $x
-	 * @param int $y
-	 * @param int $z
-	 * @param Level $level
-	 *
-	 * @return int|null returns valid y coordinate if found
-	 */
-	public static function getSuitableHeight(int $x, int $y, int $z, Level $level) : ?int {
-		$id = $level->getBlockIdAt($x, $y, $z);
-		if($id === 0) {
-			$air = true;
-			--$y;
-			while($air) {
-				$id = $level->getBlockIdAt($x, $y, $z);
-				if($id !== 0) { // this is an air block ...
-					++$y;
-					$air = false;
-				}else {
-					--$y;
-					if($y < -255) {
-						return null;
-					}
-				}
-			}
-		}else {
-			$air = false;
-			while(!$air) {
-				$id = $level->getBlockIdAt($x, $y, $z);
-				if($id === 0) {
-					$air = true;
-				}else {
-					++$y;
-					if($y > $level->getWorldHeight()) {
-						return null;
-					}
-				}
-			}
-		}
-		return $y;
 	}
 
 	public function onLoad(): void {

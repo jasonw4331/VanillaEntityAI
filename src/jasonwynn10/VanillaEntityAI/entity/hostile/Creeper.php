@@ -2,9 +2,9 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
-use jasonwynn10\VanillaEntityAI\entity\Collidable;
-use jasonwynn10\VanillaEntityAI\entity\CollisionCheckingTrait;
+use jasonwynn10\VanillaEntityAI\entity\ClimbingTrait;
 use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
+use jasonwynn10\VanillaEntityAI\entity\Interactable;
 use jasonwynn10\VanillaEntityAI\entity\MonsterBase;
 use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
 use pocketmine\entity\Creature;
@@ -18,8 +18,8 @@ use pocketmine\level\Position;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\nbt\tag\CompoundTag;
 
-class Creeper extends MonsterBase implements Explosive, Collidable {
-	use CollisionCheckingTrait;
+class Creeper extends MonsterBase implements Explosive, Interactable {
+	use ClimbingTrait;
 	public const NETWORK_ID = self::CREEPER;
 	public $width = 0.7;
 	public $height = 1.7;
@@ -216,5 +216,9 @@ class Creeper extends MonsterBase implements Explosive, Collidable {
 
 	public function onCollideWithEntity(Entity $entity) : void {
 		// TODO: Implement onCollideWithEntity() method.
+	}
+
+	public function onPlayerInteract(Player $player) : void {
+		// TODO: Implement onPlayerInteract() method.
 	}
 }

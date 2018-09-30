@@ -5,6 +5,7 @@ namespace jasonwynn10\VanillaEntityAI\entity\passiveaggressive;
 use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Creeper;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Enderman;
+use jasonwynn10\VanillaEntityAI\entity\Interactable;
 use jasonwynn10\VanillaEntityAI\network\PlayerNetworkSessionAdapter;
 use pocketmine\entity\Entity;
 use pocketmine\network\mcpe\protocol\InteractPacket;
@@ -41,9 +42,9 @@ class Player extends \pocketmine\Player {
 			case InteractPacket::ACTION_MOUSEOVER:
 				$target = $this->level->getEntity($packet->target);
 				$this->setTargetEntity($target);
-				if($target instanceof Enderman) {
-					// TODO: check looking at head
-					// TODO: aggro enderman
+				if($target instanceof CreatureBase){
+					// TODO: check player looking at head and if wearing jack 'o lantern
+					$target->onPlayerLook($this);
 				}
 				$return = true;
 				break;
@@ -62,11 +63,9 @@ class Player extends \pocketmine\Player {
 				case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT:
 					$target = $this->level->getEntity($packet->trData->entityRuntimeId);
 					$this->setTargetEntity($target);
-					if($target instanceof CreatureBase) {
-						$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, ""); // Don't show button anymore
-						if($target instanceof Creeper) {
-							$target->ignite();
-						}
+					$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, ""); // Don't show button anymore
+					if($target instanceof Interactable) {
+						$target->onPlayerInteract($this);
 						$return = true;
 						break;
 					}

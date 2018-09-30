@@ -108,6 +108,7 @@ class BiomeEntityList {
 	];
 	public const BIOME_HOSTILE_MOBS = [
 		Biome::OCEAN => [
+			Squid::NETWORK_ID // Temporary to fix empty array messages
 			// TODO: water mobs
 		],
 		Biome::PLAINS => [
@@ -154,6 +155,7 @@ class BiomeEntityList {
 			Witch::NETWORK_ID
 		],
 		Biome::RIVER => [
+			Squid::NETWORK_ID // Temporary to fix empty array messages
 			// TODO: water mobs
 		],
 		Biome::HELL => [

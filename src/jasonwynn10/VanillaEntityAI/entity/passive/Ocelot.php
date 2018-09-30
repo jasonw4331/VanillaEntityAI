@@ -4,9 +4,11 @@ namespace jasonwynn10\VanillaEntityAI\entity\passive;
 
 use jasonwynn10\VanillaEntityAI\entity\AnimalBase;
 use jasonwynn10\VanillaEntityAI\entity\Collidable;
+use jasonwynn10\VanillaEntityAI\entity\Interactable;
+use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
 use pocketmine\entity\Entity;
 
-class Ocelot extends AnimalBase implements Collidable {
+class Ocelot extends AnimalBase implements Collidable, Interactable {
 	public const NETWORK_ID = self::OCELOT;
 	public $width = 0.8;
 	public $height = 0.8;
@@ -43,5 +45,9 @@ class Ocelot extends AnimalBase implements Collidable {
 	 */
 	public function onCollideWithEntity(Entity $entity) : void {
 		// TODO: Implement onCollideWithEntity() method.
+	}
+
+	public function onPlayerInteract(Player $player) : void {
+		// TODO: Implement onPlayerInteract() method.
 	}
 }

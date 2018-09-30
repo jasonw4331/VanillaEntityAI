@@ -4,10 +4,12 @@ namespace jasonwynn10\VanillaEntityAI\entity\passive;
 
 use jasonwynn10\VanillaEntityAI\entity\AnimalBase;
 use jasonwynn10\VanillaEntityAI\entity\Collidable;
+use jasonwynn10\VanillaEntityAI\entity\Interactable;
+use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 
-class Pig extends AnimalBase implements Collidable {
+class Pig extends AnimalBase implements Collidable, Interactable {
 	public const NETWORK_ID = self::PIG;
 	public $width = 1.5;
 	public $height = 1.0;
@@ -59,5 +61,9 @@ class Pig extends AnimalBase implements Collidable {
 	 */
 	public function onCollideWithEntity(Entity $entity) : void {
 		// TODO: Implement onCollideWithEntity() method.
+	}
+
+	public function onPlayerInteract(Player $player) : void {
+		// TODO: Implement onPlayerInteract() method.
 	}
 }
