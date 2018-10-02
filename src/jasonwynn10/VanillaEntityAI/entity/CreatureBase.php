@@ -7,7 +7,9 @@ use pocketmine\block\Block;
 use pocketmine\entity\Creature;
 use pocketmine\entity\Entity;
 use pocketmine\level\Position;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\timings\Timings;
 
 abstract class CreatureBase extends Creature implements Linkable, Collidable {
 	use SpawnableTrait, CollisionCheckingTrait;
@@ -23,6 +25,159 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 	protected $linkedEntity;
 	/** @var int $moveTime */
 	protected $moveTime = 0;
+
+	public function initEntity() : void {
+		parent::initEntity();
+	}
+
+	public function move(float $dx, float $dy, float $dz) : void{
+		$this->blocksAround = null;
+
+		Timings::$entityMoveTimer->startTiming();
+
+		$movX = $dx;
+		$movY = $dy;
+		$movZ = $dz;
+
+		if($this->keepMovement) {
+			$this->boundingBox->offset($dx, $dy, $dz);
+		}else{
+			$this->ySize *= 0.4;
+
+			/*
+			if($this->isColliding) { //With cobweb?
+				$this->isColliding = false;
+				$dx *= 0.25;
+				$dy *= 0.05;
+				$dz *= 0.25;
+				$this->motionX = 0;
+				$this->motionY = 0;
+				$this->motionZ = 0;
+			}
+			*/
+
+			$axisalignedbb = clone $this->boundingBox;
+
+			/*$sneakFlag = $this->onGround and $this instanceof Player;
+
+			if($sneakFlag) {
+				for($mov = 0.05; $dx != 0.0 and count($this->level->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, -1, 0))) === 0; $movX = $dx) {
+					if($dx < $mov and $dx >= -$mov) {
+						$dx = 0;
+					}elseif($dx > 0) {
+						$dx -= $mov;
+					}else{
+						$dx += $mov;
+					}
+				}
+
+				for(; $dz != 0.0 and count($this->level->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox(0, -1, $dz))) === 0; $movZ = $dz) {
+					if($dz < $mov and $dz >= -$mov) {
+						$dz = 0;
+					}elseif($dz > 0) {
+						$dz -= $mov;
+					}else{
+						$dz += $mov;
+					}
+				}
+
+				//TODO: big messy loop
+			}*/
+
+			assert(abs($dx) <= 20 and abs($dy) <= 20 and abs($dz) <= 20, "Movement distance is excessive: dx=$dx, dy=$dy, dz=$dz");
+
+			$list = $this->level->getCollisionCubes($this, $this->level->getTickRate() > 1 ? $this->boundingBox->offsetCopy($dx, $dy, $dz) : $this->boundingBox->addCoord($dx, $dy, $dz), false);
+
+			foreach($list as $bb) {
+				$dy = $bb->calculateYOffset($this->boundingBox, $dy);
+			}
+
+			$this->boundingBox->offset(0, $dy, 0);
+
+			$fallingFlag = ($this->onGround or ($dy != $movY and $movY < 0));
+
+			foreach($list as $bb) {
+				$dx = $bb->calculateXOffset($this->boundingBox, $dx);
+			}
+
+			$this->boundingBox->offset($dx, 0, 0);
+
+			foreach($list as $bb) {
+				$dz = $bb->calculateZOffset($this->boundingBox, $dz);
+			}
+
+			$this->boundingBox->offset(0, 0, $dz);
+
+
+			if($this->stepHeight > 0 and $fallingFlag and $this->ySize < 0.05 and ($movX != $dx or $movZ != $dz)) {
+				$cx = $dx;
+				$cy = $dy;
+				$cz = $dz;
+				$dx = $movX;
+				$dy = $this->stepHeight;
+				$dz = $movZ;
+
+				$axisalignedbb1 = clone $this->boundingBox;
+
+				$this->boundingBox->setBB($axisalignedbb);
+
+				$list = $this->level->getCollisionCubes($this, $this->boundingBox->addCoord($dx, $dy, $dz), false);
+
+				foreach($list as $bb) {
+					$dy = $bb->calculateYOffset($this->boundingBox, $dy);
+				}
+
+				$this->boundingBox->offset(0, $dy, 0);
+
+				foreach($list as $bb) {
+					$dx = $bb->calculateXOffset($this->boundingBox, $dx);
+				}
+
+				$this->boundingBox->offset($dx, 0, 0);
+
+				foreach($list as $bb) {
+					$dz = $bb->calculateZOffset($this->boundingBox, $dz);
+				}
+
+				$this->boundingBox->offset(0, 0, $dz);
+
+				if(($cx ** 2 + $cz ** 2) >= ($dx ** 2 + $dz ** 2)) {
+					$dx = $cx;
+					$dy = $cy;
+					$dz = $cz;
+					$this->boundingBox->setBB($axisalignedbb1);
+				}else{
+					$blockBB = $this->level->getBlock($this->getSide(Vector3::SIDE_DOWN))->getBoundingBox();
+					$this->ySize += $blockBB->maxY - $blockBB->minY;
+				}
+			}
+		}
+
+		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
+		$this->y = $this->boundingBox->minY - $this->ySize;
+		$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
+
+		$this->checkChunks();
+		$this->checkBlockCollision();
+		$this->checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz);
+		$this->updateFallState($dy, $this->onGround);
+
+		if($movX != $dx) {
+			$this->motion->x = 0;
+		}
+
+		if($movY != $dy) {
+			$this->motion->y = 0;
+		}
+
+		if($movZ != $dz) {
+			$this->motion->z = 0;
+		}
+
+		//TODO: vehicle collision events (first we need to spawn them!)
+
+		Timings::$entityMoveTimer->stopTiming();
+	}
 
 	/**
 	 * @param Position $spawnPos

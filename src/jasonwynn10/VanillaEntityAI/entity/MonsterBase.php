@@ -6,6 +6,13 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 
 abstract class MonsterBase extends CreatureBase {
+	public function initEntity() : void {
+		parent::initEntity();
+	}
+
+	/**
+	 * @param EntityDamageEvent $source
+	 */
 	public function attack(EntityDamageEvent $source) : void {
 		if($source instanceof EntityDamageByEntityEvent)
 			$this->setTarget($source->getDamager());

@@ -4,8 +4,6 @@ namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use jasonwynn10\VanillaEntityAI\entity\AgeableTrait;
 use jasonwynn10\VanillaEntityAI\entity\ClimbingTrait;
-use jasonwynn10\VanillaEntityAI\entity\Collidable;
-use jasonwynn10\VanillaEntityAI\entity\CollisionCheckingTrait;
 use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
 use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
 use jasonwynn10\VanillaEntityAI\entity\ItemHolderTrait;
