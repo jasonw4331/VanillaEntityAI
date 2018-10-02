@@ -90,10 +90,8 @@ use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\IronGolem;
 use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\PolarBear;
 use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\SnowGolem;
 use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Wolf;
-use jasonwynn10\VanillaEntityAI\task\DespawnTask;
-use jasonwynn10\VanillaEntityAI\task\HostileSpawnTask;
+use jasonwynn10\VanillaEntityAI\task\AsyncSchedulerTask;
 use jasonwynn10\VanillaEntityAI\task\InhabitedChunkCounter;
-use jasonwynn10\VanillaEntityAI\task\PassiveSpawnTask;
 use jasonwynn10\VanillaEntityAI\tile\MobSpawner;
 use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
@@ -241,13 +239,7 @@ class EntityAI extends PluginBase {
 		$this->getServer()->getCommandMap()->register("pocketmine", new SummonCommand("summon"));
 		$this->getServer()->getCommandMap()->register("pocketmine", new DifficultyCommand("difficulty"));
 		new EntityListener($this);
-		if($this->getServer()->getConfigBool("spawn-mobs", true)) {
-			$this->getScheduler()->scheduleRepeatingTask(new HostileSpawnTask(), 1);
-		}
-		if($this->getServer()->getConfigBool("spawn-animals", true)) {
-			$this->getScheduler()->scheduleRepeatingTask(new PassiveSpawnTask(), 20);
-		}
-		$this->getScheduler()->scheduleRepeatingTask(new DespawnTask(), 1);
+		$this->getScheduler()->scheduleRepeatingTask(new AsyncSchedulerTask(), 1);
 		$this->getScheduler()->scheduleRepeatingTask(new InhabitedChunkCounter(), 20 * 60 * 60);
 	}
 
