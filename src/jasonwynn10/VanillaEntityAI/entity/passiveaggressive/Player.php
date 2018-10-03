@@ -45,7 +45,8 @@ class Player extends \pocketmine\Player {
 				if($target instanceof CreatureBase){
 					// TODO: check player looking at head and if wearing jack 'o lantern
 					$target->onPlayerLook($this);
-				}
+				}elseif($target === null)
+					$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, ""); // Don't show button anymore
 				$return = true;
 				break;
 			default:
@@ -61,7 +62,15 @@ class Player extends \pocketmine\Player {
 			$type = $packet->trData->actionType;
 			switch($type) {
 				case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT:
-					$target = $this->level->getEntity($packet->trData->entityRuntimeId);
+					$target = null;
+					foreach($this->level->getEntities() as $entity) {
+						var_dump($packet->trData->clickPos, $entity->asVector3()); // TODO: delete
+						if($entity->distance($packet->trData->clickPos) < 2) {
+							$target = $entity;
+							echo "Found\n";
+							break;
+						}
+					}
 					$this->setTargetEntity($target);
 					$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, ""); // Don't show button anymore
 					if($target instanceof Interactable) {

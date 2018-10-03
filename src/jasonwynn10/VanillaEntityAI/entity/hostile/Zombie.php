@@ -62,34 +62,38 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 		if($this->closed) {
 			return false;
 		}
-		if($this->moveTime <= 0 and isset($this->target) and !$this->target instanceof Entity) {
-			$x = $this->target->x - $this->x;
-			$y = $this->target->y - $this->y;
-			$z = $this->target->z - $this->z;
-			$diff = abs($x) + abs($z);
-			if($diff > 0) {
-				$this->motion->x = $this->speed * 0.15 * ($x / $diff);
-				$this->motion->z = $this->speed * 0.15 * ($z / $diff);
-				$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff));
+		if($this->attackTime > 0) {
+			return parent::onUpdate($currentTick);
+		}else{
+			if($this->moveTime <= 0 and  $this->isTargetValid($this->target) and !$this->target instanceof Entity) {
+				$x = $this->target->x - $this->x;
+				$y = $this->target->y - $this->y;
+				$z = $this->target->z - $this->z;
+				$diff = abs($x) + abs($z);
+				if($diff > 0) {
+					$this->motion->x = $this->speed * 0.15 * ($x / $diff);
+					$this->motion->z = $this->speed * 0.15 * ($z / $diff);
+					$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff));
+				}
+				$this->pitch = $y == 0 ? 0 : rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
+				if($this->distance($this->target) <= 0)
+					$this->target = null;
+			}elseif($this->target instanceof Entity and $this->isTargetValid($this->target)) {
+				$this->moveTime = 0;
+				$x = $this->target->x - $this->x;
+				$y = $this->target->y - $this->y;
+				$z = $this->target->z - $this->z;
+				$diff = abs($x) + abs($z);
+				if($diff > 0) {
+					$this->motion->x = $this->speed * 0.15 * ($x / $diff);
+					$this->motion->z = $this->speed * 0.15 * ($z / $diff);
+					$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff));
+				}
+				$this->pitch = $y == 0 ? 0 : rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
+			}elseif($this->moveTime <= 0) {
+				$this->moveTime = 100;
+				// TODO: random target position
 			}
-			$this->pitch = $y == 0 ? 0 : rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
-			if($this->distance($this->target) <= 0)
-				$this->target = null;
-		}elseif($this->target instanceof Entity) {
-			$this->moveTime = 0;
-			$x = $this->target->x - $this->x;
-			$y = $this->target->y - $this->y;
-			$z = $this->target->z - $this->z;
-			$diff = abs($x) + abs($z);
-			if($diff > 0) {
-				$this->motion->x = $this->speed * 0.15 * ($x / $diff);
-				$this->motion->z = $this->speed * 0.15 * ($z / $diff);
-				$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff));
-			}
-			$this->pitch = $y == 0 ? 0 : rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
-		}elseif($this->moveTime <= 0) {
-			$this->moveTime = 100;
-			// TODO: random target position
 		}
 		return parent::onUpdate($currentTick);
 	}

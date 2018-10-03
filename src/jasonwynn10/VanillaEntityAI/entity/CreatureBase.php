@@ -7,6 +7,7 @@ use pocketmine\block\Block;
 use pocketmine\entity\Creature;
 use pocketmine\entity\Entity;
 use pocketmine\level\Position;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\timings\Timings;
@@ -30,6 +31,11 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 		parent::initEntity();
 	}
 
+	/**
+	 * @param float $dx
+	 * @param float $dy
+	 * @param float $dz
+	 */
 	public function move(float $dx, float $dy, float $dz) : void{
 		$this->blocksAround = null;
 
@@ -147,7 +153,8 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 					$dz = $cz;
 					$this->boundingBox->setBB($axisalignedbb1);
 				}else{
-					$blockBB = $this->level->getBlock($this->getSide(Vector3::SIDE_DOWN))->getBoundingBox();
+					$block = $this->level->getBlock($this->getSide(Vector3::SIDE_DOWN));
+					$blockBB = $block->getBoundingBox() ?? new AxisAlignedBB($block->x, $block->y, $block->z, $block->x + 1, $block->y + 1, $block->z + 1);
 					$this->ySize += $blockBB->maxY - $blockBB->minY;
 				}
 			}
@@ -276,5 +283,25 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 	 * @param Block $block
 	 */
 	public function onCollideWithBlock(Block $block) : void {
+	}
+
+	public function push(AxisAlignedBB $source) : void {
+		$base = 0.15;
+		$x = ($source->minX + $source->maxX) / 2;
+		$z = ($source->minZ + $source->maxZ) / 2;
+		$f = sqrt($x * $x + $z * $z);
+		if($f <= 0){
+			return;
+		}
+		$f = 1 / $f;
+
+		$motion = clone $this->motion;
+
+		$motion->x /= 2;
+		$motion->z /= 2;
+		$motion->x += $x * $f * $base;
+		$motion->z += $z * $f * $base;
+
+		$this->setMotion($motion);
 	}
 }

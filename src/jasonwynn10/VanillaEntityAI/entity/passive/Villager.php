@@ -9,6 +9,7 @@ use jasonwynn10\VanillaEntityAI\entity\Interactable;
 use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
+use pocketmine\math\AxisAlignedBB;
 
 class Villager extends \pocketmine\entity\Villager implements Collidable, Interactable {
 	use AgeableTrait, CollisionCheckingTrait;
@@ -26,5 +27,12 @@ class Villager extends \pocketmine\entity\Villager implements Collidable, Intera
 
 	public function onPlayerInteract(Player $player) : void {
 		// TODO: Implement onPlayerInteract() method.
+	}
+
+	/**
+	 * @param AxisAlignedBB $source
+	 */
+	public function push(AxisAlignedBB $source): void {
+		// TODO: Implement push() method.
 	}
 }

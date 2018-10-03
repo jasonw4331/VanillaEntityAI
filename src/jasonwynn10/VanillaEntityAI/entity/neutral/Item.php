@@ -11,6 +11,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\level\Level;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 
 class Item extends ItemEntity implements Collidable {
@@ -54,5 +55,11 @@ class Item extends ItemEntity implements Collidable {
 	}
 
 	public function onCollideWithBlock(Block $block): void {
+	}
+
+	/**
+	 * @param AxisAlignedBB $source
+	 */
+	public function push(AxisAlignedBB $source): void { // cannot be pushed
 	}
 }
