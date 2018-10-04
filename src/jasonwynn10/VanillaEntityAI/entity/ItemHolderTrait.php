@@ -114,10 +114,10 @@ trait ItemHolderTrait {
 	public function saveNBT() : void {
 		parent::saveNBT();
 		if(isset($this->mainHand)) {
-			$this->namedtag->setTag(new ListTag("Mainhand", $this->mainHand->nbtSerialize(), NBT::TAG_Compound));
+			$this->namedtag->setTag(new ListTag("Mainhand", [$this->mainHand->nbtSerialize()], NBT::TAG_Compound));
 		}
 		if(isset($this->offHand)) {
-			$this->namedtag->setTag(new ListTag("Offhand", $this->offHand->nbtSerialize(), NBT::TAG_Compound));
+			$this->namedtag->setTag(new ListTag("Offhand", [$this->offHand->nbtSerialize()], NBT::TAG_Compound));
 		}
 	}
 

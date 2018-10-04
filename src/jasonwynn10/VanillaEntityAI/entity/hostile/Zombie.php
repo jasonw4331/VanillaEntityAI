@@ -73,7 +73,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 				if($diff > 0) {
 					$this->motion->x = $this->speed * 0.15 * ($x / $diff);
 					$this->motion->z = $this->speed * 0.15 * ($z / $diff);
-					$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff));
+					$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff)); // TODO: desync head with body when AI improves
 				}
 				$this->pitch = $y == 0 ? 0 : rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
 				if($this->distance($this->target) <= 0)
@@ -87,7 +87,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 				if($diff > 0) {
 					$this->motion->x = $this->speed * 0.15 * ($x / $diff);
 					$this->motion->z = $this->speed * 0.15 * ($z / $diff);
-					$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff));
+					$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff)); // TODO: desync head with body when AI improves
 				}
 				$this->pitch = $y == 0 ? 0 : rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
 			}elseif($this->moveTime <= 0) {
@@ -120,7 +120,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			$this->moveTime -= $tickDiff;
 		}
 		$time = $this->getLevel()->getTime() % Level::TIME_FULL;
-		if(!$this->isOnFire() and ($time < Level::TIME_NIGHT or $time > Level::TIME_SUNRISE) and $this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) > 7) {
+		if(!$this->isOnFire() and ($time < Level::TIME_NIGHT or $time > Level::TIME_SUNRISE) and $this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) >= 15) {
 			$this->setOnFire(2);
 		}
 		if($this->isOnFire() and $this->level->getBlock($this, true, false) instanceof Water) { // TODO: check weather

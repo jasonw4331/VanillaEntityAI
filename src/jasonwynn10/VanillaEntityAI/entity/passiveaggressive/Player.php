@@ -8,6 +8,8 @@ use jasonwynn10\VanillaEntityAI\entity\hostile\Enderman;
 use jasonwynn10\VanillaEntityAI\entity\Interactable;
 use jasonwynn10\VanillaEntityAI\network\PlayerNetworkSessionAdapter;
 use pocketmine\entity\Entity;
+use pocketmine\item\Item;
+use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
@@ -25,14 +27,37 @@ class Player extends \pocketmine\Player {
 	}
 
 	/**
+	 * @param EntityPickRequestPacket $packet
+	 *
+	 * @return bool
+	 */
+	public function handleEntityPickRequest(EntityPickRequestPacket $packet) : bool {
+		$target = $this->level->getEntity($packet->entityUniqueId);
+		if($target === null)
+			return false;
+		if($this->isCreative()) {
+			$item = Item::get(Item::MONSTER_EGG, $target::NETWORK_ID, 64);
+			if(!empty($target->getNameTag()))
+				$item->setCustomName($target->getNameTag());
+			$this->getInventory()->setItem($packet->hotbarSlot, $item);
+		}
+		return true;
+	}
+
+	/**
 	 * @param PlayerInputPacket $packet
 	 *
 	 * @return bool
 	 */
 	public function handlePlayerInput(PlayerInputPacket $packet) : bool {
-		return false;
+		return false; // TODO
 	}
 
+	/**
+	 * @param InteractPacket $packet
+	 *
+	 * @return bool
+	 */
 	public function handleInteract(InteractPacket $packet) : bool {
 		$return = parent::handleInteract($packet);
 		switch($packet->action) {
@@ -56,29 +81,26 @@ class Player extends \pocketmine\Player {
 		return $return;
 	}
 
+	/**
+	 * @param InventoryTransactionPacket $packet
+	 *
+	 * @return bool
+	 */
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool {
 		$return = parent::handleInventoryTransaction($packet);
 		if($packet->transactionType === InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY) {
 			$type = $packet->trData->actionType;
 			switch($type) {
 				case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT:
-					$target = null;
-					foreach($this->level->getEntities() as $entity) {
-						var_dump($packet->trData->clickPos, $entity->asVector3()); // TODO: delete
-						if($entity->distance($packet->trData->clickPos) < 2) {
-							$target = $entity;
-							echo "Found\n";
-							break;
-						}
-					}
+					$target = $this->level->getEntity($packet->trData->entityRuntimeId);
 					$this->setTargetEntity($target);
 					$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, ""); // Don't show button anymore
 					if($target instanceof Interactable) {
 						$target->onPlayerInteract($this);
-						$return = true;
+						return true;
 						break;
 					}
-					$return = false;
+					break;
 			}
 		}
 		return $return;

@@ -60,7 +60,7 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 			$this->moveTime -= $tickDiff;
 		}
 		$time = $this->getLevel()->getTime() % Level::TIME_FULL;
-		if(!$this->isOnFire() and ($time < Level::TIME_NIGHT or $time > Level::TIME_SUNRISE) and $this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) > 7) {
+		if(!$this->isOnFire() and ($time < Level::TIME_NIGHT or $time > Level::TIME_SUNRISE) and $this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) >= 15) {
 			$this->setOnFire(2);
 		}
 		if($this->isOnFire() and $this->level->getBlock($this, true, false) instanceof Water) { // TODO: check weather

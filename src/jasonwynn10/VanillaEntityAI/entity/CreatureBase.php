@@ -187,6 +187,18 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 	}
 
 	/**
+	 * @param Entity $entity
+	 *
+	 * @return bool
+	 */
+	public function hasLineOfSight(Entity $entity) : bool {
+		$distance = (int)$this->add(0, $this->eyeHeight)->distance($entity);
+		if($distance > 1)
+			return $this->distance($entity) < 1 or empty($this->getLineOfSight($distance));
+		return true;
+	}
+
+	/**
 	 * @param Position $spawnPos
 	 * @param CompoundTag|null $spawnData
 	 *
