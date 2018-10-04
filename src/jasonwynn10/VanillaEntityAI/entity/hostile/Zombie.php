@@ -241,10 +241,10 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			$entity = self::createEntity(self::NETWORK_ID, $spawnPos->level, $nbt);
 		}
 		// TODO: work on logic here more
-		if(!$spawnPos->isValid() or !$entity->onGround or $spawnPos->level->getFullLight($spawnPos) > $entity->spawnLight) {
+		if(!$spawnPos->isValid() or count($entity->getBlocksAround()) > 1 or $spawnPos->level->getFullLight($spawnPos) > $entity->spawnLight) {
 			$entity->flagForDespawn();
 			return null;
-		}else {
+		}else{
 			$entity->spawnToAll();
 			return $entity;
 		}

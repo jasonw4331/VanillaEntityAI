@@ -20,13 +20,13 @@ trait SpawnableTrait {
 			$nbt = $spawnData->merge($nbt);
 			$nbt->setInt("id", self::NETWORK_ID);
 		}
-		/** @var CreatureBase|SpawnableTrait $entity */
+		/** @var CreatureBase $entity */
 		$entity = self::createEntity(self::NETWORK_ID, $spawnPos->level, $nbt);
 		// TODO: work on logic here more
-		if(!$spawnPos->isValid() or count($entity->getBlocksAround()) > 1 or $spawnPos->level->getFullLight($spawnPos) > $entity->spawnLight) {
+		if(!$spawnPos->isValid() or count($entity->getBlocksAround()) > 1 or (($entity instanceof MonsterBase and $entity->level->getFullLight($entity) > $entity->spawnLight) or ($entity instanceof AnimalBase and $entity->level->getFullLight($entity) < $entity->spawnLight))) {
 			$entity->flagForDespawn();
 			return null;
-		}else {
+		}else{
 			$entity->spawnToAll();
 			return $entity;
 		}
