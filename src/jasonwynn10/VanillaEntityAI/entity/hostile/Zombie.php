@@ -59,7 +59,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 	}
 
 	public function onUpdate(int $currentTick) : bool {
-		if($this->closed) {
+		if($this->isFlaggedForDespawn() or $this->closed) {
 			return false;
 		}
 		if($this->attackTime > 0) {
