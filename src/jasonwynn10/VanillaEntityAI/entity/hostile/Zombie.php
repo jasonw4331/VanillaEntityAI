@@ -8,6 +8,7 @@ use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
 use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
 use jasonwynn10\VanillaEntityAI\entity\ItemHolderTrait;
 use jasonwynn10\VanillaEntityAI\entity\MonsterBase;
+use jasonwynn10\VanillaEntityAI\EntityAI;
 use pocketmine\block\Water;
 use pocketmine\entity\Ageable;
 use pocketmine\entity\Effect;
@@ -21,6 +22,7 @@ use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\Player;
 
 class Zombie extends MonsterBase implements Ageable, InventoryHolder {
@@ -275,5 +277,47 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			$this->server->broadcastPacket($this->hasSpawned, $pk);
 			$entity->attack(new EntityDamageByEntityEvent($this, $entity, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, $damage));
 		}
+		if($entity instanceof \jasonwynn10\VanillaEntityAI\entity\neutral\Item) {
+			if($entity->getPickupDelay() > 0 or !$this instanceof InventoryHolder or $this->level->getDifficulty() <= Level::DIFFICULTY_EASY) {
+				return;
+			}
+			$chance = EntityAI::getInstance()->getRegionalDifficulty($this->level, $this->chunk);
+			if($chance < 50) {
+				return;
+			}
+			$item = $entity->getItem();
+			if(!$this->checkItemValueToMainHand($item) and !$this->checkItemValueToOffHand($item))
+				return;
+			$pk = new TakeItemEntityPacket();
+			$pk->eid = $this->getId();
+			$pk->target = $this->getId();
+			$this->server->broadcastPacket($this->getViewers(), $pk);
+			$this->setDropAll();
+			$this->setPersistence(true);
+			if($this->checkItemValueToMainHand($item))
+				$this->mainHand = clone $item;
+			elseif($this->checkItemValueToOffHand($item))
+				$this->offHand = clone $item;
+		}
+	}
+
+	/**
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public function checkItemValueToMainHand(Item $item): bool {
+		// TODO: Implement checkItemValueToMainHand() method.
+		return true;
+	}
+
+	/**
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public function checkItemValueToOffHand(Item $item): bool {
+		// TODO: Implement checkItemValueToOffHand() method.
+		return true;
 	}
 }

@@ -27,31 +27,6 @@ class Item extends ItemEntity implements Collidable {
 				$this->sendSpawnPacket($player);
 			return;
 		}
-		if($this->pickupDelay !== 0 or !$entity instanceof \pocketmine\inventory\InventoryHolder or !$entity instanceof InventoryHolder or $this->level->getDifficulty() <= Level::DIFFICULTY_EASY) {
-			return;
-		}
-		$chance = EntityAI::getInstance()->getRegionalDifficulty($entity->level, $entity->chunk);
-		if($chance < 50) {
-			return;
-		}
-		$item = $this->getItem();
-		$inventory = $entity->getInventory();
-		if(!$item instanceof Item or !$inventory->canAddItem($item)) {
-			return;
-		}
-		$this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($inventory, $this));
-		if($ev->isCancelled()) {
-			return;
-		}
-		$pk = new TakeItemEntityPacket();
-		$pk->eid = $entity->getId();
-		$pk->target = $this->getId();
-		$this->server->broadcastPacket($this->getViewers(), $pk);
-		if($entity instanceof InventoryHolder) {
-			$entity->setDropAll();
-		}
-		$inventory->addItem(clone $item);
-		$this->flagForDespawn();
 	}
 
 	public function onCollideWithBlock(Block $block): void {

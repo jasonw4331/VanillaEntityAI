@@ -2,6 +2,8 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity;
 
+use pocketmine\item\Item;
+
 interface InventoryHolder {
 	/**
 	 * @return bool
@@ -16,4 +18,18 @@ interface InventoryHolder {
 	public function equipRandomItems() : void;
 
 	public function equipRandomArmour() : void;
+
+	/**
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public function checkItemValueToMainHand(Item $item) : bool;
+
+	/**
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public function checkItemValueToOffHand(Item $item) : bool;
 }

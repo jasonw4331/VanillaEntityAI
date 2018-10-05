@@ -6,6 +6,7 @@ use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\level\Level;
 use pocketmine\level\Position;
 
 abstract class MonsterBase extends CreatureBase {
@@ -20,6 +21,18 @@ abstract class MonsterBase extends CreatureBase {
 		if($source instanceof EntityDamageByEntityEvent)
 			$this->setTarget($source->getDamager());
 		parent::attack($source);
+	}
+
+	/**
+	 * @param int $tickDiff
+	 *
+	 * @return bool
+	 */
+	public function entityBaseTick(int $tickDiff = 1): bool {
+		if($this->level->getDifficulty() <= Level::DIFFICULTY_PEACEFUL) {
+			$this->flagForDespawn();
+		}
+		return parent::entityBaseTick($tickDiff);
 	}
 
 	/**

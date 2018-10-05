@@ -199,6 +199,22 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 	}
 
 	/**
+	 * Returns the Vector3 side number right of the specified one
+	 *
+	 * @param int $side 0-5 one of the Vector3::SIDE_* constants
+	 * @return int
+	 *
+	 * @throws \InvalidArgumentException if an invalid side is supplied
+	 */
+	public static function getRightSide(int $side) : int{
+		if($side >= 0 and $side <= 5){
+			return $side ^ 0x01; // TODO: right now it gives the opposite side...
+		}
+
+		throw new \InvalidArgumentException("Invalid side $side given to getOppositeSide");
+	}
+
+	/**
 	 * @param Position $spawnPos
 	 * @param CompoundTag|null $spawnData
 	 *
