@@ -247,7 +247,9 @@ class EntityAI extends PluginBase {
 		if($this->getServer()->getConfigBool("spawn-animals", true)) {
 			$this->getScheduler()->scheduleRepeatingTask(new PassiveSpawnTask(), 20);
 		}
-		$this->getScheduler()->scheduleRepeatingTask(new DespawnTask(), 1);
+		if($this->getServer()->getConfigBool("spawn-mobs", true) or $this->getServer()->getConfigBool("spawn-animals", true)) {
+			$this->getScheduler()->scheduleRepeatingTask(new DespawnTask(), 1);
+		}
 		$this->getScheduler()->scheduleRepeatingTask(new InhabitedChunkCounter(), 20 * 60 * 60);
 	}
 
