@@ -11,6 +11,7 @@ trait ClimbingTrait {
 		$this->setCanClimb();
 		parent::initEntity();
 	}
+
 	public function onCollideWithBlock(Block $block) : void {
 		if($this->canClimbWalls()) {
 			$this->motion->y += 0.5;

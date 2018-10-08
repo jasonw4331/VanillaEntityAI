@@ -4,15 +4,10 @@ namespace jasonwynn10\VanillaEntityAI\entity\neutral;
 
 use jasonwynn10\VanillaEntityAI\entity\Collidable;
 use jasonwynn10\VanillaEntityAI\entity\CollisionCheckingTrait;
-use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
-use jasonwynn10\VanillaEntityAI\EntityAI;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\entity\object\ItemEntity;
-use pocketmine\event\inventory\InventoryPickupItemEvent;
-use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 
 class Item extends ItemEntity implements Collidable {
 	use CollisionCheckingTrait;
@@ -29,12 +24,12 @@ class Item extends ItemEntity implements Collidable {
 		}
 	}
 
-	public function onCollideWithBlock(Block $block): void {
+	public function onCollideWithBlock(Block $block) : void {
 	}
 
 	/**
 	 * @param AxisAlignedBB $source
 	 */
-	public function push(AxisAlignedBB $source): void { // cannot be pushed
+	public function push(AxisAlignedBB $source) : void { // cannot be pushed
 	}
 }

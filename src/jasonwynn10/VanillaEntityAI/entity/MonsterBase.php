@@ -18,8 +18,9 @@ abstract class MonsterBase extends CreatureBase {
 	 * @param EntityDamageEvent $source
 	 */
 	public function attack(EntityDamageEvent $source) : void {
-		if($source instanceof EntityDamageByEntityEvent)
+		if($source instanceof EntityDamageByEntityEvent) {
 			$this->setTarget($source->getDamager());
+		}
 		parent::attack($source);
 	}
 
@@ -28,7 +29,7 @@ abstract class MonsterBase extends CreatureBase {
 	 *
 	 * @return bool
 	 */
-	public function entityBaseTick(int $tickDiff = 1): bool {
+	public function entityBaseTick(int $tickDiff = 1) : bool {
 		if($this->level->getDifficulty() <= Level::DIFFICULTY_PEACEFUL) {
 			$this->flagForDespawn();
 		}
@@ -42,8 +43,9 @@ abstract class MonsterBase extends CreatureBase {
 	 */
 	protected function isTargetValid(?Position $target) : bool {
 		if($target instanceof Entity) {
-			if($target instanceof Player)
+			if($target instanceof Player) {
 				return !$target->isFlaggedForDespawn() and !$target->isClosed() and $target->isValid() and $target->isAlive() and $target->isSurvival();
+			}
 			return !$target->isFlaggedForDespawn() and !$target->isClosed() and $target->isValid() and $target->isAlive();
 		}else {
 			return $target !== null and $target->isValid();

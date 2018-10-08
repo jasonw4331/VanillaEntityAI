@@ -41,7 +41,7 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
 		}
 		if($this->attackTime > 0) {
 			return parent::onUpdate($currentTick);
-		}else{
+		}else {
 			if($this->moveTime <= 0 and !$this->target instanceof Entity and $this->isTargetValid($this->target)) {
 				$x = $this->target->x - $this->x;
 				$y = $this->target->y - $this->y;
@@ -55,8 +55,9 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
 					$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff)); // TODO: desync head with body when AI improves
 				}
 				$this->pitch = $y == 0 ? 0 : rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
-				if($this->distance($this->target) <= 0)
+				if($this->distance($this->target) <= 0) {
 					$this->target = null;
+				}
 			}elseif($this->target instanceof Entity and $this->isTargetValid($this->target)) {
 				$this->moveTime = 0;
 				if($this->target->distance($this) <= 3) {
@@ -92,7 +93,7 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
 				$this->explode();
 				return false;
 			}
-		}else{
+		}else {
 			$this->bombTime += $tickDiff;
 			$this->setGenericFlag(self::DATA_FLAG_IGNITED, false);
 			if($this->bombTime >= 30) {
@@ -135,7 +136,7 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
 		}
 		if(isset($this->target)) {
 			$this->speed = 1.2;
-		}else{
+		}else {
 			$this->speed = 0.9;
 		}
 		$hasUpdate = parent::entityBaseTick($tickDiff);
@@ -148,7 +149,7 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
 	/**
 	 * @param Player $player
 	 */
-	public function onPlayerLook(Player $player): void {
+	public function onPlayerLook(Player $player) : void {
 		if($player->canInteract($this, $player->isCreative() ? 13 : 7) and $player->getInventory()->getItemInHand() instanceof FlintSteel) {
 			$player->getDataPropertyManager()->setString(self::DATA_INTERACTIVE_TAG, "Ignite");
 		}
@@ -221,6 +222,12 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
 		return parent::spawnFromSpawner($spawnPos, $$spawnData); // TODO: Implement spawnFromSpawner() method.
 	}
 
+	public function onCollideWithEntity(Entity $entity) : void {
+		if($entity instanceof Lightning) {
+			$this->setCharged();
+		}
+	}
+
 	public function ignite() : void {
 		$this->ignited = true;
 		$this->scheduleUpdate();
@@ -242,11 +249,6 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
 		$this->charged = $charged;
 		$this->setGenericFlag(self::DATA_FLAG_POWERED, $charged);
 		return $this;
-	}
-
-	public function onCollideWithEntity(Entity $entity) : void {
-		if($entity instanceof Lightning)
-			$this->setCharged();
 	}
 
 	/**

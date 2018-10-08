@@ -13,10 +13,6 @@ trait CollisionCheckingTrait {
 		return parent::entityBaseTick($tickDiff);
 	}
 
-	public function onUpdate(int $currentTick) : bool {
-		return parent::onUpdate($currentTick);
-	}
-
 	protected function checkNearEntities() {
 		// TODO: better method/logic
 		foreach($this->level->getNearbyEntities($this->boundingBox, $this) as $entity) {
@@ -31,6 +27,10 @@ trait CollisionCheckingTrait {
 				$entity->onCollideWithEntity($this);
 			}
 		}
+	}
+
+	public function onUpdate(int $currentTick) : bool {
+		return parent::onUpdate($currentTick);
 	}
 
 	protected function checkBlockCollision() : void {

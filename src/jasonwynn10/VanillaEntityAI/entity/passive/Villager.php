@@ -25,14 +25,14 @@ class Villager extends \pocketmine\entity\Villager implements Collidable, Intera
 		// TODO: Implement onCollideWithBlock() method.
 	}
 
-	public function onPlayerInteract(Player $player) : void {
-		// TODO: Implement onPlayerInteract() method.
-	}
-
 	/**
 	 * @param AxisAlignedBB $source
 	 */
-	public function push(AxisAlignedBB $source): void {
+	public function push(AxisAlignedBB $source) : void {
 		// TODO: Implement push() method.
+	}
+
+	public function onPlayerInteract(Player $player) : void {
+		// TODO: Implement onPlayerInteract() method.
 	}
 }

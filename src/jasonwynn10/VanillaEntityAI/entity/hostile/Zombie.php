@@ -43,7 +43,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			}
 		}
 		if(mt_rand(1, 100) >= 80) {
-			if((bool)mt_rand(0, 1)) {
+			if((bool) mt_rand(0, 1)) {
 				$this->equipRandomItems();
 			}else {
 				$this->equipRandomArmour();
@@ -66,8 +66,8 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 		}
 		if($this->attackTime > 0) {
 			return parent::onUpdate($currentTick);
-		}else{
-			if($this->moveTime <= 0 and  $this->isTargetValid($this->target) and !$this->target instanceof Entity) {
+		}else {
+			if($this->moveTime <= 0 and $this->isTargetValid($this->target) and !$this->target instanceof Entity) {
 				$x = $this->target->x - $this->x;
 				$y = $this->target->y - $this->y;
 				$z = $this->target->z - $this->z;
@@ -78,8 +78,9 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 					$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff)); // TODO: desync head with body when AI improves
 				}
 				$this->pitch = $y == 0 ? 0 : rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
-				if($this->distance($this->target) <= 0)
+				if($this->distance($this->target) <= 0) {
 					$this->target = null;
+				}
 			}elseif($this->target instanceof Entity and $this->isTargetValid($this->target)) {
 				$this->moveTime = 0;
 				$x = $this->target->x - $this->x;
@@ -156,13 +157,13 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			switch(mt_rand(0, 2)) {
 				case 0:
 					$drops[] = ItemFactory::get(Item::IRON_INGOT, 0, 1);
-					break;
+				break;
 				case 1:
 					$drops[] = ItemFactory::get(Item::CARROT, 0, 1);
-					break;
+				break;
 				case 2:
 					$drops[] = ItemFactory::get(Item::POTATO, 0, 1);
-					break;
+				break;
 			}
 		}
 		if($this->dropAll) {
@@ -206,15 +207,16 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			switch($this->getLevel()->getDifficulty()) {
 				case Level::DIFFICULTY_EASY:
 					$damage = 2;
-					break;
+				break;
 				case Level::DIFFICULTY_NORMAL:
 					$damage = 3;
-					break;
+				break;
 				case Level::DIFFICULTY_HARD:
 					$damage = 4;
 			}
-			if($this->mainHand !== null)
+			if($this->mainHand !== null) {
 				$damage = $this->mainHand->getAttackPoints();
+			}
 			$pk = new EntityEventPacket();
 			$pk->entityRuntimeId = $this->id;
 			$pk->event = EntityEventPacket::ARM_SWING;
@@ -246,7 +248,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 		if(!$spawnPos->isValid() or count($entity->getBlocksAround()) > 1 or $spawnPos->level->getFullLight($spawnPos) > $entity->spawnLight) {
 			$entity->flagForDespawn();
 			return null;
-		}else{
+		}else {
 			$entity->spawnToAll();
 			return $entity;
 		}
@@ -262,15 +264,16 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			switch($this->getLevel()->getDifficulty()) {
 				case Level::DIFFICULTY_EASY:
 					$damage = 2;
-					break;
+				break;
 				case Level::DIFFICULTY_NORMAL:
 					$damage = 3;
-					break;
+				break;
 				case Level::DIFFICULTY_HARD:
 					$damage = 4;
 			}
-			if($this->mainHand !== null)
+			if($this->mainHand !== null) {
 				$damage = $this->mainHand->getAttackPoints();
+			}
 			$pk = new EntityEventPacket();
 			$pk->entityRuntimeId = $this->id;
 			$pk->event = EntityEventPacket::ARM_SWING;
@@ -286,18 +289,20 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 				return;
 			}
 			$item = $entity->getItem();
-			if(!$this->checkItemValueToMainHand($item) and !$this->checkItemValueToOffHand($item))
+			if(!$this->checkItemValueToMainHand($item) and !$this->checkItemValueToOffHand($item)) {
 				return;
+			}
 			$pk = new TakeItemEntityPacket();
 			$pk->eid = $this->getId();
 			$pk->target = $this->getId();
 			$this->server->broadcastPacket($this->getViewers(), $pk);
 			$this->setDropAll();
 			$this->setPersistence(true);
-			if($this->checkItemValueToMainHand($item))
+			if($this->checkItemValueToMainHand($item)) {
 				$this->mainHand = clone $item;
-			elseif($this->checkItemValueToOffHand($item))
+			}elseif($this->checkItemValueToOffHand($item)) {
 				$this->offHand = clone $item;
+			}
 		}
 	}
 
@@ -306,7 +311,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 	 *
 	 * @return bool
 	 */
-	public function checkItemValueToMainHand(Item $item): bool {
+	public function checkItemValueToMainHand(Item $item) : bool {
 		// TODO: Implement checkItemValueToMainHand() method.
 		return true;
 	}
@@ -316,7 +321,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 	 *
 	 * @return bool
 	 */
-	public function checkItemValueToOffHand(Item $item): bool {
+	public function checkItemValueToOffHand(Item $item) : bool {
 		// TODO: Implement checkItemValueToOffHand() method.
 		return true;
 	}

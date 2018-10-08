@@ -45,7 +45,10 @@ class HostileSpawnTask extends Task {
 			foreach($chunks as $chunk) {
 				$packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight() - 1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));
 				$biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
-				$entityId = BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId][array_rand(BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId])];
+				$entityList = BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId];
+				if(empty($entityList))
+					continue;
+				$entityId = $entityList[array_rand(BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId])];
 				if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid()) {
 					for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
 						$x = mt_rand(-20, 20) + $packCenter->x;

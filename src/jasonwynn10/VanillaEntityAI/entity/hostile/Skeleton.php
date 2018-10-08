@@ -3,8 +3,6 @@ declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 
 use jasonwynn10\VanillaEntityAI\entity\ClimbingTrait;
-use jasonwynn10\VanillaEntityAI\entity\Collidable;
-use jasonwynn10\VanillaEntityAI\entity\CollisionCheckingTrait;
 use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
 use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
 use jasonwynn10\VanillaEntityAI\entity\ItemHolderTrait;
@@ -45,13 +43,13 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 		parent::initEntity();
 	}
 
-	public function onUpdate(int $currentTick): bool {
+	public function onUpdate(int $currentTick) : bool {
 		if($this->isFlaggedForDespawn() or $this->closed) {
 			return false;
 		}
 		if($this->attackTime > 0) {
 			return parent::onUpdate($currentTick);
-		}else{
+		}else {
 			if($this->moveTime <= 0 and $this->isTargetValid($this->target) and !$this->target instanceof Entity) {
 				$x = $this->target->x - $this->x;
 				$y = $this->target->y - $this->y;
@@ -63,8 +61,9 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 					$this->yaw = rad2deg(-atan2($x / $diff, $z / $diff)); // TODO: desync head with body when AI improves
 				}
 				$this->pitch = $y == 0 ? 0 : rad2deg(-atan2($y, sqrt($x * $x + $z * $z)));
-				if($this->distance($this->target) <= 0)
+				if($this->distance($this->target) <= 0) {
 					$this->target = null;
+				}
 			}elseif($this->target instanceof Entity and $this->isTargetValid($this->target)) {
 				$this->moveTime = 0;
 				if($this->distance($this->target) <= 16) {
@@ -73,28 +72,18 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 						$force = 1.2; // TODO: correct speed?
 						$yaw = $this->yaw + mt_rand(-220, 220) / 10;
 						$pitch = $this->pitch + mt_rand(-120, 120) / 10;
-						$nbt = Arrow::createBaseNBT(
-							new Vector3(
-								$this->x + (-sin($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * 0.5),
-								$this->y + $this->eyeHeight,
-								$this->z + (cos($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * 0.5)),
-							new Vector3(),
-							$yaw,
-							$pitch
-						);
+						$nbt = Arrow::createBaseNBT(new Vector3($this->x + (-sin($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * 0.5), $this->y + $this->eyeHeight, $this->z + (cos($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * 0.5)), new Vector3(), $yaw, $pitch);
 						/** @var Arrow $arrow */
 						$arrow = Arrow::createEntity("Arrow", $this->level, $nbt, $this);
-
 						$this->server->getPluginManager()->callEvent($ev = new EntityShootBowEvent($this, Item::get(Item::ARROW, 0, 1), $arrow, $force));
-
 						$projectile = $ev->getProjectile();
-						if($ev->isCancelled()){
+						if($ev->isCancelled()) {
 							$projectile->flagForDespawn();
 						}elseif($projectile instanceof Projectile) {
 							$this->server->getPluginManager()->callEvent($launch = new ProjectileLaunchEvent($projectile));
-							if($launch->isCancelled()){
+							if($launch->isCancelled()) {
 								$projectile->flagForDespawn();
-							}else{
+							}else {
 								$projectile->setMotion(new Vector3(-sin($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * $ev->getForce(), -sin($pitch / 180 * M_PI) * $ev->getForce(), cos($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * $ev->getForce()));
 								$projectile->spawnToAll();
 								$this->level->addSound(new LaunchSound($this), $projectile->getViewers());
@@ -110,7 +99,7 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 						$this->motion->z = $this->speed * 0.15 * ($z / $diff);
 					}
 					$this->lookAt($this->target->add(0, $this->target->eyeHeight));
-				}else{
+				}else {
 					$x = $this->target->x - $this->x;
 					$y = $this->target->y - $this->y;
 					$z = $this->target->z - $this->z;
@@ -215,13 +204,6 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 		// TODO: Implement spawnFromSpawner() method.
 	}
 
-	public function equipRandomItems() : void {
-	}
-
-	public function equipRandomArmour() : void {
-		// TODO: random armour chance by difficulty
-	}
-
 	public function onCollideWithEntity(Entity $entity) : void {
 		// TODO: Implement onCollideWithEntity() method.
 		if($entity instanceof \jasonwynn10\VanillaEntityAI\entity\neutral\Item) {
@@ -233,18 +215,20 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 				return;
 			}
 			$item = $entity->getItem();
-			if(!$this->checkItemValueToMainHand($item) and !$this->checkItemValueToOffHand($item))
+			if(!$this->checkItemValueToMainHand($item) and !$this->checkItemValueToOffHand($item)) {
 				return;
+			}
 			$pk = new TakeItemEntityPacket();
 			$pk->eid = $this->getId();
 			$pk->target = $this->getId();
 			$this->server->broadcastPacket($this->getViewers(), $pk);
 			$this->setDropAll();
 			$this->setPersistence(true);
-			if($this->checkItemValueToMainHand($item))
+			if($this->checkItemValueToMainHand($item)) {
 				$this->mainHand = clone $item;
-			elseif($this->checkItemValueToOffHand($item))
+			}elseif($this->checkItemValueToOffHand($item)) {
 				$this->offHand = clone $item;
+			}
 		}
 	}
 
@@ -253,7 +237,7 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 	 *
 	 * @return bool
 	 */
-	public function checkItemValueToMainHand(Item $item): bool {
+	public function checkItemValueToMainHand(Item $item) : bool {
 		return $this->mainHand === null;
 	}
 
@@ -262,7 +246,14 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 	 *
 	 * @return bool
 	 */
-	public function checkItemValueToOffHand(Item $item): bool {
+	public function checkItemValueToOffHand(Item $item) : bool {
 		return false;
+	}
+
+	public function equipRandomItems() : void {
+	}
+
+	public function equipRandomArmour() : void {
+		// TODO: random armour chance by difficulty
 	}
 }

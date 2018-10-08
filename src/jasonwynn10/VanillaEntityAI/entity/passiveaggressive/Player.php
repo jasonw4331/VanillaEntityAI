@@ -3,8 +3,6 @@ declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\passiveaggressive;
 
 use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
-use jasonwynn10\VanillaEntityAI\entity\hostile\Creeper;
-use jasonwynn10\VanillaEntityAI\entity\hostile\Enderman;
 use jasonwynn10\VanillaEntityAI\entity\Interactable;
 use jasonwynn10\VanillaEntityAI\network\PlayerNetworkSessionAdapter;
 use pocketmine\entity\Entity;
@@ -33,12 +31,14 @@ class Player extends \pocketmine\Player {
 	 */
 	public function handleEntityPickRequest(EntityPickRequestPacket $packet) : bool {
 		$target = $this->level->getEntity($packet->entityUniqueId);
-		if($target === null)
+		if($target === null) {
 			return false;
+		}
 		if($this->isCreative()) {
 			$item = Item::get(Item::MONSTER_EGG, $target::NETWORK_ID, 64);
-			if(!empty($target->getNameTag()))
+			if(!empty($target->getNameTag())) {
 				$item->setCustomName($target->getNameTag());
+			}
 			$this->getInventory()->setItem($packet->hotbarSlot, $item);
 		}
 		return true;
@@ -63,17 +63,18 @@ class Player extends \pocketmine\Player {
 		switch($packet->action) {
 			case InteractPacket::ACTION_LEAVE_VEHICLE:
 				// TODO: entity linking
-				break;
+			break;
 			case InteractPacket::ACTION_MOUSEOVER:
 				$target = $this->level->getEntity($packet->target);
 				$this->setTargetEntity($target);
-				if($target instanceof CreatureBase){
+				if($target instanceof CreatureBase) {
 					// TODO: check player looking at head and if wearing jack 'o lantern
 					$target->onPlayerLook($this);
-				}elseif($target === null)
+				}elseif($target === null) {
 					$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, ""); // Don't show button anymore
+				}
 				$return = true;
-				break;
+			break;
 			default:
 				$this->server->getLogger()->debug("Unhandled/unknown interaction type " . $packet->action . "received from " . $this->getName());
 				$return = false;
@@ -100,7 +101,7 @@ class Player extends \pocketmine\Player {
 						return true;
 						break;
 					}
-					break;
+				break;
 			}
 		}
 		return $return;

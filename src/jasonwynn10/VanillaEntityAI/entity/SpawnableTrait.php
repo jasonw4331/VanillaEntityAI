@@ -26,7 +26,7 @@ trait SpawnableTrait {
 		if(!$spawnPos->isValid() or count($entity->getBlocksAround()) > 1 or (($entity instanceof MonsterBase and $entity->level->getFullLight($entity) > $entity->spawnLight) or ($entity instanceof AnimalBase and $entity->level->getFullLight($entity) < $entity->spawnLight))) {
 			$entity->flagForDespawn();
 			return null;
-		}else{
+		}else {
 			$entity->spawnToAll();
 			return $entity;
 		}

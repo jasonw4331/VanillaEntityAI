@@ -28,8 +28,9 @@ abstract class AnimalBase extends CreatureBase implements Ageable {
 	 * @return bool
 	 */
 	public function entityBaseTick(int $tickDiff = 1) : bool {
-		if($this->growTime -= $tickDiff <= 0)
+		if($this->growTime -= $tickDiff <= 0) {
 			$this->setBaby(false);
+		}
 		return parent::entityBaseTick($tickDiff);
 	}
 }

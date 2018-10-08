@@ -3,9 +3,7 @@ declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\data;
 
 use jasonwynn10\VanillaEntityAI\entity\hostile\Creeper;
-use jasonwynn10\VanillaEntityAI\entity\hostile\Enderman;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Ghast;
-use jasonwynn10\VanillaEntityAI\entity\hostile\Husk;
 use jasonwynn10\VanillaEntityAI\entity\hostile\MagmaCube;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Skeleton;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Slime;
@@ -42,7 +40,7 @@ class BiomeEntityList {
 			Witch::NETWORK_ID
 		],
 		Biome::DESERT => [
-			Husk::NETWORK_ID,
+			Zombie::NETWORK_ID,
 			Skeleton::NETWORK_ID,
 			Creeper::NETWORK_ID,
 			Spider::NETWORK_ID,
@@ -82,7 +80,8 @@ class BiomeEntityList {
 		],
 		Biome::HELL => [
 			ZombiePigman::NETWORK_ID,
-			Ghast::NETWORK_ID
+			Ghast::NETWORK_ID,
+			MagmaCube::NETWORK_ID
 		],
 		Biome::ICE_PLAINS => [
 			Zombie::NETWORK_ID,
@@ -108,7 +107,6 @@ class BiomeEntityList {
 	];
 	public const BIOME_HOSTILE_MOBS = [
 		Biome::OCEAN => [
-			Squid::NETWORK_ID // Temporary to fix empty array messages
 			// TODO: water mobs
 		],
 		Biome::PLAINS => [
@@ -155,7 +153,6 @@ class BiomeEntityList {
 			Witch::NETWORK_ID
 		],
 		Biome::RIVER => [
-			Squid::NETWORK_ID // Temporary to fix empty array messages
 			// TODO: water mobs
 		],
 		Biome::HELL => [
@@ -165,7 +162,7 @@ class BiomeEntityList {
 		],
 		Biome::ICE_PLAINS => [
 			Zombie::NETWORK_ID,
-			Stray::NETWORK_ID, // TODO: replaces skeleton?
+			Skeleton::NETWORK_ID,
 			Creeper::NETWORK_ID,
 			Spider::NETWORK_ID,
 			Witch::NETWORK_ID

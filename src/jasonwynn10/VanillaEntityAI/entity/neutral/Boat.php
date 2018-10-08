@@ -25,4 +25,18 @@ class Boat extends Entity implements Linkable {
 	public function getName() : string {
 		return "Boat";
 	}
+
+	/**
+	 * @return Linkable|null
+	 */
+	public function getLink() : ?Linkable {
+		// TODO: Implement getLink() method.
+	}
+
+	/**
+	 * @param Linkable $entity
+	 */
+	public function setLink(Linkable $entity) {
+		// TODO: Implement setLink() method.
+	}
 }

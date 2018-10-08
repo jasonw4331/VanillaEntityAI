@@ -7,8 +7,9 @@ trait AgeableTrait {
 	protected $baby = false;
 
 	public function initEntity() : void {
-		if($this->getGenericFlag(self::DATA_FLAG_BABY))
+		if($this->getGenericFlag(self::DATA_FLAG_BABY)) {
 			$this->setBaby();
+		}
 		parent::initEntity();
 	}
 
@@ -28,7 +29,7 @@ trait AgeableTrait {
 		$this->baby = $baby;
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY, $baby);
 		$this->setSprinting();
-		$this->setScale($baby ?  0.5 : 1);
+		$this->setScale($baby ? 0.5 : 1);
 		return $this;
 	}
 }

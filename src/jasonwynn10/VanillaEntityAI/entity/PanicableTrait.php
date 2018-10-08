@@ -14,8 +14,9 @@ trait PanicableTrait {
 	 * @return bool
 	 */
 	public function entityBaseTick(int $tickDiff = 1) : bool {
-		if($this->panicTime -= $tickDiff <= 0)
+		if($this->panicTime -= $tickDiff <= 0) {
 			$this->setPanic(false);
+		}
 		return parent::entityBaseTick($tickDiff);
 	}
 
@@ -25,14 +26,15 @@ trait PanicableTrait {
 	public function setPanic(bool $panic = true) : void {
 		$this->setSprinting($panic);
 		$this->inPanic = $panic;
-		if($panic)
+		if($panic) {
 			$this->moveTime = 0;
+		}
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function isInPanic(): bool {
+	public function isInPanic() : bool {
 		return $this->inPanic;
 	}
 }
