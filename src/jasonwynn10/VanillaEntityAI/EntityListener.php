@@ -40,7 +40,7 @@ class EntityListener implements Listener {
 			$biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
 			$entityList = BiomeEntityList::BIOME_ANIMALS[$biomeId];
 			if(empty($entityList))
-				continue;
+				return; // no entities for this biome
 			$entityId = $entityList[array_rand(BiomeEntityList::BIOME_ANIMALS[$biomeId])];
 			if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid()) {
 				for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
@@ -60,7 +60,7 @@ class EntityListener implements Listener {
 			$biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
 			$entityList = BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId];
 			if(empty($entityList))
-				continue;
+				return; // no entities for this biome
 			$entityId = $entityList[array_rand(BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId])];
 			if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid()) {
 				for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
