@@ -38,7 +38,10 @@ class EntityListener implements Listener {
 		$lightLevel = $level->getFullLightAt($packCenter->x, $packCenter->y, $packCenter->z);
 		if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid() and $lightLevel > 8) {
 			$biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
-			$entityId = BiomeEntityList::BIOME_ANIMALS[$biomeId][array_rand(BiomeEntityList::BIOME_ANIMALS[$biomeId])];
+			$entityList = BiomeEntityList::BIOME_ANIMALS[$biomeId];
+			if(empty($entityList))
+				continue;
+			$entityId = $entityList[array_rand(BiomeEntityList::BIOME_ANIMALS[$biomeId])];
 			if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid()) {
 				for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
 					$x = mt_rand(-20, 20) + $packCenter->x;
@@ -55,7 +58,10 @@ class EntityListener implements Listener {
 			}
 		}elseif(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid() and $lightLevel <= 7) {
 			$biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
-			$entityId = BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId][array_rand(BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId])];
+			$entityList = BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId];
+			if(empty($entityList))
+				continue;
+			$entityId = $entityList[array_rand(BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId])];
 			if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid()) {
 				for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
 					$x = mt_rand(-20, 20) + $packCenter->x;
