@@ -11,7 +11,10 @@ class InhabitedChunkCounter extends Task {
 			foreach($level->getPlayers() as $player) {
 				$chunk = $player->chunk;
 				if($chunk !== null) {
-					$chunk->inhabitedTime += 1;
+					if(!isset($chunk->inhabitedTime))
+						$chunk->inhabitedTime = 1;
+					else
+						$chunk->inhabitedTime += 1;
 				}
 			}
 		}

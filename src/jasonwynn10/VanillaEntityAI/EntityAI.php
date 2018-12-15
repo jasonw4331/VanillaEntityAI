@@ -12,7 +12,6 @@ use jasonwynn10\VanillaEntityAI\entity\hostile\ElderGuardian;
 use jasonwynn10\VanillaEntityAI\entity\hostile\EnderDragon;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Enderman;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Endermite;
-use jasonwynn10\VanillaEntityAI\entity\hostile\Evoker;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Ghast;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Guardian;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Husk;
@@ -23,7 +22,6 @@ use jasonwynn10\VanillaEntityAI\entity\hostile\Skeleton;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Slime;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Spider;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Stray;
-use jasonwynn10\VanillaEntityAI\entity\hostile\Vex;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Vindicator;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Witch;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Wither;
@@ -32,43 +30,7 @@ use jasonwynn10\VanillaEntityAI\entity\hostile\Zombie;
 use jasonwynn10\VanillaEntityAI\entity\hostile\ZombieHorse;
 use jasonwynn10\VanillaEntityAI\entity\hostile\ZombiePigman;
 use jasonwynn10\VanillaEntityAI\entity\hostile\ZombieVillager;
-use jasonwynn10\VanillaEntityAI\entity\neutral\AreaEffectCloud;
-use jasonwynn10\VanillaEntityAI\entity\neutral\ArmorStand;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Arrow;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Boat;
-use jasonwynn10\VanillaEntityAI\entity\neutral\ChestMinecart;
-use jasonwynn10\VanillaEntityAI\entity\neutral\CommandBlockMinecart;
-use jasonwynn10\VanillaEntityAI\entity\neutral\DangerousWitherSkull;
-use jasonwynn10\VanillaEntityAI\entity\neutral\DragonFireball;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Egg;
-use jasonwynn10\VanillaEntityAI\entity\neutral\EnderCrystal;
-use jasonwynn10\VanillaEntityAI\entity\neutral\EnderPearl;
-use jasonwynn10\VanillaEntityAI\entity\neutral\EvocationFang;
-use jasonwynn10\VanillaEntityAI\entity\neutral\ExperienceBottle;
-use jasonwynn10\VanillaEntityAI\entity\neutral\ExperienceOrb;
-use jasonwynn10\VanillaEntityAI\entity\neutral\EyeOfEnder;
-use jasonwynn10\VanillaEntityAI\entity\neutral\FallingBlock;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Fireball;
-use jasonwynn10\VanillaEntityAI\entity\neutral\FireworksRocket;
-use jasonwynn10\VanillaEntityAI\entity\neutral\FishingHook;
-use jasonwynn10\VanillaEntityAI\entity\neutral\HopperMinecart;
 use jasonwynn10\VanillaEntityAI\entity\neutral\Item;
-use jasonwynn10\VanillaEntityAI\entity\neutral\LargeFireball;
-use jasonwynn10\VanillaEntityAI\entity\neutral\LeashKnot;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Lightning;
-use jasonwynn10\VanillaEntityAI\entity\neutral\LingeringPotion;
-use jasonwynn10\VanillaEntityAI\entity\neutral\LlamaSpit;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Minecart;
-use jasonwynn10\VanillaEntityAI\entity\neutral\MovingBlock;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Painting;
-use jasonwynn10\VanillaEntityAI\entity\neutral\ShulkerBullet;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Snowball;
-use jasonwynn10\VanillaEntityAI\entity\neutral\SplashPotion;
-use jasonwynn10\VanillaEntityAI\entity\neutral\TNT;
-use jasonwynn10\VanillaEntityAI\entity\neutral\TNTMinecart;
-use jasonwynn10\VanillaEntityAI\entity\neutral\Trident;
-use jasonwynn10\VanillaEntityAI\entity\neutral\TripodCamera;
-use jasonwynn10\VanillaEntityAI\entity\neutral\WitherSkull;
 use jasonwynn10\VanillaEntityAI\entity\passive\Bat;
 use jasonwynn10\VanillaEntityAI\entity\passive\Chicken;
 use jasonwynn10\VanillaEntityAI\entity\passive\Cow;
@@ -114,7 +76,7 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\timings\TimingsHandler;
 
 class EntityAI extends PluginBase {
-	/** @var string[] $entities */
+	/** @var string[][] $entities */
 	public static $entities = [
 		Chicken::class => ['Chicken', 'minecraft:chicken'],
 		Cow::class => ['Cow', 'minecraft:cow'],
