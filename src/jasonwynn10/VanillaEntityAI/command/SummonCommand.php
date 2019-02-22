@@ -41,12 +41,19 @@ class SummonCommand extends VanillaCommand {
 			$reflectionClass = new \ReflectionClass($class);
 			if(is_numeric($args[0]) and $reflectionClass->getConstant("NETWORK_ID") === (int)$args[0]) {
 				$entityId = $reflectionClass->getConstant("NETWORK_ID");
-			}elseif($args[0] === $reflectionClass->getShortName()) {
+				break;
+			}elseif(strtolower($args[0]) === strtolower($reflectionClass->getShortName())) {
 				$entityId = $reflectionClass->getConstant("NETWORK_ID");
-			}else {
-				$sender->sendMessage(TextFormat::RED . "That entity could not be found");
-				return true;
+				break;
 			}
+		}
+		if($entityId === 0){
+			$sender->sendMessage(TextFormat::RED . "That entity could not be found");
+			return true;
+		} elseif($entityId === Entity::NETWORK_ID){
+			$sender->getServer()->getLogger()->error("EntityID returned -1 when testing for " . $args[0]);
+			$sender->sendMessage(TextFormat::RED . "That entity could not be found (internal error)");
+			return true;
 		}
 		if(count($args) > 1 and count($args) < 4) {
 			$x = $this->getRelativeDouble($sender->x, $sender, $args[$pos = 2]);
