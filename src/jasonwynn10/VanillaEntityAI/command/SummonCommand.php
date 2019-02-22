@@ -42,7 +42,7 @@ class SummonCommand extends VanillaCommand {
 			if(is_numeric($args[0]) and $reflectionClass->getConstant("NETWORK_ID") === (int)$args[0]) {
 				$entityId = $reflectionClass->getConstant("NETWORK_ID");
 				break;
-			}elseif($args[0] === $reflectionClass->getShortName()) {
+			}elseif(strtolower($args[0]) === strtolower($reflectionClass->getShortName())) {
 				$entityId = $reflectionClass->getConstant("NETWORK_ID");
 				break;
 			}
