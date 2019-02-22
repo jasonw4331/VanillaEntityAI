@@ -50,7 +50,7 @@ class SummonCommand extends VanillaCommand {
 		if($entityId === 0){
 			$sender->sendMessage(TextFormat::RED . "That entity could not be found");
 			return true;
-		} elseif($entityId === -1){
+		} elseif($entityId === Entity::NETWORK_ID){
 			$sender->getServer()->getLogger()->error("EntityID returned -1 when testing for " . $args[0]);
 			$sender->sendMessage(TextFormat::RED . "That entity could not be found (internal error)");
 			return true;
