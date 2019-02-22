@@ -50,6 +50,10 @@ class SummonCommand extends VanillaCommand {
 		if($entityId === 0){
 			$sender->sendMessage(TextFormat::RED . "That entity could not be found");
 			return true;
+		} elseif($entityId === -1){
+			$sender->getServer()->getLogger()->error("EntityID returned -1 when testing for " . $args[0]);
+			$sender->sendMessage(TextFormat::RED . "That entity could not be found (internal error)");
+			return true;
 		}
 		if(count($args) > 1 and count($args) < 4) {
 			$x = $this->getRelativeDouble($sender->x, $sender, $args[$pos = 2]);
