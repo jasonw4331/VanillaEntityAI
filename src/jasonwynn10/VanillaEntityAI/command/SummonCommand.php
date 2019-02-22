@@ -47,12 +47,8 @@ class SummonCommand extends VanillaCommand {
 				break;
 			}
 		}
-		if($entityId === 0){
-			$sender->sendMessage(TextFormat::RED . "That entity could not be found");
-			return true;
-		} elseif($entityId === Entity::NETWORK_ID){
-			$sender->getServer()->getLogger()->error("EntityID returned -1 when testing for " . $args[0]);
-			$sender->sendMessage(TextFormat::RED . "That entity could not be found (internal error)");
+		if($entityId <= 0) {
+			$sender->sendMessage(TextFormat::RED . "Syntax error: Unexpected \"$args[0]\": at \"/summon >>$args[0]<< $args[1] $args[2] $args[3]\"");
 			return true;
 		}
 		if(count($args) > 1 and count($args) < 4) {
@@ -66,6 +62,7 @@ class SummonCommand extends VanillaCommand {
 		}
 		$entity = Entity::createEntity($entityId, $sender->getLevel(), Entity::createBaseNBT(new Vector3($x, $y, $z)));
 		$entity->spawnToAll();
+		$sender->sendMessage("Object successfully spawned");
 		return true;
 	}
 }
