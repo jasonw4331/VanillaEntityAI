@@ -178,8 +178,10 @@ class EntityAI extends PluginBase {
 		//tropical fish
 		//fish
 	];
-	/** @var self|null */
+	/** @var self|null $instance */
 	private static $instance;
+	/** @var int[] $chunkCounter */
+	public static $chunkCounter = [];
 
 	/**
 	 * @return self
@@ -191,6 +193,8 @@ class EntityAI extends PluginBase {
 	public function onLoad(): void {
 		self::$instance = $this;
 		TimingsHandler::setEnabled();
+		$this->reloadConfig();
+		self::$chunkCounter = $this->getConfig()->getAll();
 	}
 
 	public function onEnable(): void {
@@ -213,6 +217,11 @@ class EntityAI extends PluginBase {
 			$this->getScheduler()->scheduleRepeatingTask(new DespawnTask(), 1);
 		}
 		$this->getScheduler()->scheduleRepeatingTask(new InhabitedChunkCounter(), 20 * 60 * 60);
+	}
+
+	public function onDisable() {
+		$this->getConfig()->setAll(self::$chunkCounter);
+		$this->getConfig()->save();
 	}
 
 	/**
@@ -256,7 +265,7 @@ class EntityAI extends PluginBase {
 		}else {
 			$totalTimeFactor = (($totalPlayTime * 20 * 60 * 60) - 72000) / 5760000;
 		}
-		$chunkInhabitedTime = isset($chunk->inhabitedTime) ? $chunk->inhabitedTime : 0;
+		$chunkInhabitedTime = self::$chunkCounter[Level::chunkHash($chunk->getX(), $chunk->getZ())] ?? 0;
 		if($chunkInhabitedTime > 50) {
 			$chunkFactor = 1;
 		}else {

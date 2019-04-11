@@ -38,7 +38,11 @@ class EntityListener implements Listener {
 		$lightLevel = $level->getFullLightAt($packCenter->x, $packCenter->y, $packCenter->z);
 		if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid() and $lightLevel > 8) {
 			$biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
-			$entityList = BiomeEntityList::BIOME_ANIMALS[$biomeId];
+			if(array_key_exists($biomeId, BiomeEntityList::BIOME_ANIMALS)) {
+				$entityList = BiomeEntityList::BIOME_ANIMALS[$biomeId];
+			}else {
+				$entityList = BiomeEntityList::BIOME_ANIMALS[$biomeId = 1];
+			}
 			if(empty($entityList))
 				return; // no entities for this biome
 			$entityId = $entityList[array_rand(BiomeEntityList::BIOME_ANIMALS[$biomeId])];
@@ -58,7 +62,11 @@ class EntityListener implements Listener {
 			}
 		}elseif(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid() and $lightLevel <= 7) {
 			$biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
-			$entityList = BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId];
+			if(array_key_exists($biomeId, BiomeEntityList::BIOME_ANIMALS)) {
+				$entityList = BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId];
+			}else {
+				$entityList = BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId = 1];
+			}
 			if(empty($entityList))
 				return; // no entities for this biome
 			$entityId = $entityList[array_rand(BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId])];
