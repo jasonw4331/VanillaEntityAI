@@ -36,7 +36,7 @@ class SummonCommand extends VanillaCommand {
 			throw new InvalidCommandSyntaxException();
 		}
 		$entityId = 0;
-		foreach(array_keys(EntityAI::$entities) as $class) {
+		foreach(array_keys(EntityAI::getEntities()) as $class) {
 			/** @noinspection PhpUnhandledExceptionInspection */
 			$reflectionClass = new \ReflectionClass($class);
 			if(is_numeric($args[0]) and $reflectionClass->getConstant("NETWORK_ID") === (int)$args[0]) {

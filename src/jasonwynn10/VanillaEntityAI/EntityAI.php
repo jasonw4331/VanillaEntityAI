@@ -3,6 +3,8 @@ declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI;
 
 use jasonwynn10\VanillaEntityAI\block\MonsterSpawner;
+use jasonwynn10\VanillaEntityAI\block\Pumpkin;
+use jasonwynn10\VanillaEntityAI\block\Snow;
 use jasonwynn10\VanillaEntityAI\command\DifficultyCommand;
 use jasonwynn10\VanillaEntityAI\command\SummonCommand;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Blaze;
@@ -66,7 +68,9 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\FishingRod;
+use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
+use pocketmine\item\SpawnEgg;
 use pocketmine\item\Sword;
 use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
@@ -74,10 +78,11 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\plugin\PluginBase;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\Config;
 
 class EntityAI extends PluginBase {
 	/** @var string[][] $entities */
-	public static $entities = [
+	protected static $entities = [
 		Chicken::class => ['Chicken', 'minecraft:chicken'],
 		Cow::class => ['Cow', 'minecraft:cow'],
 		Pig::class => ['Pig', 'minecraft:pig'],
@@ -193,35 +198,104 @@ class EntityAI extends PluginBase {
 	public function onLoad(): void {
 		self::$instance = $this;
 		TimingsHandler::setEnabled();
-		$this->reloadConfig();
+		$this->getConfig()->load($this->getDataFolder()."config.yml", Config::JSON); // change config to be JSON with yaml file extension
 		self::$chunkCounter = $this->getConfig()->getAll();
+		$this->getLogger()->debug("Chunk Counter Data Loaded");
 	}
 
 	public function onEnable(): void {
+		BlockFactory::registerBlock(new Pumpkin(), true);
+		BlockFactory::registerBlock(new Snow(), true);
 		BlockFactory::registerBlock(new MonsterSpawner(), true);
+		$this->getLogger()->debug("Registered Blocks");
 		/** @noinspection PhpUnhandledExceptionInspection */
 		MobSpawner::registerTile(MobSpawner::class, [MobSpawner::MOB_SPAWNER, "minecraft:mob_spawner"]);
+		$this->getLogger()->debug("Registered Spawner Tile");
 		foreach(self::$entities as $class => $saveNames) {
 			Entity::registerEntity($class, true, $saveNames);
+			$this->getLogger()->debug("Entity Registered: ".$saveNames[1]);
+
+			if(!in_array($class, [
+				EnderDragon::class,
+				Wither::class,
+				ElderGuardian::class,
+				Endermite::class,
+				Item::class,
+				SnowGolem::class,
+				IronGolem::class
+			])) {
+				$item = new SpawnEgg(constant($class."::NETWORK_ID"));
+				$this->getLogger()->debug("Registered Item: ".$item->__toString());
+				if(!\pocketmine\item\Item::isCreativeItem($item)) {
+					\pocketmine\item\Item::addCreativeItem($item);
+				}
+			}
 		}
-		$this->getServer()->getCommandMap()->register("pocketmine", new SummonCommand("summon"));
-		$this->getServer()->getCommandMap()->register("pocketmine", new DifficultyCommand("difficulty"));
+		$server = $this->getServer();
+		$server->getCommandMap()->register("pocketmine", new SummonCommand("summon"));
+		$server->getCommandMap()->register("pocketmine", new DifficultyCommand("difficulty"));
+		$this->getLogger()->debug("Commands registered");
 		new EntityListener($this);
-		if($this->getServer()->getConfigBool("spawn-mobs", true)) {
+
+		$properties = new Config($server->getDataPath()."server.properties", Config::PROPERTIES, [
+			"motd" => \pocketmine\NAME . " Server",
+			"server-port" => 19132,
+			"white-list" => false,
+			"announce-player-achievements" => true,
+			"spawn-protection" => 16,
+			"max-players" => 20,
+			"spawn-animals" => true,
+			"spawn-mobs" => true,
+			"gamemode" => 0,
+			"force-gamemode" => false,
+			"hardcore" => false,
+			"pvp" => true,
+			"difficulty" => 1,
+			"generator-settings" => "",
+			"level-name" => "world",
+			"level-seed" => "",
+			"level-type" => "DEFAULT",
+			"enable-query" => true,
+			"enable-rcon" => false,
+			"rcon.password" => substr(base64_encode(random_bytes(20)), 3, 10),
+			"auto-save" => true,
+			"view-distance" => 8,
+			"xbox-auth" => true,
+			"language" => "eng"
+		]);
+		if(!$properties->exists("spawn-animals")) {
+			$properties->set("spawn-animals", true);
+		}
+		if(!$properties->exists("spawn-mobs")) {
+			$properties->set("spawn-mobs", true);
+		}
+		if($properties->hasChanged())
+			$properties->save();
+
+		if($server->getConfigBool("spawn-mobs", true)) {
 			$this->getScheduler()->scheduleRepeatingTask(new HostileSpawnTask(), 1);
 		}
-		if($this->getServer()->getConfigBool("spawn-animals", true)) {
+		if($server->getConfigBool("spawn-animals", true)) {
 			$this->getScheduler()->scheduleRepeatingTask(new PassiveSpawnTask(), 20);
 		}
-		if($this->getServer()->getConfigBool("spawn-mobs", true) or $this->getServer()->getConfigBool("spawn-animals", true)) {
+		if($server->getConfigBool("spawn-mobs", true) or $server->getConfigBool("spawn-animals", true)) {
 			$this->getScheduler()->scheduleRepeatingTask(new DespawnTask(), 1);
 		}
+		$this->getLogger()->debug("Server Property Values Confirmed");
+
 		$this->getScheduler()->scheduleRepeatingTask(new InhabitedChunkCounter(), 20 * 60 * 60);
 	}
 
 	public function onDisable() {
 		$this->getConfig()->setAll(self::$chunkCounter);
 		$this->getConfig()->save();
+	}
+
+	/**
+	 * @return string[][]
+	 */
+	public static function getEntities() : array {
+		return self::$entities;
 	}
 
 	/**

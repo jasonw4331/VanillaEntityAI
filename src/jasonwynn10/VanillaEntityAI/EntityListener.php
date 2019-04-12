@@ -26,6 +26,7 @@ class EntityListener implements Listener {
 	public function __construct(EntityAI $plugin) {
 		$plugin->getServer()->getPluginManager()->registerEvents($this, $plugin);
 		$this->plugin = $plugin;
+		$plugin->getLogger()->debug("Event Listener Registered");
 	}
 
 	/**
@@ -50,7 +51,7 @@ class EntityListener implements Listener {
 				for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
 					$x = mt_rand(-20, 20) + $packCenter->x;
 					$z = mt_rand(-20, 20) + $packCenter->z;
-					foreach(EntityAI::$entities as $class => $arr) {
+					foreach(EntityAI::getEntities() as $class => $arr) {
 						if($class instanceof AnimalBase and $class::NETWORK_ID === $entityId) {
 							$entity = $class::spawnMob(new Position($x + 0.5, $packCenter->y, $z + 0.5, $level));
 							if($entity !== null) {
@@ -74,7 +75,7 @@ class EntityListener implements Listener {
 				for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
 					$x = mt_rand(-20, 20) + $packCenter->x;
 					$z = mt_rand(-20, 20) + $packCenter->z;
-					foreach(EntityAI::$entities as $class => $arr) {
+					foreach(EntityAI::getEntities() as $class => $arr) {
 						if($class instanceof MonsterBase and $class::NETWORK_ID === $entityId) {
 							$entity = $class::spawnMob(new Position($x + 0.5, $packCenter->y, $z + 0.5, $level));
 							if($entity !== null) {

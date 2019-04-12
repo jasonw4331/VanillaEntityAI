@@ -53,7 +53,7 @@ class HostileSpawnTask extends Task {
 					for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
 						$x = mt_rand(-20, 20) + $packCenter->x;
 						$z = mt_rand(-20, 20) + $packCenter->z;
-						foreach(EntityAI::$entities as $class => $arr) {
+						foreach(EntityAI::getEntities() as $class => $arr) {
 							if($class instanceof MonsterBase and $class::NETWORK_ID === $entityId) {
 								$entity = $class::spawnMob(new Position($x + 0.5, $packCenter->y, $z + 0.5, $level));
 								if($entity !== null) {

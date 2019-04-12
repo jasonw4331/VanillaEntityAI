@@ -72,7 +72,7 @@ class MobSpawner extends Spawnable {
 					break;
 				}
 			}
-			foreach(EntityAI::$entities as $class => $arr) {
+			foreach(EntityAI::getEntities() as $class => $arr) {
 				if($class instanceof CreatureBase and $class::NETWORK_ID === $this->entityId) {
 					if($valid and count(self::getAreaEntities($this->spawnArea, $this->level, $class)) < $this->maxNearbyEntities) {
 						$spawned = 0;
