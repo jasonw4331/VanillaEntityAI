@@ -339,7 +339,7 @@ class EntityAI extends PluginBase {
 		}else {
 			$totalTimeFactor = (($totalPlayTime * 20 * 60 * 60) - 72000) / 5760000;
 		}
-		$chunkInhabitedTime = self::$chunkCounter[Level::chunkHash($chunk->getX(), $chunk->getZ())] ?? 0;
+		$chunkInhabitedTime = self::$chunkCounter[Level::chunkHash($chunk->getX(), $chunk->getZ()).":".$level->getFolderName()] ?? 0;
 		if($chunkInhabitedTime > 50) {
 			$chunkFactor = 1;
 		}else {

@@ -9,16 +9,15 @@ use pocketmine\Server;
 
 class InhabitedChunkCounter extends Task {
 	public function onRun(int $currentTick) {
-		foreach(Server::getInstance()->getLevels() as $level) {
-			foreach($level->getPlayers() as $player) {
-				$chunk = $player->chunk;
-				if($chunk !== null) {
-					$hash = Level::chunkHash($chunk->getX(), $chunk->getZ());
-					if(!isset(EntityAI::$chunkCounter[$hash])) {
-						EntityAI::$chunkCounter[$hash] = 0;
-					}
-					EntityAI::$chunkCounter[$hash] += 1;
+		foreach(Server::getInstance()->getOnlinePlayers() as $player) {
+			$level = $player->level;
+			$chunk = $player->chunk;
+			if($level !== null and $chunk !== null) {
+				$hash = Level::chunkHash($chunk->getX(), $chunk->getZ());
+				if(!isset(EntityAI::$chunkCounter[$hash])) {
+					EntityAI::$chunkCounter[$hash.":".$level->getFolderName()] = 0;
 				}
+				EntityAI::$chunkCounter[$hash.":".$level->getFolderName()] += 1;
 			}
 		}
 	}
