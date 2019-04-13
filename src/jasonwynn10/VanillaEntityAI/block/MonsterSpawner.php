@@ -5,6 +5,7 @@ namespace jasonwynn10\VanillaEntityAI\block;
 use jasonwynn10\VanillaEntityAI\tile\MobSpawner;
 use pocketmine\block\Block;
 use pocketmine\item\Item;
+use pocketmine\item\SpawnEgg;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -23,7 +24,7 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner {
 	 * @return bool
 	 */
 	public function onActivate(Item $item, Player $player = null) : bool {
-		if($player instanceof Player and $item->getId() === Item::SPAWN_EGG) {
+		if($player instanceof Player and $item instanceof SpawnEgg) {
 			$t = $this->getLevel()->getTile($this);
 			if($t instanceof MobSpawner) {
 				$spawner = $t;
@@ -32,8 +33,9 @@ class MonsterSpawner extends \pocketmine\block\MonsterSpawner {
 				$spawner = MobSpawner::createTile(MobSpawner::MOB_SPAWNER, $this->getLevel(), MobSpawner::createNBT($this));
 			}
 			$spawner->setEntityId($item->getDamage());
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	/**

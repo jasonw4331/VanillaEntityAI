@@ -205,7 +205,6 @@ class EntityAI extends PluginBase {
 
 	public function onEnable(): void {
 		BlockFactory::registerBlock(new Pumpkin(), true);
-		BlockFactory::registerBlock(new Snow(), true);
 		BlockFactory::registerBlock(new MonsterSpawner(), true);
 		$this->getLogger()->debug("Registered Blocks");
 		/** @noinspection PhpUnhandledExceptionInspection */

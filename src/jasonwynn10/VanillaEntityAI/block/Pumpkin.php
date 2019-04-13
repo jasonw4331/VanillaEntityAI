@@ -19,6 +19,34 @@ class Pumpkin extends \pocketmine\block\Pumpkin {
 			$entity = Entity::createEntity(SnowGolem::NETWORK_ID, $this->level, SnowGolem::createBaseNBT($block2->add(0.5,0,0.5)));
 			$entity->spawnToAll();
 			return false;
+		}elseif(($block1 = $this->getSide(Vector3::SIDE_NORTH, 1)) instanceof Snow and ($block2 = $this->getSide(Vector3::SIDE_NORTH, 2)) instanceof Snow) {
+			$this->level->setBlock($this, Block::get(Block::AIR));
+			$this->level->setBlock($block1, Block::get(Block::AIR));
+			$this->level->setBlock($block2, Block::get(Block::AIR));
+			$entity = Entity::createEntity(SnowGolem::NETWORK_ID, $this->level, SnowGolem::createBaseNBT($this->add(0.5,0,0.5)));
+			$entity->spawnToAll();
+			return false;
+		}elseif(($block1 = $this->getSide(Vector3::SIDE_EAST, 1)) instanceof Snow and ($block2 = $this->getSide(Vector3::SIDE_EAST, 2)) instanceof Snow) {
+			$this->level->setBlock($this, Block::get(Block::AIR));
+			$this->level->setBlock($block1, Block::get(Block::AIR));
+			$this->level->setBlock($block2, Block::get(Block::AIR));
+			$entity = Entity::createEntity(SnowGolem::NETWORK_ID, $this->level, SnowGolem::createBaseNBT($this->add(0.5,0,0.5)));
+			$entity->spawnToAll();
+			return false;
+		}elseif(($block1 = $this->getSide(Vector3::SIDE_SOUTH, 1)) instanceof Snow and ($block2 = $this->getSide(Vector3::SIDE_SOUTH, 2)) instanceof Snow) {
+			$this->level->setBlock($this, Block::get(Block::AIR));
+			$this->level->setBlock($block1, Block::get(Block::AIR));
+			$this->level->setBlock($block2, Block::get(Block::AIR));
+			$entity = Entity::createEntity(SnowGolem::NETWORK_ID, $this->level, SnowGolem::createBaseNBT($this->add(0.5,0,0.5)));
+			$entity->spawnToAll();
+			return false;
+		}elseif(($block1 = $this->getSide(Vector3::SIDE_WEST, 1)) instanceof Snow and ($block2 = $this->getSide(Vector3::SIDE_WEST, 2)) instanceof Snow) {
+			$this->level->setBlock($this, Block::get(Block::AIR));
+			$this->level->setBlock($block1, Block::get(Block::AIR));
+			$this->level->setBlock($block2, Block::get(Block::AIR));
+			$entity = Entity::createEntity(SnowGolem::NETWORK_ID, $this->level, SnowGolem::createBaseNBT($this->add(0.5,0,0.5)));
+			$entity->spawnToAll();
+			return false;
 		}
 
 		return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
