@@ -8,6 +8,7 @@ use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
 use jasonwynn10\VanillaEntityAI\entity\ItemHolderTrait;
 use jasonwynn10\VanillaEntityAI\entity\MonsterBase;
 use jasonwynn10\VanillaEntityAI\entity\neutral\Arrow;
+use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
 use jasonwynn10\VanillaEntityAI\EntityAI;
 use pocketmine\block\Water;
 use pocketmine\entity\Entity;
@@ -21,7 +22,6 @@ use pocketmine\level\sound\LaunchSound;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
-use pocketmine\Player;
 
 class Skeleton extends MonsterBase implements InventoryHolder {
 	use ItemHolderTrait, ClimbingTrait;
@@ -75,12 +75,14 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 						$nbt = Arrow::createBaseNBT(new Vector3($this->x + (-sin($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * 0.5), $this->y + $this->eyeHeight, $this->z + (cos($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * 0.5)), new Vector3(), $yaw, $pitch);
 						/** @var Arrow $arrow */
 						$arrow = Arrow::createEntity("Arrow", $this->level, $nbt, $this);
-						$this->server->getPluginManager()->callEvent($ev = new EntityShootBowEvent($this, Item::get(Item::ARROW, 0, 1), $arrow, $force));
+						$ev = new EntityShootBowEvent($this, Item::get(Item::ARROW, 0, 1), $arrow, $force);
+						$ev->call();
 						$projectile = $ev->getProjectile();
 						if($ev->isCancelled()) {
 							$projectile->flagForDespawn();
 						}elseif($projectile instanceof Projectile) {
-							$this->server->getPluginManager()->callEvent($launch = new ProjectileLaunchEvent($projectile));
+							$launch = new ProjectileLaunchEvent($projectile);
+							$launch->call();
 							if($launch->isCancelled()) {
 								$projectile->flagForDespawn();
 							}else {

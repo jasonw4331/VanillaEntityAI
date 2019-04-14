@@ -33,6 +33,7 @@ abstract class MonsterBase extends CreatureBase {
 		if($this->level->getDifficulty() <= Level::DIFFICULTY_PEACEFUL) {
 			$this->flagForDespawn();
 		}
+		// TODO: find target if none set
 		return parent::entityBaseTick($tickDiff);
 	}
 

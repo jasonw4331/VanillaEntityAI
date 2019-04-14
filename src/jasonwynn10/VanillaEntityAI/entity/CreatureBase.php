@@ -12,8 +12,8 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\timings\Timings;
 
-abstract class CreatureBase extends Creature implements Linkable, Collidable {
-	use SpawnableTrait, CollisionCheckingTrait;
+abstract class CreatureBase extends Creature implements Linkable, Collidable, Lookable {
+	use SpawnableTrait, CollisionCheckingTrait, LinkableTrait;
 	/** @var float $speed */
 	protected $speed = 1.0;
 	/** @var float $stepHeight */
@@ -40,7 +40,7 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 		if($side >= 0 and $side <= 5) {
 			return $side ^ 0x01; // TODO: right now it gives the opposite side...
 		}
-		throw new \InvalidArgumentException("Invalid side $side given to getOppositeSide");
+		throw new \InvalidArgumentException("Invalid side $side given to getRightSide");
 	}
 
 	/**
@@ -72,45 +72,8 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 			$this->boundingBox->offset($dx, $dy, $dz);
 		}else {
 			$this->ySize *= 0.4;
-			/*
-			if($this->isColliding) { //With cobweb?
-				$this->isColliding = false;
-				$dx *= 0.25;
-				$dy *= 0.05;
-				$dz *= 0.25;
-				$this->motionX = 0;
-				$this->motionY = 0;
-				$this->motionZ = 0;
-			}
-			*/
 			$axisalignedbb = clone $this->boundingBox;
-			/*$sneakFlag = $this->onGround and $this instanceof Player;
-
-			if($sneakFlag) {
-				for($mov = 0.05; $dx != 0.0 and count($this->level->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, -1, 0))) === 0; $movX = $dx) {
-					if($dx < $mov and $dx >= -$mov) {
-						$dx = 0;
-					}elseif($dx > 0) {
-						$dx -= $mov;
-					}else{
-						$dx += $mov;
-					}
-				}
-
-				for(; $dz != 0.0 and count($this->level->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox(0, -1, $dz))) === 0; $movZ = $dz) {
-					if($dz < $mov and $dz >= -$mov) {
-						$dz = 0;
-					}elseif($dz > 0) {
-						$dz -= $mov;
-					}else{
-						$dz += $mov;
-					}
-				}
-
-				//TODO: big messy loop
-			}*/
-			assert(abs($dx) <= 20 and abs($dy) <= 20 and abs($dz) <= 20, "Movement distance is excessive: dx=$dx, dy=$dy, dz=$dz");
-			$list = $this->level->getCollisionCubes($this, $this->level->getTickRate() > 1 ? $this->boundingBox->offsetCopy($dx, $dy, $dz) : $this->boundingBox->addCoord($dx, $dy, $dz), false);
+			$list = $this->level->getCollisionCubes($this, $this->boundingBox->addCoord($dx, $dy, $dz), false);
 			foreach($list as $bb) {
 				$dy = $bb->calculateYOffset($this->boundingBox, $dy);
 			}
@@ -242,23 +205,6 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable {
 	 */
 	public function setPersistence(bool $persistent) : self {
 		$this->persistent = $persistent;
-		return $this;
-	}
-
-	/**
-	 * @return Linkable|null
-	 */
-	public function getLink() : ?Linkable {
-		return $this->linkedEntity;
-	}
-
-	/**
-	 * @param Linkable|null $entity
-	 *
-	 * @return CreatureBase
-	 */
-	public function setLink(?Linkable $entity) : self {
-		$this->linkedEntity = $entity;
 		return $this;
 	}
 

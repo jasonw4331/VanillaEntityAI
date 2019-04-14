@@ -26,7 +26,6 @@ class Item extends ItemEntity implements Collidable {
 	}
 
 	public function onCollideWithEntity(Entity $entity) : void {
-		// TODO: entity pick-ups
 		//TODO: minecart interactions
 	}
 

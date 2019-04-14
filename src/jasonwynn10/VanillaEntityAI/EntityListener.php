@@ -30,6 +30,13 @@ class EntityListener implements Listener {
 	}
 
 	/**
+	 * @param PlayerCreationEvent $event
+	 */
+	public function onLogin(PlayerCreationEvent $event) {
+		$event->setPlayerClass(Player::class);
+	}
+
+	/**
 	 * @param ChunkLoadEvent $event
 	 */
 	public function onLoad(ChunkLoadEvent $event) {
@@ -98,12 +105,5 @@ class EntityListener implements Listener {
 				$entity->flagForDespawn();
 			}
 		}
-	}
-
-	/**
-	 * @param PlayerCreationEvent $event
-	 */
-	public function onLogin(PlayerCreationEvent $event) {
-		$event->setPlayerClass(Player::class);
 	}
 }

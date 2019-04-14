@@ -2,8 +2,11 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\passiveaggressive;
 
-use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
+use jasonwynn10\VanillaEntityAI\block\Pumpkin;
+use jasonwynn10\VanillaEntityAI\entity\hostile\Enderman;
 use jasonwynn10\VanillaEntityAI\entity\Interactable;
+use jasonwynn10\VanillaEntityAI\entity\Linkable;
+use jasonwynn10\VanillaEntityAI\entity\Lookable;
 use jasonwynn10\VanillaEntityAI\network\PlayerNetworkSessionAdapter;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
@@ -62,13 +65,19 @@ class Player extends \pocketmine\Player {
 		$return = parent::handleInteract($packet);
 		switch($packet->action) {
 			case InteractPacket::ACTION_LEAVE_VEHICLE:
-				// TODO: entity linking
+				$target = $this->level->getEntity($packet->target);
+				$this->setTargetEntity($target);
+				if($target instanceof Linkable) {
+					$target->unlink();
+				}
 			break;
 			case InteractPacket::ACTION_MOUSEOVER:
 				$target = $this->level->getEntity($packet->target);
 				$this->setTargetEntity($target);
-				if($target instanceof CreatureBase) {
-					// TODO: check player looking at head and if wearing jack 'o lantern
+				// TODO: check distance
+				if($target instanceof Lookable) {
+					if($target instanceof Enderman and $this->getArmorInventory()->getHelmet() instanceof Pumpkin)
+						break;
 					$target->onPlayerLook($this);
 				}elseif($target === null) {
 					$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, ""); // Don't show button anymore
