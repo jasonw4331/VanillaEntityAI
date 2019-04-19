@@ -21,9 +21,9 @@ trait LinkableTrait {
 	/**
 	 * @param Entity|Linkable|null $entity
 	 *
-	 * @return self
+	 * @return Entity|Linkable
 	 */
-	public function setLink(?Linkable $entity) : self {
+	public function setLink(?Linkable $entity) : Linkable {
 		$this->link = $entity;
 		$entity->setLink($this);
 		$viewers = $this->getViewers();

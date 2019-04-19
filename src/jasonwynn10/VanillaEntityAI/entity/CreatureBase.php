@@ -22,8 +22,6 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 	protected $target = null;
 	/** @var bool $persistent */
 	protected $persistent = false;
-	/** @var Linkable|null $linkedEntity */
-	protected $linkedEntity;
 	/** @var int $moveTime */
 	protected $moveTime = 0;
 
@@ -212,6 +210,7 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 	 * @param Player $player
 	 */
 	public function onPlayerLook(Player $player) : void {
+		// TODO: Implement onPlayerLook() method.
 	}
 
 	/**

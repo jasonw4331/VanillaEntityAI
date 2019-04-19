@@ -13,9 +13,9 @@ interface Linkable {
 	/**
 	 * @param Linkable|null $entity
 	 *
-	 * @return Linkable
+	 * @return Entity|Linkable
 	 */
-	public function setLink(?Linkable $entity) : self;
+	public function setLink(?Linkable $entity) : Linkable;
 
 	/**
 	 * @return bool
