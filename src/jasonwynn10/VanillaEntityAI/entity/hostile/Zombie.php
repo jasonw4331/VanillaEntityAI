@@ -131,7 +131,6 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 		}elseif($this->target instanceof Player) {
 			if($this->target->isCreative() or !$this->target->isAlive() or $this->distance($this->target) > 16 or !$this->hasLineOfSight($this->target)) {
 				$this->target = null;
-				$hasUpdate = true;
 			}
 		}
 		$hasUpdate = parent::entityBaseTick($tickDiff) ? true : $hasUpdate;
@@ -146,19 +145,6 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			$this->extinguish();
 		}
 		$this->attackDelay += $tickDiff;
-		if(!$this->hasEffect(Effect::WATER_BREATHING) and $this->isUnderwater()) {
-			$hasUpdate = true;
-			$airTicks = $this->getAirSupplyTicks() - $tickDiff;
-			// TODO: drowned transformation
-			if($airTicks <= -20) {
-				$airTicks = 0;
-				$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
-				$this->attack($ev);
-			}
-			$this->setAirSupplyTicks($airTicks);
-		}else {
-			$this->setAirSupplyTicks(300);
-		}
 		return $hasUpdate;
 	}
 

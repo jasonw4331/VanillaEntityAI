@@ -139,7 +139,6 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 		}elseif($this->target instanceof Player) {
 			if($this->target->isCreative() or !$this->target->isAlive() or $this->distance($this->target) > 16 or !$this->hasLineOfSight($this->target)) {
 				$this->target = null;
-				$hasUpdate = true;
 			}
 		}
 		$hasUpdate = parent::entityBaseTick($tickDiff) ? true : $hasUpdate;
@@ -180,6 +179,13 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 		foreach($this->getArmorInventory()->getContents() as $piece)
 			$exp += mt_rand(1, 3);
 		return $exp;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function canBreathe() : bool{
+		return true;
 	}
 
 	/**

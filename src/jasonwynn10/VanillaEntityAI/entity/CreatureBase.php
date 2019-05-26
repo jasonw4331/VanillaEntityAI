@@ -148,11 +148,14 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 	public function hasLineOfSight(Entity $entity) : bool {
 		$distance = (int) $this->add(0, $this->eyeHeight)->distance($entity);
 		if($distance > 1) {
-			return $this->distance($entity) < 1 or empty($this->getLineOfSight($distance, 0, [
+			$blocksBetween = $this->getLineOfSight($distance, 0, [
 				BlockIds::AIR => BlockIds::AIR,
 				BlockIds::WATER => BlockIds::WATER,
 				BlockIds::LAVA => BlockIds::LAVA
-			]));
+			]);
+			return empty(array_filter($blocksBetween, function(Block $block) {
+				return !in_array($block->getId(), [BlockIds::AIR, BlockIds::WATER, BlockIds::LAVA]);
+			}));
 		}
 		return true;
 	}

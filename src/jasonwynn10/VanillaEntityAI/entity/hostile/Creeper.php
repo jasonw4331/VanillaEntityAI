@@ -105,7 +105,8 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
 	}
 
 	public function explode() {
-		$this->server->getPluginManager()->callEvent($ev = new ExplosionPrimeEvent($this, $this->charged ? 6 : 3));
+		$ev = new ExplosionPrimeEvent($this, $this->charged ? 6 : 3);
+		$ev->call();
 		if(!$ev->isCancelled()) {
 			$explosion = new Explosion($this, $ev->getForce(), $this);
 			$ev->setBlockBreaking(true); // TODO: mob griefing gamerule?
@@ -123,14 +124,16 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
 	 * @return bool
 	 */
 	public function entityBaseTick(int $tickDiff = 1) : bool {
+		$hasUpdate = false;
 		if($this->target === null) {
 			foreach($this->hasSpawned as $player) {
 				if($player->isSurvival() and $this->distance($player) <= 16 and $this->hasLineOfSight($player)) {
 					$this->target = $player;
+					$hasUpdate = true;
 				}
 			}
 		}elseif($this->target instanceof Player) {
-			if($this->target->isCreative() or !$this->target->isAlive()) {
+			if($this->target->isCreative() or !$this->target->isAlive() or $this->distance($this->target) > 16 or !$this->hasLineOfSight($this->target)) {
 				$this->target = null;
 			}
 		}
@@ -139,7 +142,7 @@ class Creeper extends MonsterBase implements Explosive, Interactable {
 		}else {
 			$this->speed = 0.9;
 		}
-		$hasUpdate = parent::entityBaseTick($tickDiff);
+		$hasUpdate = parent::entityBaseTick($tickDiff) ? true : $hasUpdate;
 		if($this->moveTime > 0) {
 			$this->moveTime -= $tickDiff;
 		}
