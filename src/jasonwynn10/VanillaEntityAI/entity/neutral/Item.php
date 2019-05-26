@@ -30,7 +30,7 @@ class Item extends ItemEntity implements Collidable {
 	}
 
 	public function onCollideWithBlock(Block $block) : void {
-		// TODO: blocks that delete items
+		// TODO: hoppers, pressure plates, tripwire
 	}
 
 	/**

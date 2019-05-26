@@ -269,9 +269,9 @@ class EntityAI extends PluginBase {
 		if(!$properties->exists("spawn-mobs")) {
 			$properties->set("spawn-mobs", true);
 		}
-		if($properties->hasChanged())
+		if($properties->hasChanged()){
 			$properties->save();
-
+		}
 		if($server->getConfigBool("spawn-mobs", true)) {
 			$this->getScheduler()->scheduleRepeatingTask(new HostileSpawnTask(), 1);
 		}
