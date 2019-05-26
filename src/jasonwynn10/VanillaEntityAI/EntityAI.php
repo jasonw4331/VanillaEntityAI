@@ -9,6 +9,7 @@ use jasonwynn10\VanillaEntityAI\command\SummonCommand;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Blaze;
 use jasonwynn10\VanillaEntityAI\entity\hostile\CaveSpider;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Creeper;
+use jasonwynn10\VanillaEntityAI\entity\hostile\Drowned;
 use jasonwynn10\VanillaEntityAI\entity\hostile\ElderGuardian;
 use jasonwynn10\VanillaEntityAI\entity\hostile\EnderDragon;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Enderman;
@@ -177,7 +178,7 @@ class EntityAI extends PluginBase {
 		//balloon
 		//pufferfish
 		//salmon
-		//drowned
+		Drowned::class => ['Drowned', 'minecraft:drowned'],
 		//tropical fish
 		//fish
 	];

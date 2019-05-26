@@ -30,11 +30,27 @@ abstract class MonsterBase extends CreatureBase {
 	 * @return bool
 	 */
 	public function entityBaseTick(int $tickDiff = 1) : bool {
+		$hasUpdate = false;
 		if($this->level->getDifficulty() <= Level::DIFFICULTY_PEACEFUL) {
 			$this->flagForDespawn();
 		}
-		// TODO: find target if none set
-		return parent::entityBaseTick($tickDiff);
+		if($this->target === null) {
+			foreach($this->hasSpawned as $player) {
+				if($player->isSurvival() and $this->distance($player) <= 16 and $this->hasLineOfSight($player)) {
+					$this->target = $player;
+					$hasUpdate = true;
+				}
+			}
+		}elseif($this->target instanceof Player) {
+			if($this->target->isCreative() or !$this->target->isAlive() or $this->distance($this->target) > 16 or !$this->hasLineOfSight($this->target)) {
+				$this->target = null;
+			}
+		}elseif($this->target instanceof CreatureBase) {
+			if(!$this->target->isAlive() or $this->distance($this->target) > 16 or !$this->hasLineOfSight($this->target)) {
+				$this->target = null;
+			}
+		}
+		return parent::entityBaseTick($tickDiff) ? true : $hasUpdate;
 	}
 
 	/**
