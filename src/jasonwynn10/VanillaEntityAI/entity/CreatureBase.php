@@ -4,6 +4,7 @@ namespace jasonwynn10\VanillaEntityAI\entity;
 
 use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
 use pocketmine\block\Block;
+use pocketmine\block\BlockIds;
 use pocketmine\entity\Creature;
 use pocketmine\entity\Entity;
 use pocketmine\level\Position;
@@ -147,7 +148,11 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 	public function hasLineOfSight(Entity $entity) : bool {
 		$distance = (int) $this->add(0, $this->eyeHeight)->distance($entity);
 		if($distance > 1) {
-			return $this->distance($entity) < 1 or empty($this->getLineOfSight($distance));
+			return $this->distance($entity) < 1 or empty($this->getLineOfSight($distance, 0, [
+				BlockIds::AIR => BlockIds::AIR,
+				BlockIds::WATER => BlockIds::WATER,
+				BlockIds::LAVA => BlockIds::LAVA
+			]));
 		}
 		return true;
 	}

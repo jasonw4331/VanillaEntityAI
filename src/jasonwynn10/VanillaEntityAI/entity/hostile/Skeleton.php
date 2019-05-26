@@ -75,6 +75,7 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 						$nbt = Arrow::createBaseNBT(new Vector3($this->x + (-sin($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * 0.5), $this->y + $this->eyeHeight, $this->z + (cos($yaw / 180 * M_PI) * cos($pitch / 180 * M_PI) * 0.5)), new Vector3(), $yaw, $pitch);
 						/** @var Arrow $arrow */
 						$arrow = Arrow::createEntity("Arrow", $this->level, $nbt, $this);
+						$arrow->setPickupMode(Arrow::PICKUP_NONE);
 						$ev = new EntityShootBowEvent($this, Item::get(Item::ARROW, 0, 1), $arrow, $force);
 						$ev->call();
 						$projectile = $ev->getProjectile();
@@ -127,19 +128,21 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 	 * @return bool
 	 */
 	public function entityBaseTick(int $tickDiff = 1) : bool {
-		$this->checkNearEntities();
+		$hasUpdate = false;
 		if($this->target === null) {
 			foreach($this->hasSpawned as $player) {
 				if($player->isSurvival() and $this->distance($player) <= 16 and $this->hasLineOfSight($player)) {
 					$this->target = $player;
+					$hasUpdate = true;
 				}
 			}
 		}elseif($this->target instanceof Player) {
-			if($this->target->isCreative() or !$this->target->isAlive()) {
+			if($this->target->isCreative() or !$this->target->isAlive() or $this->distance($this->target) > 16 or !$this->hasLineOfSight($this->target)) {
 				$this->target = null;
+				$hasUpdate = true;
 			}
 		}
-		$hasUpdate = parent::entityBaseTick($tickDiff);
+		$hasUpdate = parent::entityBaseTick($tickDiff) ? true : $hasUpdate;
 		if($this->moveTime > 0) {
 			$this->moveTime -= $tickDiff;
 		}

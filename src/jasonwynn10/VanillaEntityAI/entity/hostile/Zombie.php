@@ -40,6 +40,8 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			$this->setBaby();
 			if(mt_rand(1, 100) <= 15) {
 				// TODO: zombie jockey
+			}else {
+				// TODO: check nearby chickens
 			}
 		}
 		if(mt_rand(1, 100) >= 80) {
@@ -58,6 +60,17 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 
 	public function equipRandomArmour() : void {
 		//TODO random enchantments and random armour
+	}
+
+	public function attack(EntityDamageEvent $source) : void {
+		if($source->getCause() === EntityDamageEvent::CAUSE_DROWNING and $this->getHealth() - $source->getFinalDamage() <= 0) {
+			/** @var Drowned|null $entity */
+			$entity = self::createEntity(self::DROWNED, $this->level, Drowned::createBaseNBT($this, $this->motion, $this->yaw, $this->pitch));
+			$entity->setMainHandItem($this->mainHand);
+			$entity->setOffHandItem($this->offHand);
+			$this->level->addEntity($entity);
+		}
+		parent::attack($source);
 	}
 
 	public function onUpdate(int $currentTick) : bool {
@@ -107,18 +120,21 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 	 * @return bool
 	 */
 	public function entityBaseTick(int $tickDiff = 1) : bool {
+		$hasUpdate = false;
 		if($this->target === null) {
 			foreach($this->hasSpawned as $player) {
 				if($player->isSurvival() and $this->distance($player) <= 16 and $this->hasLineOfSight($player)) {
 					$this->target = $player;
+					$hasUpdate = true;
 				}
 			}
 		}elseif($this->target instanceof Player) {
-			if($this->target->isCreative() or !$this->target->isAlive()) {
+			if($this->target->isCreative() or !$this->target->isAlive() or $this->distance($this->target) > 16 or !$this->hasLineOfSight($this->target)) {
 				$this->target = null;
+				$hasUpdate = true;
 			}
 		}
-		$hasUpdate = parent::entityBaseTick($tickDiff);
+		$hasUpdate = parent::entityBaseTick($tickDiff) ? true : $hasUpdate;
 		if($this->moveTime > 0) {
 			$this->moveTime -= $tickDiff;
 		}
