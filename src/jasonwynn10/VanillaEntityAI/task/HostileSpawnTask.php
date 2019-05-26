@@ -5,6 +5,7 @@ namespace jasonwynn10\VanillaEntityAI\task;
 use jasonwynn10\VanillaEntityAI\data\BiomeEntityList;
 use jasonwynn10\VanillaEntityAI\entity\MonsterBase;
 use jasonwynn10\VanillaEntityAI\EntityAI;
+use pocketmine\level\biome\Biome;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
@@ -45,7 +46,7 @@ class HostileSpawnTask extends Task {
 			foreach($chunks as $chunk) {
 				$packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight() - 1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));
 				$biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
-				$entityList = BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId];
+				$entityList = BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId] ?? BiomeEntityList::BIOME_HOSTILE_MOBS[Biome::PLAINS]; // TODO remove hack when more biomes added
 				if(empty($entityList))
 					continue;
 				$entityId = $entityList[array_rand(BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId])];

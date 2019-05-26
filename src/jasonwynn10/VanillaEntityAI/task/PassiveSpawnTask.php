@@ -5,6 +5,7 @@ namespace jasonwynn10\VanillaEntityAI\task;
 use jasonwynn10\VanillaEntityAI\data\BiomeEntityList;
 use jasonwynn10\VanillaEntityAI\entity\AnimalBase;
 use jasonwynn10\VanillaEntityAI\EntityAI;
+use pocketmine\level\biome\Biome;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
@@ -45,7 +46,7 @@ class PassiveSpawnTask extends Task {
 				$entityList = BiomeEntityList::BIOME_ANIMALS[$biomeId];
 				if(empty($entityList))
 					continue;
-				$entityId = $entityList[array_rand(BiomeEntityList::BIOME_ANIMALS[$biomeId])];
+				$entityId = $entityList[array_rand(BiomeEntityList::BIOME_ANIMALS[$biomeId])] ?? BiomeEntityList::BIOME_HOSTILE_MOBS[Biome::PLAINS]; // TODO remove hack when more biomes added
 				if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid()) {
 					for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
 						$x = mt_rand(-20, 20) + $packCenter->x;
