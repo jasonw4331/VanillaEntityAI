@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\data;
 
 use jasonwynn10\VanillaEntityAI\entity\hostile\Creeper;
+use jasonwynn10\VanillaEntityAI\entity\hostile\Drowned;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Ghast;
 use jasonwynn10\VanillaEntityAI\entity\hostile\MagmaCube;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Skeleton;
@@ -29,7 +30,8 @@ class BiomeEntityList {
 	/** @var int[][]  */
 	public const BIOME_ENTITIES = [
 		Biome::OCEAN => [
-			Squid::NETWORK_ID
+			Squid::NETWORK_ID,
+			Drowned::NETWORK_ID
 			// TODO: water mobs
 		],
 		Biome::PLAINS => [
@@ -75,7 +77,8 @@ class BiomeEntityList {
 			Witch::NETWORK_ID
 		],
 		Biome::RIVER => [
-			Squid::NETWORK_ID
+			Squid::NETWORK_ID,
+			Drowned::NETWORK_ID
 			// TODO: water mobs
 		],
 		Biome::HELL => [
@@ -107,6 +110,7 @@ class BiomeEntityList {
 	];
 	public const BIOME_HOSTILE_MOBS = [
 		Biome::OCEAN => [
+			Drowned::NETWORK_ID
 			// TODO: water mobs
 		],
 		Biome::PLAINS => [
@@ -153,6 +157,7 @@ class BiomeEntityList {
 			Witch::NETWORK_ID
 		],
 		Biome::RIVER => [
+			Drowned::NETWORK_ID
 			// TODO: water mobs
 		],
 		Biome::HELL => [
@@ -230,7 +235,7 @@ class BiomeEntityList {
 		],
 		Biome::RIVER => [
 			Squid::NETWORK_ID
-			// TODO: water mobs
+			// TODO: fish
 		],
 		Biome::HELL => [
 			// none spawn
