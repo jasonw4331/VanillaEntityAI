@@ -245,8 +245,8 @@ class EntityAI extends PluginBase {
 			"announce-player-achievements" => true,
 			"spawn-protection" => 16,
 			"max-players" => 20,
-			"spawn-animals" => true,
-			"spawn-mobs" => true,
+			"spawn-animals" => false, // TODO: default to true once task lag is fixed
+			"spawn-mobs" => false, // TODO: default to true once task lag is fixed
 			"gamemode" => 0,
 			"force-gamemode" => false,
 			"hardcore" => false,
@@ -265,21 +265,21 @@ class EntityAI extends PluginBase {
 			"language" => "eng"
 		]);
 		if(!$properties->exists("spawn-animals")) {
-			$properties->set("spawn-animals", true);
+			$properties->set("spawn-animals", false); // TODO: default to true once task lag is fixed
 		}
 		if(!$properties->exists("spawn-mobs")) {
-			$properties->set("spawn-mobs", true);
+			$properties->set("spawn-mobs", false); // TODO: default to true once task lag is fixed
 		}
 		if($properties->hasChanged()){
 			$properties->save();
 		}
-		if($server->getConfigBool("spawn-mobs", true)) {
+		if($server->getConfigBool("spawn-mobs", false)) {
 			$this->getScheduler()->scheduleRepeatingTask(new HostileSpawnTask(), 1);
 		}
-		if($server->getConfigBool("spawn-animals", true)) {
+		if($server->getConfigBool("spawn-animals", false)) {
 			$this->getScheduler()->scheduleRepeatingTask(new PassiveSpawnTask(), 20);
 		}
-		if($server->getConfigBool("spawn-mobs", true) or $server->getConfigBool("spawn-animals", true)) {
+		if($server->getConfigBool("spawn-mobs", false) or $server->getConfigBool("spawn-animals", false)) { // TODO: default to true once task lag is fixed
 			$this->getScheduler()->scheduleRepeatingTask(new DespawnTask(), 1);
 		}
 		$this->getLogger()->debug("Server Property Values Confirmed");
