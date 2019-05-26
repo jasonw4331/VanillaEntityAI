@@ -5,7 +5,6 @@ namespace jasonwynn10\VanillaEntityAI\task;
 use jasonwynn10\VanillaEntityAI\data\BiomeEntityList;
 use jasonwynn10\VanillaEntityAI\entity\MonsterBase;
 use jasonwynn10\VanillaEntityAI\EntityAI;
-use pocketmine\level\biome\Biome;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
@@ -22,6 +21,20 @@ class HostileSpawnTask extends Task {
 			if($level->getDifficulty() < Level::DIFFICULTY_EASY) {
 				continue;
 			}
+			/** @var string[] $disabled */
+			$disabled = EntityAI::getInstance()->getConfig()->get("DisabledWorlds", []);
+			if(in_array($level->getFolderName(), $disabled) or in_array($level->getName(), $disabled)) {
+				continue;
+			}
+			$entities = 0;
+			foreach($level->getEntities() as $entity) {
+				if($entity instanceof MonsterBase) {
+					$entities += 1;
+				}
+				if($entities >= 200) { // bedrock edition has hard cap of 200 per world/dimension
+					continue 2;
+				}
+			}
 			/** @var Chunk[] $chunks */
 			$chunks = [];
 			foreach($level->getPlayers() as $player) {
@@ -32,24 +45,13 @@ class HostileSpawnTask extends Task {
 					}
 				}
 			}
-			$entities = 0;
-			foreach($chunks as $chunk) {
-				foreach($chunk->getEntities() as $entity) {
-					if($entity instanceof MonsterBase) {
-						$entities += 1;
-					}
-					if($entities >= 200) { // bedrock edition has hard cap of 200
-						return;
-					}
-				}
-			}
 			foreach($chunks as $chunk) {
 				$packCenter = new Vector3(mt_rand($chunk->getX() << 4, (($chunk->getX() << 4) + 15)), mt_rand(0, $level->getWorldHeight() - 1), mt_rand($chunk->getZ() << 4, (($chunk->getZ() << 4) + 15)));
 				$biomeId = $level->getBiomeId($packCenter->x, $packCenter->z);
-				$entityList = BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId] ?? BiomeEntityList::BIOME_HOSTILE_MOBS[Biome::PLAINS]; // TODO remove hack when more biomes added
+				$entityList = BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId] ?? [];
 				if(empty($entityList))
 					continue;
-				$entityId = $entityList[array_rand(BiomeEntityList::BIOME_HOSTILE_MOBS[$biomeId])];
+				$entityId = $entityList[array_rand($entityList)];
 				if(!$level->getBlockAt($packCenter->x, $packCenter->y, $packCenter->z)->isSolid()) {
 					for($attempts = 0, $currentPackSize = 0; $attempts <= 12 and $currentPackSize < 4; $attempts++) {
 						$x = mt_rand(-20, 20) + $packCenter->x;

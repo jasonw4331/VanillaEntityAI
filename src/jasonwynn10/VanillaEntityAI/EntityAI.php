@@ -4,7 +4,6 @@ namespace jasonwynn10\VanillaEntityAI;
 
 use jasonwynn10\VanillaEntityAI\block\MonsterSpawner;
 use jasonwynn10\VanillaEntityAI\block\Pumpkin;
-use jasonwynn10\VanillaEntityAI\block\Snow;
 use jasonwynn10\VanillaEntityAI\command\DifficultyCommand;
 use jasonwynn10\VanillaEntityAI\command\SummonCommand;
 use jasonwynn10\VanillaEntityAI\entity\hostile\Blaze;
@@ -68,7 +67,6 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\FishingRod;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\item\SpawnEgg;
 use pocketmine\item\Sword;
@@ -187,6 +185,8 @@ class EntityAI extends PluginBase {
 	private static $instance;
 	/** @var int[] $chunkCounter */
 	public static $chunkCounter = [];
+	/** @var Config $counter */
+	private $counter;
 
 	/**
 	 * @return self
@@ -198,8 +198,9 @@ class EntityAI extends PluginBase {
 	public function onLoad(): void {
 		self::$instance = $this;
 		TimingsHandler::setEnabled();
-		$this->getConfig()->load($this->getDataFolder()."config.yml", Config::JSON); // change config to be JSON with yaml file extension
-		self::$chunkCounter = $this->getConfig()->getAll();
+		$this->counter = new Config($this->getDataFolder()."counter.json", Config::JSON);
+		self::$chunkCounter = $this->counter->getAll();
+		$this->getConfig()->setAll(["DisabledWorlds" => ["hub"]]);
 		$this->getLogger()->debug("Chunk Counter Data Loaded");
 	}
 
@@ -286,8 +287,8 @@ class EntityAI extends PluginBase {
 	}
 
 	public function onDisable() {
-		$this->getConfig()->setAll(self::$chunkCounter);
-		$this->getConfig()->save();
+		$this->counter->setAll(self::$chunkCounter);
+		$this->counter->save();
 	}
 
 	/**
