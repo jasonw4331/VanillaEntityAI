@@ -207,7 +207,6 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 	}
 
 	public function onCollideWithEntity(Entity $entity) : void {
-		// TODO: Implement onCollideWithEntity() method.
 		if($entity instanceof \jasonwynn10\VanillaEntityAI\entity\neutral\Item) {
 			if($entity->getPickupDelay() > 0 or !$this instanceof InventoryHolder or $this->level->getDifficulty() <= Level::DIFFICULTY_EASY) {
 				return;
@@ -222,7 +221,7 @@ class Skeleton extends MonsterBase implements InventoryHolder {
 			}
 			$pk = new TakeItemEntityPacket();
 			$pk->eid = $this->getId();
-			$pk->target = $this->getId();
+			$pk->target = $entity->getId();
 			$this->server->broadcastPacket($this->getViewers(), $pk);
 			$this->setDropAll();
 			$this->setPersistence(true);

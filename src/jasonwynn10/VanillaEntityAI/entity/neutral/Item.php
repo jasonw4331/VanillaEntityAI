@@ -13,9 +13,9 @@ class Item extends ItemEntity implements Collidable {
 	use CollisionCheckingTrait;
 
 	public function entityBaseTick(int $tickDiff = 1) : bool {
-		foreach($this->level->getNearbyEntities($this->boundingBox->expandedCopy(1.5,1.5,1.5), $this) as $entity) {
-			if($this->pickupDelay === 0 and $entity instanceof Item and $entity->onGround and $this->motion->equals($entity->getMotion()) and $this->item->equals($entity->getItem())) {
-				$this->item->setCount($this->item->getCount() + $entity->getItem()->getCount());
+		foreach($this->level->getNearbyEntities($this->boundingBox->expandedCopy(0.5,0.5,0.5), $this) as $entity) {
+			if($this->pickupDelay === 0 and $entity instanceof Item and $entity->onGround and $this->motion->equals($entity->getMotion()) and $this->item->equals($entity->getItem()) and ($count = $this->item->getCount() + $entity->getItem()->getCount()) <= $this->item->getMaxStackSize()) {
+				$this->item->setCount($count);
 				$entity->flagForDespawn();
 				foreach($this->getViewers() as $player)
 					$this->sendSpawnPacket($player);

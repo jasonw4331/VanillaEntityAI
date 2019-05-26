@@ -294,7 +294,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			}
 			$pk = new TakeItemEntityPacket();
 			$pk->eid = $this->getId();
-			$pk->target = $this->getId();
+			$pk->target = $entity->getId();
 			$this->server->broadcastPacket($this->getViewers(), $pk);
 			$this->setDropAll();
 			$this->setPersistence(true);

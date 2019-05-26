@@ -350,7 +350,7 @@ class EntityAI extends PluginBase {
 		}
 		$phaseTime = $level->getTime() / Level::TIME_FULL;
 		while($phaseTime > 5)
-			$phaseTime -= 5; // TODO: better method
+			$phaseTime -= 5; // TODO: find better method
 		$moonPhase = 1.0;
 		switch($phaseTime) {
 			case 1:
