@@ -77,7 +77,7 @@ trait ItemHolderTrait {
 	 *
 	 * @return ItemHolderTrait
 	 */
-	public function setMainHandItem(Item $mainHand) : ItemHolderTrait {
+	public function setMainHandItem(?Item $mainHand) : ItemHolderTrait {
 		$this->mainHand = $mainHand;
 		$pk = new MobEquipmentPacket();
 		$pk->entityRuntimeId = $this->getId();
@@ -100,7 +100,7 @@ trait ItemHolderTrait {
 	 *
 	 * @return ItemHolderTrait
 	 */
-	public function setOffHandItem(Item $offHand) : ItemHolderTrait {
+	public function setOffHandItem(?Item $offHand) : ItemHolderTrait {
 		$this->offHand = $offHand;
 		$pk = new MobEquipmentPacket();
 		$pk->entityRuntimeId = $this->getId();
