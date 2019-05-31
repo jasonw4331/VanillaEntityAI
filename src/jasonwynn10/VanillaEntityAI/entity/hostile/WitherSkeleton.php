@@ -5,6 +5,7 @@ namespace jasonwynn10\VanillaEntityAI\entity\hostile;
 use jasonwynn10\VanillaEntityAI\entity\Collidable;
 use jasonwynn10\VanillaEntityAI\entity\CollisionCheckingTrait;
 use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
+use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
 use jasonwynn10\VanillaEntityAI\entity\ItemHolderTrait;
 use jasonwynn10\VanillaEntityAI\entity\MonsterBase;
 use pocketmine\entity\Entity;
@@ -13,7 +14,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\CompoundTag;
 
-class WitherSkeleton extends MonsterBase implements Collidable {
+class WitherSkeleton extends MonsterBase implements Collidable, InventoryHolder {
 	use CollisionCheckingTrait, ItemHolderTrait;
 	public const NETWORK_ID = self::WITHER_SKELETON;
 	public $width = 0.875;
@@ -72,5 +73,31 @@ class WitherSkeleton extends MonsterBase implements Collidable {
 	 */
 	public function onCollideWithEntity(Entity $entity) : void {
 		// TODO: Implement onCollideWithEntity() method.
+	}
+
+	public function equipRandomItems() : void {
+		// TODO: Implement equipRandomItems() method.
+	}
+
+	public function equipRandomArmour() : void {
+		// TODO: Implement equipRandomArmour() method.
+	}
+
+	/**
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public function checkItemValueToMainHand(Item $item) : bool {
+		// TODO: Implement checkItemValueToMainHand() method.
+	}
+
+	/**
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public function checkItemValueToOffHand(Item $item) : bool {
+		// TODO: Implement checkItemValueToOffHand() method.
 	}
 }

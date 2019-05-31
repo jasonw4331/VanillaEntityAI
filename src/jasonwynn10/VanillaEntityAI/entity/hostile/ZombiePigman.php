@@ -6,6 +6,7 @@ use jasonwynn10\VanillaEntityAI\entity\AgeableTrait;
 use jasonwynn10\VanillaEntityAI\entity\Collidable;
 use jasonwynn10\VanillaEntityAI\entity\CollisionCheckingTrait;
 use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
+use jasonwynn10\VanillaEntityAI\entity\InventoryHolder;
 use jasonwynn10\VanillaEntityAI\entity\ItemHolderTrait;
 use jasonwynn10\VanillaEntityAI\entity\MonsterBase;
 use pocketmine\entity\Ageable;
@@ -15,7 +16,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\CompoundTag;
 
-class ZombiePigman extends MonsterBase implements Ageable, Collidable {
+class ZombiePigman extends MonsterBase implements Ageable, Collidable, InventoryHolder {
 	use CollisionCheckingTrait, ItemHolderTrait, AgeableTrait;
 	public const NETWORK_ID = self::ZOMBIE_PIGMAN;
 	public $width = 2.0;
@@ -89,5 +90,31 @@ class ZombiePigman extends MonsterBase implements Ageable, Collidable {
 	 */
 	public function onCollideWithEntity(Entity $entity) : void {
 		// TODO: Implement onCollideWithEntity() method.
+	}
+
+	public function equipRandomItems() : void {
+		// TODO: Implement equipRandomItems() method.
+	}
+
+	public function equipRandomArmour() : void {
+		// TODO: Implement equipRandomArmour() method.
+	}
+
+	/**
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public function checkItemValueToMainHand(Item $item) : bool {
+		// TODO: Implement checkItemValueToMainHand() method.
+	}
+
+	/**
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public function checkItemValueToOffHand(Item $item) : bool {
+		// TODO: Implement checkItemValueToOffHand() method.
 	}
 }

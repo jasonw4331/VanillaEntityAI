@@ -32,4 +32,14 @@ interface InventoryHolder {
 	 * @return bool
 	 */
 	public function checkItemValueToOffHand(Item $item) : bool;
+
+	/**
+	 * @return Item|null
+	 */
+	public function getMainHand() : ?Item;
+
+	/**
+	 * @return Item|null
+	 */
+	public function getOffHand() : ?Item;
 }
