@@ -11,8 +11,8 @@ use jasonwynn10\VanillaEntityAI\entity\MonsterBase;
 use jasonwynn10\VanillaEntityAI\EntityAI;
 use pocketmine\block\Water;
 use pocketmine\entity\Ageable;
-use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntityIds;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
@@ -22,6 +22,7 @@ use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\Player;
 
@@ -69,6 +70,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			$entity->setMainHandItem($this->mainHand);
 			$entity->setOffHandItem($this->offHand);
 			$this->level->addEntity($entity);
+			$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_CONVERT_TO_DROWNED, 0, EntityIds::ZOMBIE, $this->isBaby());
 		}
 		parent::attack($source);
 	}
