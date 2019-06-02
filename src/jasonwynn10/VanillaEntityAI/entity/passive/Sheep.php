@@ -24,7 +24,9 @@ class Sheep extends AnimalBase implements Collidable, Interactable {
 		parent::initEntity();
 
 		if((bool)$this->namedtag->getByte("Sheared", 0)) {
-			$this->sheared = true;
+			$this->setSheared(true);
+		}else {
+			$this->setSheared(false);
 		}
 
 		$chance = mt_rand(1, 1000);
@@ -42,7 +44,8 @@ class Sheep extends AnimalBase implements Collidable, Interactable {
 			$colorMeta = ColorToMeta::WHITE;
 		}
 		if($this->namedtag->getByte("Color", ColorToMeta::WHITE) !== null)
-			$this->colorMeta = $this->namedtag->getByte("Color", $colorMeta);
+			$colorMeta = $this->namedtag->getByte("Color", ColorToMeta::WHITE);
+		$this->setColor($colorMeta);
 		if(mt_rand(1, 100) <= 5) {
 			$this->setBaby(true);
 		}
