@@ -8,10 +8,12 @@ use jasonwynn10\VanillaEntityAI\entity\Collidable;
 use jasonwynn10\VanillaEntityAI\entity\Interactable;
 use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntityIds;
 use pocketmine\item\Dye;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\Shears;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class Sheep extends AnimalBase implements Collidable, Interactable {
 	public const NETWORK_ID = self::SHEEP;
@@ -120,6 +122,7 @@ class Sheep extends AnimalBase implements Collidable, Interactable {
 			$this->shear();
 			//$hand->applyDamage(1); TODO: is this needed here?
 			$player->getInventory()->setItemInHand($hand);
+			$this->level->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_SHEAR, 0, EntityIds::PLAYER);
 		}
 		if($hand instanceof Dye and !$this->sheared) {
 			$this->setColor($hand->pop()->getDamage());
