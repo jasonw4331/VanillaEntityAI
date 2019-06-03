@@ -72,6 +72,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			$this->level->addEntity($entity);
 			$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_CONVERT_TO_DROWNED, 0, EntityIds::ZOMBIE, $this->isBaby());
 		}
+		// TODO: 10% chance to resist knockback.
 		parent::attack($source);
 	}
 
