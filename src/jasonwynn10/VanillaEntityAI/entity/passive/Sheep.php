@@ -23,6 +23,7 @@ class Sheep extends AnimalBase implements Collidable, Interactable {
 	private $sheared = false;
 
 	public function initEntity() : void {
+		$this->setMaxHealth(8);
 		parent::initEntity();
 
 		if((bool)$this->namedtag->getByte("Sheared", 0)) {

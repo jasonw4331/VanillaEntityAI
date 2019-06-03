@@ -43,7 +43,7 @@ class Mooshroom extends Cow {
 	 * @param Entity $entity
 	 */
 	public function onCollideWithEntity(Entity $entity) : void {
-		// TODO: Red mooshrooms convert to brown mooshrooms, and brown convert to red, when they are struck by lightning.
+		// TODO:
 	}
 
 	public function onPlayerLook(Player $player) : void {
