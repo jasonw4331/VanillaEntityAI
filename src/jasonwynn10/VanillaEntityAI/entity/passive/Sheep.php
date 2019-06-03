@@ -120,7 +120,7 @@ class Sheep extends AnimalBase implements Collidable, Interactable {
 		$hand = $player->getInventory()->getItemInHand();
 		if(!$this->isBaby() and $hand instanceof Shears and !$this->sheared) {
 			$this->shear();
-			//$hand->applyDamage(1); TODO: is this needed here?
+			$hand->applyDamage(1);
 			$player->getInventory()->setItemInHand($hand);
 			$this->level->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_SHEAR, 0, EntityIds::PLAYER);
 		}

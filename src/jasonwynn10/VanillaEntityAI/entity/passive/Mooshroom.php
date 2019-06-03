@@ -3,10 +3,9 @@ declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\passive;
 
 use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
-use pocketmine\entity\Effect;
-use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityIds;
+use pocketmine\item\Bowl;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\Shears;
@@ -17,24 +16,10 @@ class Mooshroom extends Cow {
 	public $width = 1.781;
 	public $height = 1.875;
 
-	private $type = "red";
-	private $effectId = 0; // byte
-	private $effectDuration = 0; //int
 
 	public function initEntity() : void {
 		parent::initEntity();
 
-		if($this->namedtag->getString("Type") !== null) {
-			$this->setType($this->namedtag->getString("Type", "red"));
-		}else {
-			$this->setType(((bool)mt_rand()) ? "red" : "brown");
-		}
-
-		if($this->namedtag->getByte("EffectId") !== null and $this->namedtag->getInt("EffectDuration") !== null) {
-			$effect = Effect::getEffect($this->namedtag->getByte("EffectId"));
-			if($effect !== null)
-				$this->setStewEffect(new EffectInstance($effect, $this->namedtag->getInt("EffectDuration")));
-		}
 	}
 
 	/**
@@ -66,8 +51,9 @@ class Mooshroom extends Cow {
 		if(!$this->isBaby() and $hand instanceof Shears) {
 			$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, "Shear");
 		}
-		// bowls
-		// flowers?
+		if(!$this->isBaby() and $hand instanceof Bowl) {
+			$this->getDataPropertyManager()->setString(Entity::DATA_INTERACTIVE_TAG, "Mushroom Stew");
+		}
 		parent::onPlayerLook($player);
 	}
 
@@ -75,54 +61,25 @@ class Mooshroom extends Cow {
 		$hand = $player->getInventory()->getItemInHand();
 		if(!$this->isBaby() and $hand instanceof Shears) {
 			$this->shear();
-			//$hand->applyDamage(1); TODO: is this needed here?
+			$hand->applyDamage(1);
 			$player->getInventory()->setItemInHand($hand);
 			$this->level->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_SHEAR, 0, EntityIds::PLAYER);
 		}
-		// TODO: mooshrooms can be milked with bowls to give mushroom stew.
-		// TODO: When a flower is used on a brown mooshroom, the brown mooshroom will give a suspicious stew related to that flower the next time it is milked with a bowl.
+		if(!$this->isBaby() and $hand instanceof Bowl) {
+			$hand = ItemFactory::get(Item::MUSHROOM_STEW);
+			$player->getInventory()->setItemInHand($hand);
+		}
 		parent::onPlayerInteract($player);
 	}
 
 	public function shear() : self {
-		if($this->type === "red") {
-			$this->level->dropItem($this, ItemFactory::get(Item::RED_MUSHROOM, 0, 5));
-		}else{
-			$this->level->dropItem($this, ItemFactory::get(Item::BROWN_MUSHROOM, 0, 5));
-		}
+		$this->level->dropItem($this, ItemFactory::get(Item::RED_MUSHROOM, 0, 5));
 		$cow = Cow::createEntity("Cow", $this->level, Cow::createBaseNBT($this, $this->motion, $this->yaw, $this->pitch));
 		if($cow !== null) {
 			$this->level->addEntity($cow);
 			$this->flagForDespawn();
+			$cow->spawnToAll();
 		}
 		return $this;
-	}
-
-	public function setType(string $type) : self {
-		$type = strtolower($type);
-		if($type === "red" or $type === "brown") {
-			$this->type = $type;
-			$this->namedtag->setString("Type", $type);
-			// TODO: show client mooshroom type
-		}
-		else
-			throw new \UnexpectedValueException("'$type' is not a valid type of mooshroom");
-		return $this;
-	}
-
-	public function setStewEffect(EffectInstance $effectInstance) {
-		$this->effectId = $effectInstance->getId();
-		$this->effectDuration = $effectInstance->getDuration();
-
-		$this->namedtag->setByte("EffectId", $this->effectId);
-		$this->namedtag->setInt("EffectDuration", $this->effectDuration);
-	}
-
-	public function getStewEffect() : ?EffectInstance {
-		$effect = Effect::getEffect($this->effectId);
-		if($effect !== null)
-			return new EffectInstance($effect, $this->effectDuration);
-		else
-			return null;
 	}
 }

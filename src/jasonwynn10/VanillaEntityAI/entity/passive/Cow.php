@@ -2,12 +2,9 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\entity\passive;
 
-use jasonwynn10\VanillaEntityAI\entity\AgeableTrait;
 use jasonwynn10\VanillaEntityAI\entity\AnimalBase;
-use jasonwynn10\VanillaEntityAI\entity\Collidable;
 use jasonwynn10\VanillaEntityAI\entity\Interactable;
 use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
-use pocketmine\entity\Ageable;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityIds;
 use pocketmine\item\Bucket;
@@ -15,8 +12,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
-class Cow extends AnimalBase implements Collidable, Interactable, Ageable {
-	use AgeableTrait;
+class Cow extends AnimalBase implements Interactable {
 	public const NETWORK_ID = self::COW;
 	public $width = 1.5;
 	public $height = 1.2;
