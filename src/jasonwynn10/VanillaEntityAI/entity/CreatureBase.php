@@ -56,7 +56,6 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 
 	public function initEntity() : void {
 		parent::initEntity();
-		$this->setGenericFlag(self::DATA_FLAG_NO_AI, true);
 	}
 
 	public function lookAround() : void {

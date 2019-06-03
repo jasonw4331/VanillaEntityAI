@@ -40,10 +40,9 @@ class Cow extends AnimalBase implements Interactable {
 			$this->move($this->motion->x * $tickDiff, $this->motion->y, $this->motion->z * $tickDiff);
 			$this->motion->y -= 0.2 * $tickDiff;
 			$this->updateMovement();
-			return true;
+			return parent::onUpdate($currentTick);
 		}
-		//
-
+		return parent::onUpdate($currentTick);
 	}
 
 	/**
