@@ -27,7 +27,7 @@ trait AgeableTrait {
 	 */
 	public function setBaby(bool $baby = true) : self {
 		$this->baby = $baby;
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY, $baby);
+		$this->setGenericFlag(self::DATA_FLAG_BABY, $baby);
 		$this->setSprinting();
 		$this->setScale($baby ? 0.5 : 1);
 		return $this;
