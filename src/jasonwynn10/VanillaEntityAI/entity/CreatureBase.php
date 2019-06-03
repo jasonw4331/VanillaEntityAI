@@ -25,6 +25,8 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 	protected $persistent = false;
 	/** @var int $moveTime */
 	protected $moveTime = 0;
+	/** @var int $idleTime */
+	protected $idleTime = 0;
 
 	/**
 	 * Returns the Vector3 side number right of the specified one
@@ -55,6 +57,40 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 	public function initEntity() : void {
 		parent::initEntity();
 		$this->setGenericFlag(self::DATA_FLAG_NO_AI, true);
+	}
+
+	public function lookAround() : void {
+		$entities = $this->level->getNearbyEntities($this->boundingBox->expandedCopy(8,2,8), $this);
+		$entities = array_filter($entities,function(Entity $entity){
+			if($entity->isAlive() or !$entity->isFlaggedForDespawn() and $entity instanceof Player) {
+				return true;
+			}
+			return false;
+		});
+		$yaw = $this->yaw;
+		$pitch = $this->pitch;
+		if(!empty($entities) and mt_rand(1,3) === 1) {
+			/** @var Player $player */
+			$player = $entities[array_rand($entities)];
+			$this->lookAt($player->asVector3()->add(0, $player->height));
+		}else{
+			// rotate the entity: 0 degrees is south and increases clockwise
+			$yaw = mt_rand(0, 1) ? $yaw + mt_rand(15, 45) : $yaw - mt_rand(15, 45);
+			if($yaw > 360){
+				$yaw = 360;
+			}else if($yaw < 0){
+				$yaw = 0;
+			}
+			// 0 degrees is horizontal, -90 is up, 90 is down. but 90 degrees looks very silly - so 60 degrees is completely ok
+			$pitch = mt_rand(0, 1) ? $pitch + mt_rand(10, 20) : $pitch - mt_rand(10, 20);
+			if($pitch > 60){
+				$pitch = 60;
+			}else if($pitch < -60){
+				$pitch = -60;
+			}
+		}
+
+		$this->setRotation($yaw, $pitch);
 	}
 
 	/**
