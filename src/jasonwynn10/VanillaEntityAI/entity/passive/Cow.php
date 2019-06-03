@@ -9,9 +9,11 @@ use jasonwynn10\VanillaEntityAI\entity\Interactable;
 use jasonwynn10\VanillaEntityAI\entity\passiveaggressive\Player;
 use pocketmine\entity\Ageable;
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntityIds;
 use pocketmine\item\Bucket;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class Cow extends AnimalBase implements Collidable, Interactable, Ageable {
 	use AgeableTrait;
@@ -83,7 +85,18 @@ class Cow extends AnimalBase implements Collidable, Interactable, Ageable {
 	public function onPlayerInteract(Player $player) : void {
 		$hand = $player->getInventory()->getItemInHand();
 		if($hand instanceof Bucket and $hand->getDamage() === 0) { // check for empty bucket
-			// milking logic
+			$item = ItemFactory::get(Item::BUCKET, 1);
+			if($player->isSurvival()){
+				if($hand->getCount() === 0){
+					$player->getInventory()->setItemInHand($item);
+				}else{
+					$player->getInventory()->setItemInHand($hand);
+					$player->getInventory()->addItem($item);
+				}
+			}else{
+				$player->getInventory()->addItem($item);
+			}
+			$this->level->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_MILK, 0, EntityIds::PLAYER, $this->isBaby());
 		}
 	}
 }
