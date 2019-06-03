@@ -32,7 +32,7 @@ class Cow extends AnimalBase implements Interactable {
 	}
 
 	/**
-	 * @return array
+	 * @return Item[]
 	 */
 	public function getDrops() : array {
 		$drops = parent::getDrops();
@@ -49,6 +49,9 @@ class Cow extends AnimalBase implements Interactable {
 		}
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getXpDropAmount() : int {
 		$exp = parent::getXpDropAmount();
 		if(!$this->isBaby()) {

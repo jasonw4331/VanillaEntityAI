@@ -37,7 +37,7 @@ abstract class CreatureBase extends Creature implements Linkable, Collidable, Lo
 	 */
 	public static function getRightSide(int $side) : int {
 		if($side >= 0 and $side <= 5) {
-			return $side ^ 0x01; // TODO: right now it gives the opposite side...
+			return $side ^ 0x03; // TODO: right now it gives the opposite side...
 		}
 		throw new \InvalidArgumentException("Invalid side $side given to getRightSide");
 	}

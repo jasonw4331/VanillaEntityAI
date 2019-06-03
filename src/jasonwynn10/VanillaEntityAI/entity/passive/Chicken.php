@@ -43,6 +43,9 @@ class Chicken extends AnimalBase {
 		return $drops;
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getXpDropAmount() : int {
 		$exp = parent::getXpDropAmount();
 		if(!$this->isBaby()) {

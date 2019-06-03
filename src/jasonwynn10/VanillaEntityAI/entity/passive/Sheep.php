@@ -131,12 +131,20 @@ class Sheep extends AnimalBase implements Collidable, Interactable {
 		}
 	}
 
+	/**
+	 * @return Sheep
+	 */
 	public function shear() : self {
 		$this->level->dropItem($this, ItemFactory::get(Item::WOOL, $this->colorMeta, mt_rand(1, 3)));
 		$this->setSheared(true);
 		return $this;
 	}
 
+	/**
+	 * @param bool $sheared
+	 *
+	 * @return Sheep
+	 */
 	public function setSheared(bool $sheared = true) : self {
 		$this->sheared = $sheared;
 		$this->setGenericFlag(self::DATA_FLAG_SHEARED, $sheared);
@@ -144,10 +152,18 @@ class Sheep extends AnimalBase implements Collidable, Interactable {
 		return $this;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function isSheared() : bool {
 		return $this->sheared;
 	}
 
+	/**
+	 * @param int $colorMeta
+	 *
+	 * @return Sheep
+	 */
 	public function setColor(int $colorMeta) : self {
 		if($colorMeta >= 0 and $colorMeta <= 15) {
 			$this->colorMeta = $colorMeta;
@@ -159,6 +175,9 @@ class Sheep extends AnimalBase implements Collidable, Interactable {
 		return $this;
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getColor() : int {
 		return $this->colorMeta;
 	}

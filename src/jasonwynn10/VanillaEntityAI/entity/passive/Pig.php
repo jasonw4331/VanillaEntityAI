@@ -56,6 +56,9 @@ class Pig extends AnimalBase implements Collidable, Interactable, Rideable {
 		return $drops;
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getXpDropAmount() : int {
 		$exp = parent::getXpDropAmount();
 		if(!$this->isBaby()) {
