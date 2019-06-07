@@ -231,7 +231,7 @@ class MobSpawner extends Spawnable {
 	 * @return MobSpawner
 	 */
 	public function setMinSpawnDelay(int $minDelay) : MobSpawner {
-		if($minDelay < $this->maxSpawnDelay) {
+		if($minDelay < $this->maxSpawnDelay and !($minDelay < -0x8000 or $minDelay > 0x7fff)) {
 			$this->minSpawnDelay = $minDelay;
 		}
 		return $this;
@@ -243,7 +243,7 @@ class MobSpawner extends Spawnable {
 	 * @return MobSpawner
 	 */
 	public function setMaxSpawnDelay(int $maxDelay) : MobSpawner {
-		if($this->minSpawnDelay < $maxDelay and $maxDelay !== 0) {
+		if($this->minSpawnDelay < $maxDelay and $maxDelay !== 0 and !($maxDelay < -0x8000 or $maxDelay > 0x7fff)) {
 			$this->maxSpawnDelay = $maxDelay;
 		}
 		return $this;
@@ -255,7 +255,7 @@ class MobSpawner extends Spawnable {
 	 * @return MobSpawner
 	 */
 	public function setSpawnDelay(int $delay) : MobSpawner {
-		if($delay < $this->maxSpawnDelay and $delay > $this->minSpawnDelay) {
+		if($delay < $this->maxSpawnDelay and $delay > $this->minSpawnDelay and !($delay < -0x8000 or $delay > 0x7fff)) {
 			$this->delay = $delay;
 		}
 		return $this;
