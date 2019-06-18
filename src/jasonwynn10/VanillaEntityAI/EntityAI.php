@@ -201,7 +201,6 @@ class EntityAI extends PluginBase {
 		TimingsHandler::setEnabled();
 		$this->counter = new Config($this->getDataFolder()."counter.json", Config::JSON);
 		self::$chunkCounter = $this->counter->getAll();
-		$this->getConfig()->setAll(["DisabledWorlds" => ["hub"]]);
 		$this->getLogger()->debug("Chunk Counter Data Loaded");
 	}
 
