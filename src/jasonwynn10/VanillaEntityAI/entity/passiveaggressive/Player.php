@@ -10,7 +10,7 @@ use jasonwynn10\VanillaEntityAI\entity\Lookable;
 use jasonwynn10\VanillaEntityAI\network\PlayerNetworkSessionAdapter;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
+use pocketmine\network\mcpe\protocol\ActorPickRequestPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
@@ -28,11 +28,11 @@ class Player extends \pocketmine\Player {
 	}
 
 	/**
-	 * @param EntityPickRequestPacket $packet
+	 * @param ActorPickRequestPacket $packet
 	 *
 	 * @return bool
 	 */
-	public function handleEntityPickRequest(EntityPickRequestPacket $packet) : bool {
+	public function handleEntityPickRequest(ActorPickRequestPacket $packet) : bool {
 		$target = $this->level->getEntity($packet->entityUniqueId);
 		if($target === null) {
 			return false;
