@@ -21,9 +21,9 @@ use pocketmine\level\biome\Biome;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
+use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\Player;
 
 class Zombie extends MonsterBase implements Ageable, InventoryHolder {
@@ -209,9 +209,9 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			if($this->mainHand !== null) {
 				$damage = $this->mainHand->getAttackPoints();
 			}
-			$pk = new EntityEventPacket();
+			$pk = new ActorEventPacket();
 			$pk->entityRuntimeId = $this->id;
-			$pk->event = EntityEventPacket::ARM_SWING;
+			$pk->event = ActorEventPacket::ARM_SWING;
 			$this->server->broadcastPacket($this->hasSpawned, $pk);
 			$player->attack(new EntityDamageByEntityEvent($this, $player, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, $damage));
 		}
@@ -266,9 +266,9 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			if($this->mainHand !== null) {
 				$damage = $this->mainHand->getAttackPoints();
 			}
-			$pk = new EntityEventPacket();
+			$pk = new ActorEventPacket();
 			$pk->entityRuntimeId = $this->id;
-			$pk->event = EntityEventPacket::ARM_SWING;
+			$pk->event = ActorEventPacket::ARM_SWING;
 			$this->server->broadcastPacket($this->hasSpawned, $pk);
 			$entity->attack(new EntityDamageByEntityEvent($this, $entity, EntityDamageByEntityEvent::CAUSE_ENTITY_ATTACK, $damage));
 		}
@@ -284,7 +284,7 @@ class Zombie extends MonsterBase implements Ageable, InventoryHolder {
 			if(!$this->checkItemValueToMainHand($item) and !$this->checkItemValueToOffHand($item)) {
 				return;
 			}
-			$pk = new TakeItemEntityPacket();
+			$pk = new TakeItemActorPacket();
 			$pk->eid = $this->getId();
 			$pk->target = $entity->getId();
 			$this->server->broadcastPacket($this->getViewers(), $pk);
