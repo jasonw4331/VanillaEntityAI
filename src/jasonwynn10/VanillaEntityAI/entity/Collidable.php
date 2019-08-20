@@ -4,7 +4,6 @@ namespace jasonwynn10\VanillaEntityAI\entity;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\math\AxisAlignedBB;
 
 interface Collidable {
 	/**
@@ -18,7 +17,7 @@ interface Collidable {
 	public function onCollideWithBlock(Block $block) : void;
 
 	/**
-	 * @param AxisAlignedBB $source
+	 * @param CreatureBase $source
 	 */
-	public function push(AxisAlignedBB $source) : void;
+	public function push(CreatureBase $source) : void;
 }
