@@ -4,10 +4,10 @@ namespace jasonwynn10\VanillaEntityAI\entity\neutral;
 
 use jasonwynn10\VanillaEntityAI\entity\Collidable;
 use jasonwynn10\VanillaEntityAI\entity\CollisionCheckingTrait;
+use jasonwynn10\VanillaEntityAI\entity\CreatureBase;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\entity\object\ItemEntity;
-use pocketmine\math\AxisAlignedBB;
 
 class Item extends ItemEntity implements Collidable {
 	use CollisionCheckingTrait;
@@ -34,8 +34,8 @@ class Item extends ItemEntity implements Collidable {
 	}
 
 	/**
-	 * @param AxisAlignedBB $source
+	 * @param CreatureBase $source
 	 */
-	public function push(AxisAlignedBB $source) : void { // cannot be pushed
+	public function push(CreatureBase $source) : void { // cannot be pushed
 	}
 }

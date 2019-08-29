@@ -1,3 +1,3 @@
 .idea/
 !/resources/config.yml
-.github/*
+.github/ISSUE_TEMPLATE
