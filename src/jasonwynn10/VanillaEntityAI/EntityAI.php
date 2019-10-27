@@ -205,6 +205,8 @@ class EntityAI extends PluginBase {
 	}
 
 	public function onEnable(): void {
+		$this->getConfig()->setDefaults(["DisabledWorlds" => [""]]);
+		$this->getConfig()->save();
 		BlockFactory::registerBlock(new Pumpkin(), true);
 		BlockFactory::registerBlock(new MonsterSpawner(), true);
 		$this->getLogger()->debug("Registered Blocks");
