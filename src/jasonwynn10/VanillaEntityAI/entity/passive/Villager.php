@@ -26,9 +26,9 @@ class Villager extends \pocketmine\entity\Villager implements Collidable, Intera
 	}
 
 	/**
-	 * @param CreatureBase $source
+	 * @param Collidable $source
 	 */
-	public function push(CreatureBase $source) : void {
+	public function push(Collidable $source) : void {
 		// TODO: Implement push() method.
 	}
 

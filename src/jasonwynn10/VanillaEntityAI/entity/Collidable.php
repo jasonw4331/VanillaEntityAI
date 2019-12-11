@@ -17,7 +17,7 @@ interface Collidable {
 	public function onCollideWithBlock(Block $block) : void;
 
 	/**
-	 * @param CreatureBase $source
+	 * @param Collidable $source
 	 */
-	public function push(CreatureBase $source) : void;
+	public function push(Collidable $source) : void;
 }

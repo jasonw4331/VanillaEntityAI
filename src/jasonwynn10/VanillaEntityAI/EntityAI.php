@@ -274,10 +274,10 @@ class EntityAI extends PluginBase {
 		if($properties->hasChanged()){
 			$properties->save();
 		}
-		if($server->getConfigBool("spawn-mobs", false)) {
+		if($server->getConfigBool("spawn-mobs", false)) { // TODO: default to true once task lag is fixed
 			$this->getScheduler()->scheduleRepeatingTask(new HostileSpawnTask(), 1);
 		}
-		if($server->getConfigBool("spawn-animals", false)) {
+		if($server->getConfigBool("spawn-animals", false)) { // TODO: default to true once task lag is fixed
 			$this->getScheduler()->scheduleRepeatingTask(new PassiveSpawnTask(), 20);
 		}
 		if($server->getConfigBool("spawn-mobs", false) or $server->getConfigBool("spawn-animals", false)) { // TODO: default to true once task lag is fixed

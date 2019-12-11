@@ -34,8 +34,8 @@ class Item extends ItemEntity implements Collidable {
 	}
 
 	/**
-	 * @param CreatureBase $source
+	 * @param Collidable $source
 	 */
-	public function push(CreatureBase $source) : void { // cannot be pushed
+	public function push(Collidable $source) : void { // cannot be pushed
 	}
 }
