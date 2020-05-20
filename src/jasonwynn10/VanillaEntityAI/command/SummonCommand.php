@@ -5,13 +5,15 @@ namespace jasonwynn10\VanillaEntityAI\command;
 use jasonwynn10\VanillaEntityAI\EntityAI;
 use pocketmine\command\CommandSender;
 use pocketmine\command\defaults\VanillaCommand;
+use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
 
-class SummonCommand extends VanillaCommand {
+class SummonCommand extends VanillaCommand implements PluginIdentifiableCommand {
 	public function __construct(string $name) {
 		parent::__construct($name, "Summons an entity.", "/summon <entityType: EntityType> [spawnPos: x y z]");
 		$this->setPermission("pocketmine.command.summon");
@@ -64,5 +66,9 @@ class SummonCommand extends VanillaCommand {
 		$entity->spawnToAll();
 		$sender->sendMessage("Object successfully spawned");
 		return true;
+	}
+
+	public function getPlugin() : Plugin {
+		return EntityAI::getInstance();
 	}
 }

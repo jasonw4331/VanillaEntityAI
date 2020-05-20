@@ -2,14 +2,17 @@
 declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\command;
 
+use jasonwynn10\VanillaEntityAI\EntityAI;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\level\Level;
 use pocketmine\Player;
+use pocketmine\plugin\Plugin;
 
-class DifficultyCommand extends \pocketmine\command\defaults\DifficultyCommand {
+class DifficultyCommand extends \pocketmine\command\defaults\DifficultyCommand implements PluginIdentifiableCommand {
 	public function execute(CommandSender $sender, string $commandLabel, array $args) {
 		if(!$this->testPermission($sender)) {
 			return true;
@@ -41,5 +44,9 @@ class DifficultyCommand extends \pocketmine\command\defaults\DifficultyCommand {
 			throw new InvalidCommandSyntaxException();
 		}
 		return true;
+	}
+
+	public function getPlugin() : Plugin {
+		return EntityAI::getInstance();
 	}
 }
