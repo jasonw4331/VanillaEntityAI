@@ -3,7 +3,7 @@ main: jasonwynn10\VanillaEntityAI\EntityAI
 version: 1.0.0-alpha4
 api:
 - 3.0.0
-mcpe-protocols:
+mcpe-protocol:
 - 361
 description: "A plugin for vanilla-like mob AI"
 author: "jasonwynn10"
