@@ -4,7 +4,7 @@ version: 1.0.0-alpha4
 api:
 - 3.0.0
 mcpe-protocol:
-- 361
+- 448
 description: "A plugin for vanilla-like mob AI"
 author: "jasonwynn10"
 load: STARTUP
