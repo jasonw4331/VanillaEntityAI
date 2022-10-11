@@ -1,5 +1,5 @@
 # Vanilla Entity AI
-[![Discord](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/XYHhYnJ)
+[![Discord](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/R7kdetE)
 [![Poggit-Ci](https://poggit.pmmp.io/ci.shield/jasonwynn10/VanillaEntityAI/VanillaEntityAI)](https://poggit.pmmp.io/ci/jasonwynn10/VanillaEntityAI/~)
 ### **Make mobs behave in your server worlds exactly like they do in vanilla!**
 
