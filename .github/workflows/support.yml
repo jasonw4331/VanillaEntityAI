@@ -1,0 +1,29 @@
+name: 'Manage support request issues'
+
+on:
+  issues:
+    types: [ labeled, unlabeled, reopened ]
+
+jobs:
+  support:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dessant/support-requests@v3
+        with:
+          github-token: ${{ github.token }}
+          support-label: "Support request"
+          issue-comment: >
+            Hi, we only accept **bug reports** on this issue tracker, but this issue looks like a support request.
+
+
+            Instead of creating an issue, try the following:
+
+            - Ask the community on our [Discord server](https://discord.gg/R7kdetE) or the [PocketMine Forums](https://forums.pmmp.io)
+            
+            - Ask in the PocketMine community [Discord server](https://discord.gg/bmSAZBG)
+
+
+            [Discord](https://discord.gg/R7kdetE) | [Forums](https://forums.pmmp.io)
+
+          close-issue: true
+          lock-issue: false

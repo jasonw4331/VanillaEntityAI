@@ -1,0 +1,6 @@
+{
+	"name": "jasonwynn10/cs-fixer-plugin-config",
+	"require-dev": {
+		"friendsofphp/php-cs-fixer": "^3.11"
+	}
+}

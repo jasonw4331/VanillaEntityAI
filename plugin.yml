@@ -1,0 +1,8 @@
+name: VanillaEntityAI
+main: jasonwynn10\VanillaEntityAI\Main
+src-namespace-prefix: jasonwynn10\VanillaEntityAI
+version: 1.0.0
+api: 4.0.0
+description: "A plugin which implements minecraft vanilla-like entity AI"
+author: "jasonwynn10"
+load: STARTUP
