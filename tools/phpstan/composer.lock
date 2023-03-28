@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "706d6482baa97c94d8f8e459d9214a74",
+    "content-hash": "146889a4ebe69ef4fe3cc93db99d80b1",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -120,6 +120,40 @@
                 }
             ],
             "time": "2022-08-10T22:54:19+00:00"
+        },
+        {
+            "name": "cortexpe/commando",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CortexPE/Commando.git",
+                "reference": "ede058439d2b217a0f5de86d7456a7a96d2d296f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CortexPE/Commando/zipball/ede058439d2b217a0f5de86d7456a7a96d2d296f",
+                "reference": "ede058439d2b217a0f5de86d7456a7a96d2d296f",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "CortexPE\\Commando\\": [
+                        "src\\CortexPE\\Commando\\"
+                    ]
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0-only"
+            ],
+            "description": "A Command Framework virion for PocketMine-MP ",
+            "support": {
+                "issues": "https://github.com/CortexPE/Commando/issues",
+                "source": "https://github.com/CortexPE/Commando/tree/master"
+            },
+            "time": "2022-04-04T13:57:06+00:00"
         },
         {
             "name": "fgrosse/phpasn1",
@@ -1290,6 +1324,21 @@
             "time": "2023-01-12T18:13:24+00:00"
         },
         {
+            "name": "salmonde/pathfinding",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SalmonDE/Pathfinding.git",
+                "reference": "master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SalmonDE\\Pathfinding\\": "src/"
+                }
+            }
+        },
+        {
             "name": "symfony/filesystem",
             "version": "v5.4.21",
             "source": {
@@ -1714,7 +1763,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "cortexpe/commando": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

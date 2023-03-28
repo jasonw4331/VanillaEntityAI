@@ -9,9 +9,14 @@ projects:
       - tests
       - .github
       - build
-      - phpstan
+      - tools
     excludeFiles:
       - .gitignore
       - CONTRIBUTING.md
       - SECURITY.md
+    libs:
+      - src: salmonde/pathfinding/Pathfinder
+        version: ^1.0.0
+      - src: CortexPE/Commando/Commando
+        version: ^3.0.0
 ...
