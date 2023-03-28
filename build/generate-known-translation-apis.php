@@ -60,7 +60,7 @@ const SHARED_HEADER = <<<'HEADER'
 
 declare(strict_types=1);
 
-namespace jasonwynn10\PoliteTeleports\lang;
+namespace jasonwynn10\VanillaEntityAI\lang;
 
 
 HEADER;
