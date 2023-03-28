@@ -6,3 +6,11 @@ api: 4.0.0
 description: "A plugin which implements minecraft vanilla-like entity AI"
 author: "jasonwynn10"
 load: STARTUP
+
+permissions:
+  VanillaEntityAI.command.summon:
+    default: op
+    description: "Allows the user to summon entities"
+  VanillaEntityAI.command.difficulty:
+    default: op
+    description: "Allows the user to change the difficulty of the world"
