@@ -18,7 +18,7 @@ use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\world\World;
 
-class DifficultyCommand extends BaseCommand{
+final class DifficultyCommand extends BaseCommand{
 
 	public function __construct(Main $plugin){
 		parent::__construct(
