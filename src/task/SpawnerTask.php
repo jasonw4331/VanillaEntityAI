@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace jasonwynn10\VanillaEntityAI\task;
 
 use jasonwynn10\VanillaEntityAI\Main;
+use jasonwynn10\VanillaEntityAI\util\MonsterSpawnerConstants;
 use pocketmine\block\Flowable;
 use pocketmine\block\tile\MonsterSpawner;
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Location;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -19,6 +21,7 @@ use pocketmine\world\Position;
 use function array_filter;
 use function array_rand;
 use function count;
+use function floor;
 use function mt_rand;
 
 final class SpawnerTask extends Task{
@@ -47,8 +50,8 @@ final class SpawnerTask extends Task{
 		if(!$this->coordinate->getWorld()->getTileAt((int) $this->coordinate->x, (int) $this->coordinate->y, (int) $this->coordinate->z) instanceof MonsterSpawner){
 			return;
 		}
-		// check tile data has a mob ready
-		if(!isset($this->tileData["entityTypeId"])){
+		// check tile data has an entity type ready
+		if(!isset($this->tileData["entityTypeId"]) || $this->tileData["entityTypeId"] === ":"){
 			return;
 		}
 		// check if player is nearby
@@ -68,7 +71,7 @@ final class SpawnerTask extends Task{
 			for($z = $this->coordinate->z - $this->tileData["spawnRange"]; $z <= $this->coordinate->z + $this->tileData["spawnRange"]; ++$z){
 				for($y = $this->coordinate->y - $this->tileData["spawnRange"]; $y <= $this->coordinate->y + $this->tileData["spawnRange"]; ++$y){
 					$block = $this->coordinate->getWorld()->getBlockAt((int) $x, (int) $y, (int) $z);
-					if($block instanceof Flowable && $block->getSide(Facing::UP) instanceof Flowable){
+					if($block instanceof Flowable && $block->getSide(Facing::UP) instanceof Flowable){ // TODO: account for entity-specific spawn requirements
 						$spawnSpaces[] = $block;
 					}
 				}
@@ -80,14 +83,19 @@ final class SpawnerTask extends Task{
 		// spawn mob cluster
 		for($i = 0; $i < $this->tileData["spawnPerAttempt"]; $i++){
 			$spawnSpace = $spawnSpaces[array_rand($spawnSpaces)]->getPosition();
+			/** @var Entity $entity */
 			$entity = $this->getEntityClassFromTypeId($this->tileData["entityTypeId"]);
 
 			(new $entity(Location::fromObject($spawnSpace, $spawnSpace->getWorld()), $this->tileData['SpawnData'] ?? null))->spawnToAll();
 		}
-
 		// set new spawn delay
 		$this->tileData["spawnDelay"] = mt_rand($this->tileData["minSpawnDelay"], $this->tileData["maxSpawnDelay"]);
-
+		// update spawn data if potentials list exists from weighted randomness
+		if(isset($this->tileData["spawnPotentials"])){
+			$potential = $this->getRandomSpawnPotentials($this->tileData["spawnPotentials"]);
+			$this->tileData["entityTypeId"] = $potential->getString(MonsterSpawnerConstants::TAG_SUB_TYPE_ID, ':');
+			$this->tileData["spawnData"] = $potential->getCompoundTag(MonsterSpawnerConstants::TAG_SUB_PROPERTIES);
+		}
 		// schedule next spawn task
 		$this->plugin->getScheduler()->scheduleDelayedTask(
 			new SpawnerTask($this->plugin, $this->coordinate, $this->tileData),
@@ -95,8 +103,77 @@ final class SpawnerTask extends Task{
 		);
 	}
 
+	/**
+	 * @phpstan-return class-string<Entity>|null
+	 */
+	private function getEntityClassFromTypeId(string $entityTypeId) : ?string{
+		// drop prefixing
+		$entityTypeId = str_replace("minecraft:", "", $entityTypeId);
+		// use reflection to acquire registered classes from EntityFactory
+		$factory = EntityFactory::getInstance();
+		$reflection = new \ReflectionClass($factory);
+		$property = $reflection->getProperty('saveNames');
+		$property->setAccessible(true);
+		/** @phpstan-var array<class-string<Entity>, string> $saveNames */
+		$saveNames = $property->getValue($factory);
+
+		// test if entity type id string is similar but not equal to key or value strings
+		foreach($saveNames as $class => $saveName){
+			if(str_contains(mb_strtolower($saveName), mb_strtolower($entityTypeId))){
+				return $class;
+			}elseif(str_contains(mb_strtolower($class), mb_strtolower($entityTypeId))){
+				return $class;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * @phpstan-param ListTag<CompoundTag> $items
+	 * @noinspection PhpIncompatibleReturnTypeInspection
+	 * @noinspection PhpPossiblePolymorphicInvocationInspection
+	 */
+	private function getRandomSpawnPotentials(ListTag $items) : CompoundTag {
+		$cumulativeWeights = [];
+		$totalWeight = 0;
+		foreach ($items as $item) {
+			$weight = $item->getInt(MonsterSpawnerConstants::TAG_SUB_WEIGHT, 1);
+			$totalWeight += $weight;
+			$cumulativeWeights[] = $totalWeight;
+		}
+		$index = $this->binarySearchIntegerArray($cumulativeWeights, mt_rand(1, $totalWeight));
+		return $items->get($index);
+	}
+
+	/**
+	 * @param int[] $arr
+	 */
+	private function binarySearchIntegerArray(array $arr, int $value) : int {
+		$low = 0;
+		$high = count($arr) - 1;
+		while ($low <= $high) {
+			$mid = (int) floor(($low + $high) / 2);
+			if ($arr[$mid] < $value) {
+				$low = $mid + 1;
+			} elseif ($arr[$mid] > $value) {
+				$high = $mid - 1;
+			} else {
+				return $mid;
+			}
+		}
+		return $low;
+	}
+
 	public function setEntityId(string $entityId) : void{
+		if($entityId === '') {
+			$entityId = ':'; // empty string is not allowed by the NBT spec here
+		}
 		$this->tileData["entityTypeId"] = $entityId;
+	}
+
+	public function getEntityId() : string{
+		return $this->tileData["entityTypeId"];
 	}
 
 	public function getSpawnDelay() : int{
@@ -125,5 +202,43 @@ final class SpawnerTask extends Task{
 
 	public function getSpawnRange() : int{
 		return $this->tileData["spawnRange"];
+	}
+
+	public function getEntityWidth() : float{
+		return $this->tileData["displayEntityWidth"];
+	}
+
+	public function getEntityHeight() : float{
+		return $this->tileData["displayEntityHeight"];
+	}
+
+	public function getEntityScale() : float{
+		return $this->tileData["displayEntityScale"];
+	}
+
+	/**
+	 * @phpstan-return array{
+	 *     "entityTypeId": string,
+	 *     "spawnPotentials"?: ListTag,
+	 *     "spawnData"?: CompoundTag,
+	 *     "displayEntityWidth": float,
+	 *     "displayEntityHeight": float,
+	 *     "displayEntityScale": float,
+	 *     "spawnDelay": int,
+	 *     "minSpawnDelay": int,
+	 *     "maxSpawnDelay": int,
+	 *     "spawnPerAttempt": int,
+	 *     "maxNearbyEntities": int,
+	 *     "spawnRange": int,
+	 *     "requiredPlayerRange": int
+	 * }
+	 */
+	public function getTileData() : array{
+		$tileData = $this->tileData;
+		if(isset($tileData["spawnPotentials"]))
+			$tileData["spawnPotentials"] = clone $tileData["spawnPotentials"];
+		if(isset($tileData["spawnData"]))
+			$tileData["spawnData"] = clone $tileData["spawnData"];
+		return $tileData;
 	}
 }
