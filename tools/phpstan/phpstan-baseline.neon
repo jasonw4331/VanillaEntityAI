@@ -1,1 +1,117 @@
-parameters: []
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Dynamic call to static method jasonwynn10\\\\VanillaEntityAI\\\\Main\\:\\:setInstance\\(\\)\\.$#"
+			count: 1
+			path: ../../src/Main.php
+
+		-
+			message: "#^Parameter \\#3 \\$args \\(array\\{difficulty\\: int\\}\\) of method jasonwynn10\\\\VanillaEntityAI\\\\command\\\\DifficultyCommand\\:\\:onRun\\(\\) should be contravariant with parameter \\$args \\(array\\) of method CortexPE\\\\Commando\\\\BaseCommand\\:\\:onRun\\(\\)$#"
+			count: 1
+			path: ../../src/command/DifficultyCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$sender \\(pocketmine\\\\player\\\\Player\\) of method jasonwynn10\\\\VanillaEntityAI\\\\command\\\\SummonCommand\\:\\:onRun\\(\\) should be contravariant with parameter \\$sender \\(pocketmine\\\\command\\\\CommandSender\\) of method CortexPE\\\\Commando\\\\BaseCommand\\:\\:onRun\\(\\)$#"
+			count: 1
+			path: ../../src/command/SummonCommand.php
+
+		-
+			message: "#^Parameter \\#3 \\$args \\(array\\{entityType\\: class\\-string\\<pocketmine\\\\entity\\\\Entity\\>, nameTag\\?\\: string, spawnPos\\?\\: pocketmine\\\\math\\\\Vector3, yRot\\?\\: float, xRot\\?\\: float, spawnEvent\\?\\: string\\}\\) of method jasonwynn10\\\\VanillaEntityAI\\\\command\\\\SummonCommand\\:\\:onRun\\(\\) should be contravariant with parameter \\$args \\(array\\) of method CortexPE\\\\Commando\\\\BaseCommand\\:\\:onRun\\(\\)$#"
+			count: 1
+			path: ../../src/command/SummonCommand.php
+
+		-
+			message: "#^Variable \\$spawnLocation might not be defined\\.$#"
+			count: 2
+			path: ../../src/command/SummonCommand.php
+
+		-
+			message: "#^Using nullsafe method call on non\\-nullable type jasonwynn10\\\\VanillaEntityAI\\\\task\\\\NaturalAnimalSpawnTask\\. Use \\-\\> instead\\.$#"
+			count: 1
+			path: ../../src/data/NaturalSpawnTaskCollector.php
+
+		-
+			message: "#^Using nullsafe method call on non\\-nullable type jasonwynn10\\\\VanillaEntityAI\\\\task\\\\NaturalMonsterSpawnTask\\. Use \\-\\> instead\\.$#"
+			count: 2
+			path: ../../src/data/NaturalSpawnTaskCollector.php
+
+		-
+			message: "#^Using nullsafe method call on non\\-nullable type jasonwynn10\\\\VanillaEntityAI\\\\task\\\\SpawnerTask\\. Use \\-\\> instead\\.$#"
+			count: 1
+			path: ../../src/data/SpawnerTaskCollector.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, mixed given\\.$#"
+			count: 2
+			path: ../../src/event/EventListener.php
+
+		-
+			message: "#^Parameter \\#2 \\$haystack of function in_array expects array, mixed given\\.$#"
+			count: 1
+			path: ../../src/event/EventListener.php
+
+		-
+			message: "#^Parameter \\#3 \\$tileData of class jasonwynn10\\\\VanillaEntityAI\\\\task\\\\SpawnerTask constructor expects array\\{entityTypeId\\: string, spawnPotentials\\?\\: pocketmine\\\\nbt\\\\tag\\\\ListTag, spawnData\\?\\: pocketmine\\\\nbt\\\\tag\\\\CompoundTag, displayEntityWidth\\: float, displayEntityHeight\\: float, displayEntityScale\\: float, spawnDelay\\: int, minSpawnDelay\\: int, \\.\\.\\.\\}, array\\<string, mixed\\> given\\.$#"
+			count: 2
+			path: ../../src/event/EventListener.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between pocketmine\\\\block\\\\tile\\\\MonsterSpawner and null will always evaluate to false\\.$#"
+			count: 1
+			path: ../../src/event/EventListener.php
+
+		-
+			message: "#^Property jasonwynn10\\\\VanillaEntityAI\\\\event\\\\TaskCleanupListener\\:\\:\\$plugin is never read, only written\\.$#"
+			count: 1
+			path: ../../src/event/TaskCleanupListener.php
+
+		-
+			message: "#^Property jasonwynn10\\\\VanillaEntityAI\\\\task\\\\NaturalAnimalSpawnTask\\:\\:\\$plugin is never read, only written\\.$#"
+			count: 1
+			path: ../../src/task/NaturalAnimalSpawnTask.php
+
+		-
+			message: "#^Property jasonwynn10\\\\VanillaEntityAI\\\\task\\\\NaturalMonsterSpawnTask\\:\\:\\$plugin is never read, only written\\.$#"
+			count: 1
+			path: ../../src/task/NaturalMonsterSpawnTask.php
+
+		-
+			message: "#^Call to an undefined method object\\:\\:spawnToAll\\(\\)\\.$#"
+			count: 1
+			path: ../../src/task/SpawnerTask.php
+
+		-
+			message: "#^Method jasonwynn10\\\\VanillaEntityAI\\\\task\\\\SpawnerTask\\:\\:getRandomSpawnPotentials\\(\\) should return pocketmine\\\\nbt\\\\tag\\\\CompoundTag but returns pocketmine\\\\nbt\\\\tag\\\\Tag\\.$#"
+			count: 1
+			path: ../../src/task/SpawnerTask.php
+
+		-
+			message: "#^Offset 'SpawnData' on array\\{entityTypeId\\: string, displayEntityWidth\\: float, displayEntityHeight\\: float, displayEntityScale\\: float, spawnDelay\\: int, minSpawnDelay\\: int, maxSpawnDelay\\: int, spawnPerAttempt\\: int\\<1, max\\>, \\.\\.\\.\\} on left side of \\?\\? does not exist\\.$#"
+			count: 1
+			path: ../../src/task/SpawnerTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$entityClass of static method jasonwynn10\\\\VanillaEntityAI\\\\util\\\\SpawnVerifier\\:\\:canSpawn\\(\\) expects class\\-string\\<pocketmine\\\\entity\\\\Entity\\>, class\\-string\\<pocketmine\\\\entity\\\\Entity\\>\\|null given\\.$#"
+			count: 1
+			path: ../../src/task/SpawnerTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$items of method jasonwynn10\\\\VanillaEntityAI\\\\task\\\\SpawnerTask\\:\\:getRandomSpawnPotentials\\(\\) expects iterable\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>&pocketmine\\\\nbt\\\\tag\\\\ListTag, pocketmine\\\\nbt\\\\tag\\\\ListTag given\\.$#"
+			count: 1
+			path: ../../src/task/SpawnerTask.php
+
+		-
+			message: "#^Parameter \\#3 \\$tileData of class jasonwynn10\\\\VanillaEntityAI\\\\task\\\\SpawnerTask constructor expects array\\{entityTypeId\\: string, spawnPotentials\\?\\: pocketmine\\\\nbt\\\\tag\\\\ListTag, spawnData\\?\\: pocketmine\\\\nbt\\\\tag\\\\CompoundTag, displayEntityWidth\\: float, displayEntityHeight\\: float, displayEntityScale\\: float, spawnDelay\\: int, minSpawnDelay\\: int, \\.\\.\\.\\}, array\\{entityTypeId\\: string, displayEntityWidth\\: float, displayEntityHeight\\: float, displayEntityScale\\: float, spawnDelay\\: int, minSpawnDelay\\: int, maxSpawnDelay\\: int, spawnPerAttempt\\: int, \\.\\.\\.\\} given\\.$#"
+			count: 1
+			path: ../../src/task/SpawnerTask.php
+
+		-
+			message: "#^Property jasonwynn10\\\\VanillaEntityAI\\\\task\\\\SpawnerTask\\:\\:\\$tileData \\(array\\{entityTypeId\\: string, spawnPotentials\\?\\: pocketmine\\\\nbt\\\\tag\\\\ListTag, spawnData\\?\\: pocketmine\\\\nbt\\\\tag\\\\CompoundTag, displayEntityWidth\\: float, displayEntityHeight\\: float, displayEntityScale\\: float, spawnDelay\\: int, minSpawnDelay\\: int, \\.\\.\\.\\}\\) does not accept array\\{entityTypeId\\: string, spawnPotentials\\?\\: pocketmine\\\\nbt\\\\tag\\\\ListTag, spawnData\\: pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null, displayEntityWidth\\: float, displayEntityHeight\\: float, displayEntityScale\\: float, spawnDelay\\: int, minSpawnDelay\\: int, \\.\\.\\.\\}\\.$#"
+			count: 1
+			path: ../../src/task/SpawnerTask.php
+
+		-
+			message: "#^Call to an undefined static method jasonwynn10\\\\VanillaEntityAI\\\\data\\\\InhabitedChunkTimeTracker\\:\\:getTimeAt\\(\\)\\.$#"
+			count: 1
+			path: ../../src/util/DifficultyFactor.php
+
