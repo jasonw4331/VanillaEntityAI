@@ -27,7 +27,7 @@ final class SpawnerTask extends Task{
 	 * @phpstan-param array{
 	 *     "entityTypeId": string,
 	 *     "spawnPotentials"?: ListTag,
-	 *     "SpawnData"?: CompoundTag,
+	 *     "spawnData"?: CompoundTag,
 	 *     "displayEntityWidth": float,
 	 *     "displayEntityHeight": float,
 	 *     "displayEntityScale": float,
