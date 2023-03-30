@@ -7,6 +7,7 @@ namespace jasonwynn10\VanillaEntityAI\task;
 use jasonwynn10\VanillaEntityAI\Main;
 use jasonwynn10\VanillaEntityAI\util\MonsterSpawnerConstants;
 use pocketmine\block\Flowable;
+use pocketmine\block\Opaque;
 use pocketmine\block\tile\MonsterSpawner;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
@@ -71,7 +72,7 @@ final class SpawnerTask extends Task{
 			for($z = $this->coordinate->z - $this->tileData["spawnRange"]; $z <= $this->coordinate->z + $this->tileData["spawnRange"]; ++$z){
 				for($y = $this->coordinate->y - $this->tileData["spawnRange"]; $y <= $this->coordinate->y + $this->tileData["spawnRange"]; ++$y){
 					$block = $this->coordinate->getWorld()->getBlockAt((int) $x, (int) $y, (int) $z);
-					if($block instanceof Flowable && $block->getSide(Facing::UP) instanceof Flowable){ // TODO: account for entity-specific spawn requirements
+					if($block instanceof Opaque and $block->getSide(Facing::UP) instanceof Flowable){ // TODO: account for entity-specific spawn requirements
 						$spawnSpaces[] = $block;
 					}
 				}
