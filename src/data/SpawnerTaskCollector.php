@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI\util;
+namespace jasonwynn10\VanillaEntityAI\data;
 
 use jasonwynn10\VanillaEntityAI\task\SpawnerTask;
 use pocketmine\utils\SingletonTrait;
