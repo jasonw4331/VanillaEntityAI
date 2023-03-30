@@ -7,6 +7,9 @@ interface MonsterSpawnerConstants{
 	const TAG_ENTITY_TYPE_ID = "EntityIdentifier"; //TAG_String
 	const TAG_SPAWN_DELAY = "Delay"; //TAG_Short
 	const TAG_SPAWN_POTENTIALS = "SpawnPotentials"; //TAG_List<TAG_Compound>
+	const TAG_SUB_TYPE_ID = "TypeId"; //TAG_String
+	const TAG_SUB_PROPERTIES = "Properties"; //TAG_Compound
+	const TAG_SUB_WEIGHT = "Weight"; //TAG_Int
 	const TAG_SPAWN_DATA = "SpawnData"; //TAG_Compound
 	const TAG_MIN_SPAWN_DELAY = "MinSpawnDelay"; //TAG_Short
 	const TAG_MAX_SPAWN_DELAY = "MaxSpawnDelay"; //TAG_Short
