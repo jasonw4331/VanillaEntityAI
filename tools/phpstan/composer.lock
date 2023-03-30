@@ -127,12 +127,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/CortexPE/Commando.git",
-                "reference": "ede058439d2b217a0f5de86d7456a7a96d2d296f"
+                "reference": "97d45507196337f708cc2676cba8b6bdbcfd26de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CortexPE/Commando/zipball/ede058439d2b217a0f5de86d7456a7a96d2d296f",
-                "reference": "ede058439d2b217a0f5de86d7456a7a96d2d296f",
+                "url": "https://api.github.com/repos/CortexPE/Commando/zipball/97d45507196337f708cc2676cba8b6bdbcfd26de",
+                "reference": "97d45507196337f708cc2676cba8b6bdbcfd26de",
                 "shasum": ""
             },
             "default-branch": true,
@@ -153,7 +153,7 @@
                 "issues": "https://github.com/CortexPE/Commando/issues",
                 "source": "https://github.com/CortexPE/Commando/tree/master"
             },
-            "time": "2022-04-04T13:57:06+00:00"
+            "time": "2023-03-28T20:52:54+00:00"
         },
         {
             "name": "fgrosse/phpasn1",
