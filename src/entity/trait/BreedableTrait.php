@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI\entity\trait;
+namespace jasonw4331\VanillaEntityAI\entity\trait;
 
 use pocketmine\nbt\tag\CompoundTag;
 
@@ -12,7 +12,7 @@ trait BreedableTrait{
 
 	protected function saveBreedableNBT(CompoundTag $nbt) : CompoundTag {
 		$nbt->setInt("InLove", $this->inLove); // ticks until loses breedable status
-		$nbt->setLong("LoveCause", $this->loveCause); // UniqueId of animal
+		$nbt->setLong("LoveCause", $this->loveCause); // UniqueId of player who caused this entity to be in love
 		$nbt->setInt("BreedCooldown", $this->breedCooldown); // ticks until can breed again
 		return $nbt;
 	}

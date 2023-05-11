@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI\data;
+namespace jasonw4331\VanillaEntityAI\data;
 
-use jasonwynn10\VanillaEntityAI\task\SpawnerTask;
+use jasonw4331\VanillaEntityAI\task\SpawnerTask;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\Position;
 use pocketmine\world\World;

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI\entity\trait;
+namespace jasonw4331\VanillaEntityAI\entity\trait;
 
 use pocketmine\nbt\tag\CompoundTag;
 

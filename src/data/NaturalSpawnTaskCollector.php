@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI\data;
+namespace jasonw4331\VanillaEntityAI\data;
 
-use jasonwynn10\VanillaEntityAI\task\NaturalAnimalSpawnTask;
-use jasonwynn10\VanillaEntityAI\task\NaturalMonsterSpawnTask;
+use jasonw4331\VanillaEntityAI\task\NaturalAnimalSpawnTask;
+use jasonw4331\VanillaEntityAI\task\NaturalMonsterSpawnTask;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
 

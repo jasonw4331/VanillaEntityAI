@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI\lang;
+namespace jasonw4331\VanillaEntityAI\lang;
 
 /**
  * This class contains constants for all the translations known to PoliteTeleports.

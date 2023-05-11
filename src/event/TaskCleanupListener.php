@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI\event;
+namespace jasonw4331\VanillaEntityAI\event;
 
-use jasonwynn10\VanillaEntityAI\data\NaturalSpawnTaskCollector;
-use jasonwynn10\VanillaEntityAI\data\SpawnerTaskCollector;
-use jasonwynn10\VanillaEntityAI\Main;
+use jasonw4331\VanillaEntityAI\data\NaturalSpawnTaskCollector;
+use jasonw4331\VanillaEntityAI\data\SpawnerTaskCollector;
+use jasonw4331\VanillaEntityAI\Main;
 use pocketmine\block\MonsterSpawner;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\Listener;

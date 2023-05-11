@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI\command\argument;
+namespace jasonw4331\VanillaEntityAI\command\argument;
 
 use CortexPE\Commando\args\StringEnumArgument;
 use pocketmine\command\CommandSender;

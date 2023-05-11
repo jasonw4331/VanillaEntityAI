@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI\util;
+namespace jasonw4331\VanillaEntityAI\util;
 
-use jasonwynn10\VanillaEntityAI\data\InhabitedChunkTimeTracker;
+use jasonw4331\VanillaEntityAI\data\InhabitedChunkTimeTracker;
 use pocketmine\world\World;
 use function array_reduce;
 use function floor;

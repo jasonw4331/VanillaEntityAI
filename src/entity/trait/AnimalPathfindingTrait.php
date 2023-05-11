@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI\entity\trait;
+namespace jasonw4331\VanillaEntityAI\entity\trait;
 
-use jasonwynn10\VanillaEntityAI\util\Utils;
+use jasonw4331\VanillaEntityAI\util\Utils;
 use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\Grass;
@@ -17,7 +17,7 @@ use function mt_rand;
 trait AnimalPathfindingTrait{
 
 	protected static function getBlockOfInterest(Position $center) : Block{
-		// ramdomly select a block from a 21x21x15 cube centered around block below entity for 10 blocks of interest
+		// randomly select a block from a 21x21x15 cube centered around block below entity for 10 blocks of interest
 		// block must be opaque and have air above it
 		$totalWeight = 0;
 		$cumulativeWeights = [];

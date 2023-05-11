@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI\util;
+namespace jasonw4331\VanillaEntityAI\util;
 
 interface MonsterSpawnerConstants{
 	const TAG_ENTITY_TYPE_ID = "EntityIdentifier"; //TAG_String

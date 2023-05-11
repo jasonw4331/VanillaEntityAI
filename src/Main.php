@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI;
+namespace jasonw4331\VanillaEntityAI;
 
 use CortexPE\Commando\PacketHooker;
-use jasonwynn10\VanillaEntityAI\command\DifficultyCommand;
-use jasonwynn10\VanillaEntityAI\command\SummonCommand;
-use jasonwynn10\VanillaEntityAI\event\EventListener;
-use jasonwynn10\VanillaEntityAI\event\TaskCleanupListener;
+use jasonw4331\VanillaEntityAI\command\DifficultyCommand;
+use jasonw4331\VanillaEntityAI\command\SummonCommand;
+use jasonw4331\VanillaEntityAI\event\EventListener;
+use jasonw4331\VanillaEntityAI\event\TaskCleanupListener;
 use pocketmine\entity\EntityFactory;
 use pocketmine\lang\Language;
 use pocketmine\plugin\PluginBase;

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI\command;
+namespace jasonw4331\VanillaEntityAI\command;
 
 use CortexPE\Commando\args\IntegerArgument;
 use CortexPE\Commando\BaseCommand;
-use jasonwynn10\VanillaEntityAI\command\argument\DifficultyArgument;
-use jasonwynn10\VanillaEntityAI\entity\Hostile;
-use jasonwynn10\VanillaEntityAI\lang\CustomKnownTranslationFactory;
-use jasonwynn10\VanillaEntityAI\Main;
+use jasonw4331\VanillaEntityAI\command\argument\DifficultyArgument;
+use jasonw4331\VanillaEntityAI\entity\interfaces\Hostile;
+use jasonw4331\VanillaEntityAI\lang\CustomKnownTranslationFactory;
+use jasonw4331\VanillaEntityAI\Main;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI\lang;
+namespace jasonw4331\VanillaEntityAI\lang;
 
 use pocketmine\lang\Translatable;
 

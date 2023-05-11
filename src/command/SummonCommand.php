@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI\command;
+namespace jasonw4331\VanillaEntityAI\command;
 
 use CortexPE\Commando\args\BlockPositionArgument;
 use CortexPE\Commando\args\FloatArgument;
 use CortexPE\Commando\args\RawStringArgument;
 use CortexPE\Commando\BaseCommand;
 use CortexPE\Commando\constraint\InGameRequiredConstraint;
-use jasonwynn10\VanillaEntityAI\command\argument\EntityTypeArgument;
-use jasonwynn10\VanillaEntityAI\lang\CustomKnownTranslationFactory;
-use jasonwynn10\VanillaEntityAI\Main;
+use jasonw4331\VanillaEntityAI\command\argument\EntityTypeArgument;
+use jasonw4331\VanillaEntityAI\lang\CustomKnownTranslationFactory;
+use jasonw4331\VanillaEntityAI\Main;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;

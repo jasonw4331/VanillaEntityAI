@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
-namespace jasonwynn10\VanillaEntityAI\task;
+namespace jasonw4331\VanillaEntityAI\task;
 
-use jasonwynn10\VanillaEntityAI\Main;
-use jasonwynn10\VanillaEntityAI\util\MonsterSpawnerConstants;
+use jasonw4331\VanillaEntityAI\Main;
+use jasonw4331\VanillaEntityAI\util\MonsterSpawnerConstants;
+use jasonw4331\VanillaEntityAI\util\SpawnVerifier;
+use jasonw4331\VanillaEntityAI\util\Utils;
+use pocketmine\block\Block;
 use pocketmine\block\Flowable;
 use pocketmine\block\Opaque;
 use pocketmine\block\tile\MonsterSpawner;
@@ -22,7 +25,6 @@ use pocketmine\world\Position;
 use function array_filter;
 use function array_rand;
 use function count;
-use function floor;
 use function mt_rand;
 
 final class SpawnerTask extends Task{
@@ -83,11 +85,12 @@ final class SpawnerTask extends Task{
 		}
 		// spawn mob cluster
 		for($i = 0; $i < $this->tileData["spawnPerAttempt"]; $i++){
-			$spawnSpace = $spawnSpaces[array_rand($spawnSpaces)]->getPosition();
-			/** @var Entity $entity */
+			/** @var Block $spawnBlock */
+			$spawnBlock = $spawnSpaces[array_rand($spawnSpaces)];
 			$entity = $this->getEntityClassFromTypeId($this->tileData["entityTypeId"]);
-
-			(new $entity(Location::fromObject($spawnSpace, $spawnSpace->getWorld()), $this->tileData['SpawnData'] ?? null))->spawnToAll();
+			if(SpawnVerifier::canSpawn($entity, $spawnBlock)){
+				(new $entity(Location::fromObject($spawnBlock->getPosition()->up(), $spawnBlock->getPosition()->getWorld()), $this->tileData['SpawnData'] ?? null))->spawnToAll();
+			}
 		}
 		// set new spawn delay
 		$this->tileData["spawnDelay"] = mt_rand($this->tileData["minSpawnDelay"], $this->tileData["maxSpawnDelay"]);
@@ -141,29 +144,10 @@ final class SpawnerTask extends Task{
 		foreach ($items as $item) {
 			$weight = $item->getInt(MonsterSpawnerConstants::TAG_SUB_WEIGHT, 1);
 			$totalWeight += $weight;
-			$cumulativeWeights[] = $totalWeight;
+			$cumulativeWeights[] = $totalWeight; // TODO: check if this is correct
 		}
-		$index = $this->binarySearchIntegerArray($cumulativeWeights, mt_rand(1, $totalWeight));
+		$index = Utils::binarySearchIntegerArray($cumulativeWeights, mt_rand(1, $totalWeight));
 		return $items->get($index);
-	}
-
-	/**
-	 * @param int[] $arr
-	 */
-	private function binarySearchIntegerArray(array $arr, int $value) : int {
-		$low = 0;
-		$high = count($arr) - 1;
-		while ($low <= $high) {
-			$mid = (int) floor(($low + $high) / 2);
-			if ($arr[$mid] < $value) {
-				$low = $mid + 1;
-			} elseif ($arr[$mid] > $value) {
-				$high = $mid - 1;
-			} else {
-				return $mid;
-			}
-		}
-		return $low;
 	}
 
 	public function setEntityId(string $entityId) : void{
