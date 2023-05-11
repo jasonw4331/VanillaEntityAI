@@ -6,41 +6,39 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: PHPStan analysis
-    runs-on: ubuntu-20.04
+  PHPStan_Analyze:
+    name: PHPStan Analysis
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        php:
-          - "8.1.17"
-        pm-version-major: [ 4 ]
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup PHP
-        uses: pmmp/setup-php-action@4d1b890176aa299211f4ccae76ddbf9bd008bbd6
+      - name: Setup PHP and tools
+        uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
-          install-path: "./bin"
-          pm-version-major: ${{ matrix.pm-version-major }}
+          php-version: 8.0
+          tools: phpstan
+          coverage: none
 
-      - name: Restore Composer package cache
+      - name: Get composer cache directory
         id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache composer dependencies
         uses: actions/cache@v3
         with:
-          path: "~/.cache/composer"
-          key: "php-${{ matrix.php }}-composer-${{ hashFiles('**/composer.json') }}"
-          restore-keys: "php-${{ matrix.php }}-composer-"
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
-      - name: Install PHPStan Composer dependencies
-        working-directory: ./tools/phpstan
-        run: composer install --prefer-dist --no-interaction
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader --ignore-platform-reqs
 
-      - name: Run PHPStan
-        working-directory: ./tools/phpstan
-        run: vendor/bin/phpstan analyze -c ./phpstan.neon.dist
+      - name: Run PhpStan
+        run: phpstan analyze --no-progress src -c phpstan.neon.dist
+
   codestyle:
     name: Code Style checks
     runs-on: ubuntu-latest
@@ -53,8 +51,8 @@ jobs:
       - name: Setup PHP and tools
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.1
-          tools: php-cs-fixer:3.11
+          tools: php-cs-fixer
+          coverage: none
 
       - name: Run PHP-CS-Fixer
-        run: php-cs-fixer fix --dry-run --diff --config=./tools/cs-fixer/.php-cs-fixer.php
+        run: php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.php

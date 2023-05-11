@@ -1,0 +1,61 @@
+{
+	"name": "jasonw4331/vanillaentityai",
+	"description": "A non-customizable plugin to add vanilla entities with AI to PocketMine servers",
+	"type": "library",
+	"license": "lgpl-3.0-or-later",
+	"authors": [{
+		"name": "jasonw4331",
+		"email": "jasonwynn10@gmail.com"
+	}],
+	"minimum-stability": "beta",
+	"prefer-stable": true,
+	"autoload": {
+		"psr-4": {
+			"jasonw4331\\VanillaEntityAI\\": "/src"
+		}
+	},
+	"repositories": [{
+		"type": "package",
+		"package": {
+			"name": "salmonde/pathfinding",
+			"version": "0.1.0",
+			"source": {
+				"url": "https://github.com/SalmonDE/Pathfinding.git",
+				"type": "git",
+				"reference": "master"
+			},
+			"autoload": {
+				"psr-4": {
+					"SalmonDE\\Pathfinding\\": "src/"
+				}
+			},
+			"extra": {
+				"virion": {
+					"spec": "3.0",
+					"namespace-root": "SalmonDE/Pathfinding"
+				}
+			}
+		}
+	}],
+	"require": {
+		"cortexpe/commando": "dev-master",
+		"salmonde/pathfinding": "*"
+	},
+	"require-dev": {
+		"phpstan/phpstan": "^1.4.6",
+		"pocketmine/pocketmine-mp": "^4.0.0",
+		"phpstan/phpstan-strict-rules": "^1.0",
+		"phpstan/extension-installer": "^1.0",
+		"symfony/filesystem": "^5.4",
+		"friendsofphp/php-cs-fixer": "^3.11"
+	},
+	"config": {
+		"allow-plugins": {
+			"phpstan/extension-installer": true
+		}
+	},
+	"scripts": {
+		"make-baseline": "@php ./vendor/bin/phpstan analyze -b phpstan-baseline.php -c phpstan.neon.dist --allow-empty-baseline",
+		"fix-codestyle": "@php ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff"
+	}
+}
