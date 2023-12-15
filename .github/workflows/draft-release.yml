@@ -53,7 +53,7 @@ jobs:
         run: php pharynx.phar -i . -f LICENSE -c -p=${{ github.workspace }}/${{ steps.get-manifest.outputs.NAME }}.phar
 
       - name: Upload release artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: release_artifacts
           path: |
